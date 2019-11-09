@@ -3,34 +3,6 @@ using System.Collections.Concurrent;
 
 namespace wavegenerator
 {
-    public class Program
-    {
-        public static void Main()
-        {
-            var r = new TabletopTest(261.6, 10, 1, 2);
-            r.Write("tabletop.wav");
-
-        }
-    }
-
-    public class TabletopTest : TabletopGenerator
-    {
-        public TabletopTest(double baseFrequency, int sectionLengthSeconds, int numSections, short channels) : base(baseFrequency, sectionLengthSeconds, numSections, channels)
-        {
-        }
-
-        protected override Params CreateParams(int section)
-        {
-            return new Params
-            {
-                TopFrequency = 261.6*2,
-                RampLength = 2,
-                TopLength = 2,
-                RampsUseSin2 = true
-            };
-        }
-    }
-
     public abstract class TabletopGenerator : FrequencyFunctionWaveFile
     {
         public TabletopGenerator(double baseFrequency, int sectionLengthSeconds, int numSections, short channels) : base(sectionLengthSeconds * numSections, channels)
@@ -94,7 +66,7 @@ namespace wavegenerator
                 // on the tabletop
                 return p.TopFrequency;
             }
-            else if(ts <= prefixLength + 2* p.RampLength +p.TopLength)
+            else if (ts <= prefixLength + 2 * p.RampLength + p.TopLength)
             {
                 //on the second ('down') ramp
                 double timeAlongRamp = ts - prefixLength - p.RampLength - p.TopLength;
@@ -115,34 +87,6 @@ namespace wavegenerator
             if (p.TopLength < 0) throw new InvalidOperationException("TopLength must be >= 0");
             if (p.RampLength < 0) throw new InvalidOperationException("RampLength must be >= 0");
             if (p.TopLength + 2 * p.RampLength > sectionLengthSeconds) throw new InvalidOperationException("TopLength + 2*RampLength must be <= sectionLengthSeconds");
-        }
-    }
-
-
-    public class Jump : FrequencyFunctionWaveFile
-    {
-        public Jump(int lengthSeconds, short channels) : base(lengthSeconds, channels)
-        {
-        }
-
-        protected override double Frequency(double t, int n, int channel)
-        {
-            if (t < 1)
-                return 261.6;
-            else
-                return 261.1 * 2;
-        }
-    }
-
-    public class Rising : FrequencyFunctionWaveFile
-    {
-        public Rising(int lengthSeconds, short channels) : base(lengthSeconds, channels)
-        {
-        }
-
-        protected override double Frequency(double t, int n, int channel)
-        {
-            return 261.6 * (1 + (float)n / N);
         }
     }
 }
