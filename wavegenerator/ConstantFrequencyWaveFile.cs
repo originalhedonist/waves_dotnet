@@ -15,4 +15,5 @@ namespace wavegenerator
             return Math.Sin(2 * Math.PI * frequency * t);
         }
     }
+
 }
