@@ -7,8 +7,8 @@ namespace wavegenerator
     {
         public static void Main()
         {
-            var r = new Rising(2, 2);
-            r.Write("rising.wav");
+            var r = new TabletopTest(261.6, 10, 1, 2);
+            r.Write("tabletop.wav");
 
         }
     }
@@ -23,7 +23,7 @@ namespace wavegenerator
         {
             return new Params
             {
-                TopFrequency = 261.6,
+                TopFrequency = 261.6*2,
                 RampLength = 2,
                 TopLength = 2
             };
