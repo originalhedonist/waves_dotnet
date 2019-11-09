@@ -1,0 +1,21 @@
+﻿using System;
+namespace wavegenerator
+{
+    public abstract class FrequencyFunctionWaveFile : WaveFile
+    {
+        private double x;
+        public FrequencyFunctionWaveFile(int lengthSeconds, short channels) : base(lengthSeconds, channels)
+        {
+        }
+
+        protected abstract double Frequency(double t, int n, int channel);
+
+        protected override double Amplitude(double t, int n, int channel)
+        {
+            var f = Frequency(t, n, channel);
+            var dx = 2 * Math.PI * f / N;
+            x += dx;
+            return Math.Sin(x);
+        }
+    }
+}
