@@ -12,12 +12,16 @@ namespace wavegenerator
         {
         }
 
+#if RANDOM
         private bool IsBreak(int section) => isBreakCache.GetOrAdd(section, s =>
         {
             //no breaks in the first ten minutes
-            if (s * sectionLengthSeconds < Constants.MinBreakSeconds) return false;
-            return Randomizer.GetRandom() > 0.9; //10% chance of being a break after ten mins
+            if (s * sectionLengthSeconds < Constants.MinTimeBeforeBreak) return false;
+            return Randomizer.Probability(0.1, false); //10% chance of being a break after ten mins
         });
+#else
+        private bool IsBreak(int section) => false; //no breaks if not random
+#endif
 
         public override double Amplitude(double t, int n, int channel)
         {
@@ -48,7 +52,7 @@ namespace wavegenerator
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
             double progression = ((float)section + 1) / numSections; // <= 1
-            var isTabletop = Randomizer.GetRandom() < progression;
+            var isTabletop = Randomizer.Probability(progression, true) ;
             if (isTabletop)
             {
                 //if it's a tabletop:
@@ -64,10 +68,12 @@ namespace wavegenerator
                     TopLength = topLength,
                     RampsUseSin2 = true
                 };
+                Console.WriteLine($"Section {section} is a tabletop with length {result.TopLength}, rampLength = {result.RampLength}");
                 return result;
             }
             else
             {
+                Console.WriteLine($"Section {section} is not a tabletop");
                 var result = new TabletopParams();
                 return result;
             }
@@ -77,10 +83,14 @@ namespace wavegenerator
         {
             double progression = ((float)section + 1) / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
-            var isRise = Randomizer.GetRandom() < Constants.ChanceOfRise;
+            var isRise = Randomizer.Probability(Constants.ChanceOfRise, true);
             double frequencyLimit = isRise ? Constants.MaxPulseFrequency : Constants.MinPulseFrequency;
             double frequencyChangeLimit = frequencyLimit - baseFrequency;
-            double topFrequency = Randomizer.GetRandom() * frequencyChangeLimit * progression;
+            double topFrequency = baseFrequency + Randomizer.GetRandom() * frequencyChangeLimit * progression;
+            if (topFrequency <= 0)
+                throw new InvalidOperationException("TopFrequency must be > 0");
+
+            Console.WriteLine($"Section {section} using top frequency of {topFrequency}");
             return topFrequency;
         }
 
@@ -88,6 +98,8 @@ namespace wavegenerator
         private readonly ConcurrentDictionary<int, double> wetnessCache = new ConcurrentDictionary<int, double>();
         public double Wetness(double t, int n)
         {
+            return 0.6;//for now
+
             // rise in a sin^2 fashion from MinWetness to MaxWetness
             int section = Section(n);
             double maxWetnessForSection = wetnessCache.GetOrAdd(section, s =>

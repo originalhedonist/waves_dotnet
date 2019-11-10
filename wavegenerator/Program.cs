@@ -9,7 +9,10 @@ namespace wavegenerator
         {
             CheckConstants();
 
-            var pulseGenerator = new PulseGenerator(sectionLengthSeconds: 60, numSections: 10, channels: 2);
+            var pulseGenerator = new PulseGenerator(
+                sectionLengthSeconds: Constants.SectionLength,
+                numSections: Constants.NumSections,
+                channels: 2);
             var carrierFrequencyApplier = new CarrierFrequencyApplier<PulseGenerator>(pulseGenerator, 600);
             carrierFrequencyApplier.Write($"composition_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.wav");
 
@@ -18,7 +21,10 @@ namespace wavegenerator
         private static void CheckConstants()
         {
             if (Constants.MaxTabletopLength >= Constants.SectionLength - 2 * Constants.MinRampLength)
-                throw new InvalidOperationException($"MaxTabletopLength must be < SectionLength");
+                throw new InvalidOperationException($"MaxTabletopLength must be < SectionLength - 2*MinRampLength");
+
+            if (Constants.MaxBreakLength >= Constants.SectionLength - 2 * Constants.BreakRampLength)
+                throw new InvalidOperationException($"MaxBreakLength must be < SectionLength - 2*BreakRampLength");
         }
     }
 

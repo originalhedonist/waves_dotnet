@@ -3,7 +3,8 @@ namespace wavegenerator
 {
     public class Constants
     {
-        public const double SectionLength = 30;// length of each 'section' (a 'section' containing one 'tabletop' of either rising, or falling, pulse frequency in the middle)
+        public const int SectionLength = 30;// length of each 'section' (a 'section' containing one 'tabletop' of either rising, or falling, pulse frequency in the middle)
+        public const int NumSections = 10;// number of sections in the track
         public const double MinTabletopLength = 1;// min length of the 'top' part of the table top frequency
         public const double MaxTabletopLength = 20;// max length of the 'top' part of the table top frequency
         public const double MinRampLength = 1; //minimum length of the 'ramp' part of the table top
@@ -13,9 +14,9 @@ namespace wavegenerator
         public const double BasePulseFrequency = 0.5; // the 'normal', quiescent frequency that it normally pulses at
         public const double MinPulseFrequency = 0.2; // the lowest frequency the pulsing in a section can fall to
         public const double MaxPulseFrequency = 1.5; //the highest frequency the pulsing in a section can rise to
-        public const double MinBreakSeconds = 600; // the soonest in the track there can be a 'break'
 
-        public const double ChanceOfBreak = 0.1;
+        public const double MinTimeBeforeBreak = 600; // the soonest in the track there can be a 'break'
+        public const double ChanceOfBreak = 0.1; //after MinTimeBeforeBreak seconds
         public const double MinBreakLength = 1;
         public const double MaxBreakLength = 10;
         public const double BreakRampLength = 2; //BreakRampLength * 2 + MaxBreakLength must be <= SectionLength

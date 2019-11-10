@@ -51,10 +51,8 @@ namespace wavegenerator
 
                     for(int n = 0; n < N; n++)
                     {
-                        if ((n % (samplingFrequency * 10)) == 0)
-                            Console.Out.WriteLine($"\rWritten {TimeSpan.FromSeconds(n * samplingFrequency)}");
-
                         double t = LengthSeconds * ((double)n) / N;
+
                         for (int c = 0; c < Channels; c++)
                         {
                             double A = Amplitude(t, n, c);
