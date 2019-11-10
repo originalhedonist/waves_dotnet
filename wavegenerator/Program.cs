@@ -18,15 +18,19 @@ namespace wavegenerator
         {
         }
 
-        protected override Params CreateParams(int section)
+        protected override TabletopParams CreateParams(int section)
         {
-            return new Params
+            return new TabletopParams
             {
-                TopFrequency = section == 0 ? 261.6*2 : 261.6 / 2,
                 RampLength = 1,
                 TopLength = 4,
                 RampsUseSin2 = true
             };
+        }
+
+        protected override double CreateTopFrequency(int section)
+        {
+            return 261.6 * 2;
         }
     }
 
