@@ -17,10 +17,12 @@ namespace wavegenerator
         {
             //no breaks in the first ten minutes
             if (s * sectionLengthSeconds < Constants.MinTimeBeforeBreak) return false;
-            return Randomizer.Probability(0.1, false); //10% chance of being a break after ten mins
+            var retval = Randomizer.Probability(0.1, false); //10% chance of being a break after ten mins
+            if(retval) Console.WriteLine($"Section {s} is a break");
+            return retval;
         });
 #else
-        private bool IsBreak(int section) => false; //no breaks if not random
+        private bool IsBreak(int _) => false; //no breaks if not random
 #endif
 
         public override double Amplitude(double t, int n, int channel)
@@ -94,24 +96,24 @@ namespace wavegenerator
             return topFrequency;
         }
 
-
         private readonly ConcurrentDictionary<int, double> wetnessCache = new ConcurrentDictionary<int, double>();
         public double Wetness(double t, int n)
         {
-            return 0.6;//for now
-
             // rise in a sin^2 fashion from MinWetness to MaxWetness
             int section = Section(n);
             double maxWetnessForSection = wetnessCache.GetOrAdd(section, s =>
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
                 double maxWetness = Constants.MinWetness + progression * Randomizer.GetRandom() * (Constants.MaxWetness - Constants.MinWetness);
+                Console.WriteLine($"The max wetness for section {s} is {maxWetness}");
                 return maxWetness;
             });
+            
             double ts = t - (section * sectionLengthSeconds); //time through the current section
             double ps = ts / sectionLengthSeconds; // progression through section
             double x = ps * Math.PI;// max wetness in the middle (x = pi/2)
-            double w = Math.Pow(Math.Sin(x), 2);
+            double w = Constants.MinWetness + 
+                Math.Pow(Math.Sin(x), 2) * (Constants.MaxWetness - Constants.MinWetness);
             return w;
         }
     }
