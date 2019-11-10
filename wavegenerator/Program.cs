@@ -4,11 +4,21 @@ namespace wavegenerator
 {
     public class Program
     {
+
         public static void Main()
         {
-            var r = new TabletopTest(261.6, 10, 2, 2);
-            r.Write("tabletop.wav");
+            CheckConstants();
 
+            var pulseGenerator = new PulseGenerator(sectionLengthSeconds: 60, numSections: 10, channels: 2);
+            var carrierFrequencyApplier = new CarrierFrequencyApplier<PulseGenerator>(pulseGenerator, 600);
+            carrierFrequencyApplier.Write($"composition_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.wav");
+
+        }
+
+        private static void CheckConstants()
+        {
+            if (Constants.MaxTabletopLength >= Constants.SectionLength - 2 * Constants.MinRampLength)
+                throw new InvalidOperationException($"MaxTabletopLength must be < SectionLength");
         }
     }
 
@@ -18,7 +28,7 @@ namespace wavegenerator
         {
         }
 
-        protected override TabletopParams CreateParams(int section)
+        protected override TabletopParams CreateTabletopParamsForSection(int section)
         {
             return new TabletopParams
             {

@@ -19,22 +19,30 @@ namespace wavegenerator
             this.numSections = numSections;
         }
 
-        private readonly double baseFrequency;
-        private readonly int sectionLengthSeconds;
-        private readonly int numSections;
+        protected readonly double baseFrequency;
+        protected readonly int sectionLengthSeconds;
+        protected readonly int numSections;
 
         protected abstract double CreateTopFrequency(int section);
-        protected abstract TabletopParams CreateParams(int section);
+        protected abstract TabletopParams CreateTabletopParamsForSection(int section);
+        protected TabletopParams GetTabletopParamsBySection(int section) => paramsCache.GetOrAdd(section, s =>
+        {
+            var p = CreateTabletopParamsForSection(section);
+            ValidateParams(p);
+            return p;
+        });
+
         //should only be called once, and cached.
         // It might (and very probably will) do 'Random' operations, so want the same one for the whole segment!
 
         private readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
+        protected int Section(int n) => (int)(((float)n / N) * numSections);
         protected override double Frequency(double t, int n, int channel)
         {
-            int section = (int)(((float)n / N) * numSections);
-            var p = paramsCache.GetOrAdd(section, CreateParams);
-            ValidateParams(p);
+            int section = Section(n);
+            var p = GetTabletopParamsBySection(section);
+            
             var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
             if (topFrequency <= 0) throw new InvalidOperationException("TopFrequency must be >= 0");
 
@@ -49,58 +57,6 @@ namespace wavegenerator
             if (p.TopLength < 0) throw new InvalidOperationException("TopLength must be >= 0");
             if (p.RampLength < 0) throw new InvalidOperationException("RampLength must be >= 0");
             if (p.TopLength + 2 * p.RampLength > sectionLengthSeconds) throw new InvalidOperationException("TopLength + 2*RampLength must be <= sectionLengthSeconds");
-        }
-    }
-
-    public static class TabletopAlgorithm
-    {
-        /*            TopLength    RampLength
-         *          <--------------><->
-         * y|       ________________
-         *  |      /ymax            \   prefixLength (same both sides)
-         *  |     /                  \ <-->
-         *  |____/                    \____
-         *  |ymin
-         * ________________________________x
-         *  <-----------xmax-------------->
-         * the TopFrequency doesn't necessarily have to be greater than baseFrequency - but it must be >0.
-         */
-
-        public static double GetY(double x, double xmax, double ymin, double ymax, TabletopParams p)
-        {
-            double prefixLength = (xmax - p.TopLength - 2 * p.RampLength) / 2; //length of the bit at base frequency before the first ramp
-            double dy = ymax - ymin;
-            if (x < prefixLength)
-            {
-                //before the first ramp
-                return ymin;
-            }
-            else if (x < prefixLength + p.RampLength)
-            {
-                // on the first ('up') ramp
-                double timeAlongRamp = x - prefixLength;
-                double proportionAlongRamp = timeAlongRamp / p.RampLength;
-                double proportionUpRamp = p.RampsUseSin2 ? Math.Pow(Math.Sin(proportionAlongRamp * Math.PI / 2), 2) : proportionAlongRamp;
-                return ymin + proportionUpRamp * dy;
-            }
-            else if (x <= prefixLength + p.RampLength + p.TopLength)
-            {
-                // on the tabletop
-                return ymax;
-            }
-            else if (x <= prefixLength + 2 * p.RampLength + p.TopLength)
-            {
-                //on the second ('down') ramp
-                double timeAlongRamp = x - prefixLength - p.RampLength - p.TopLength;
-                double proportionAlongRamp = timeAlongRamp / p.RampLength;
-                double proportionUpRamp = p.RampsUseSin2 ? Math.Pow(Math.Sin(proportionAlongRamp * Math.PI / 2), 2) : proportionAlongRamp;
-                return ymin + (1 - proportionUpRamp) * dy;
-            }
-            else
-            {
-                //after the second ramp
-                return ymin;
-            }
         }
     }
 }

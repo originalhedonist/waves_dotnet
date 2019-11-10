@@ -10,7 +10,7 @@ namespace wavegenerator
 
         protected abstract double Frequency(double t, int n, int channel);
 
-        protected override double Amplitude(double t, int n, int channel)
+        public override double Amplitude(double t, int n, int channel)
         {
             var f = Frequency(t, n, channel);
             var dx = Math.PI * f / samplingFrequency;

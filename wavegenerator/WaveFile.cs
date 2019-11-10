@@ -10,16 +10,16 @@ namespace wavegenerator
     {
         protected const int samplingFrequency = 44100;
         protected const short bytesPerSample = 2;
-        protected readonly int lengthSeconds;
-        protected readonly short channels;
+        public int LengthSeconds { get; }
+        public short Channels { get; }
         protected readonly int overallDataSize;
         protected readonly int overallFileSize;
         protected readonly int N;
 
         public WaveFile(int lengthSeconds, short channels)
         {
-            this.lengthSeconds = lengthSeconds;
-            this.channels = channels;
+            this.LengthSeconds = lengthSeconds;
+            this.Channels = channels;
             this.N = lengthSeconds * samplingFrequency;
             this.overallDataSize = N * channels * bytesPerSample;
             this.overallFileSize = this.overallDataSize + 44;
@@ -41,18 +41,21 @@ namespace wavegenerator
                     fileStream.Write(Encoding.ASCII.GetBytes("fmt "));
                     binaryWriter.Write((int)16); //length of format data
                     binaryWriter.Write((short)1); //type of format (1 = PCM)
-                    binaryWriter.Write(channels);
+                    binaryWriter.Write(Channels);
                     binaryWriter.Write(samplingFrequency);
-                    binaryWriter.Write((int)(samplingFrequency * bytesPerSample * channels));
-                    binaryWriter.Write((short)(bytesPerSample * channels));
+                    binaryWriter.Write((int)(samplingFrequency * bytesPerSample * Channels));
+                    binaryWriter.Write((short)(bytesPerSample * Channels));
                     binaryWriter.Write((short)(bytesPerSample * 8)); // bits per sample
                     fileStream.Write(Encoding.ASCII.GetBytes("data"));
                     binaryWriter.Write(overallDataSize);
 
                     for(int n = 0; n < N; n++)
                     {
-                        double t = lengthSeconds * ((double)n) / N;
-                        for (int c = 0; c < channels; c++)
+                        if ((n % (samplingFrequency * 10)) == 0)
+                            Console.Out.WriteLine($"\rWritten {TimeSpan.FromSeconds(n * samplingFrequency)}");
+
+                        double t = LengthSeconds * ((double)n) / N;
+                        for (int c = 0; c < Channels; c++)
                         {
                             double A = Amplitude(t, n, c);
                             if (A < -1 || A > 1)
@@ -68,6 +71,6 @@ namespace wavegenerator
             }
         }
 
-        protected abstract double Amplitude(double t, int n, int channel);
+        public abstract double Amplitude(double t, int n, int channel);
     }
 }

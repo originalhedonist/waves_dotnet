@@ -10,7 +10,7 @@ namespace wavegenerator
             this.frequency = frequency;
         }
 
-        protected override double Amplitude(double t, int n, int channel)
+        public override double Amplitude(double t, int n, int channel)
         {
             return Math.Sin(2 * Math.PI * frequency * t);
         }
