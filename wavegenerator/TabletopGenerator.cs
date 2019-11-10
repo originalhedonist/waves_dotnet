@@ -59,7 +59,7 @@ namespace wavegenerator
                 double timeAlongRamp = ts - prefixLength;
                 double proportionAlongRamp = timeAlongRamp / p.RampLength;
                 double proportionUpRamp = p.RampsUseSin2 ? Math.Pow(Math.Sin(proportionAlongRamp * Math.PI / 2), 2) : proportionAlongRamp;
-                return baseFrequency + proportionAlongRamp * df;
+                return baseFrequency + proportionUpRamp * df;
             }
             else if (ts <= prefixLength + p.RampLength + p.TopLength)
             {
