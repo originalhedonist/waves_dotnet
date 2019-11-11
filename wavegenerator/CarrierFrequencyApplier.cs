@@ -5,27 +5,23 @@ namespace wavegenerator
     public class CarrierFrequencyApplier : WaveFile
     {
         private readonly WaveFile pattern;
-        private readonly double carrierFrequency;
+        private readonly double carrierFrequencyRight;
+        private readonly double carrierFrequencyLeft;
 
-        public CarrierFrequencyApplier(WaveFile pattern, double carrierFrequency) : base(pattern.LengthSeconds, pattern.Channels)
+        public CarrierFrequencyApplier(WaveFile pattern, double carrierFrequencyRight, double carrierFrequencyLeft) : base(pattern.LengthSeconds, pattern.Channels)
         {
             this.pattern = pattern;
-            this.carrierFrequency = carrierFrequency;
+            this.carrierFrequencyRight = carrierFrequencyRight;
+            this.carrierFrequencyLeft = carrierFrequencyLeft;
         }
 
         public override double Amplitude(double t, int n, int channel)
         {
+            double carrierFrequency = channel == 0 ? carrierFrequencyLeft : carrierFrequencyRight;
             double x = 2 * Math.PI * carrierFrequency * t;
             double carrierAmplitude = channel == 0 ? Math.Sin(x) : Math.Cos(x); //this is the amplitude if it were constant.
             double patternAmplitude = Math.Abs(pattern.Amplitude(t, n, channel));
-            //return carrierAmplitude * patternAmplitude;
-
-            //the nearer wetness is to 1, the more we disregard the pattern amplitude
-            double wetness = pattern.Wetness(t, n);
-            double a_maxdry = patternAmplitude * carrierAmplitude;
-            double a_maxwet = carrierAmplitude;
-            double a = a_maxdry + (a_maxwet - a_maxdry) * wetness;
-            return a;
+            return carrierAmplitude * patternAmplitude;
         }
     }
 }

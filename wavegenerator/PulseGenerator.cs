@@ -10,40 +10,51 @@ namespace wavegenerator
         {
         }
 
-#if RANDOM
         private readonly ConcurrentDictionary<int, bool> isBreakCache = new ConcurrentDictionary<int, bool>();
+        private readonly ConcurrentDictionary<int, TabletopParams> breakParamsCache = new ConcurrentDictionary<int, TabletopParams>();
+
         private bool IsBreak(int section) => isBreakCache.GetOrAdd(section, s =>
         {
-            //no breaks in the first ten minutes
             if (s * sectionLengthSeconds < Constants.MinTimeBeforeBreak) return false;
-            var retval = Randomizer.Probability(0.1, false); //10% chance of being a break after ten mins
-            if(retval) Console.WriteLine($"Section {s} is a break");
+            var retval = Randomizer.Probability(0.1, s % 2 == 1); //10% chance of being a break after ten mins
+            if (retval) Console.WriteLine($"Section {s} is a break");
             return retval;
         });
-#else
-        private bool IsBreak(int _) => false; //no breaks if not random
-#endif
+
+        public TabletopParams GetBreakParams(int section) => breakParamsCache.GetOrAdd(section, s =>
+        {
+            var breakLength = Randomizer.GetRandom() * (Constants.MaxBreakLength - Constants.MinBreakLength) + Constants.MinBreakLength;
+            var p = new TabletopParams
+            {
+                RampLength = Constants.BreakRampLength,
+                TopLength = breakLength,
+                RampsUseSin2 = true
+            };
+            return p;
+        });
 
         public override double Amplitude(double t, int n, int channel)
         {
             var section = Section(n);
             double baseA = base.Amplitude(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
+            double wetness = Wetness(t, n);
+            double a_maxdry = Math.Abs(baseA);
+            double a_maxwet = 1;
+            double a = a_maxdry + (a_maxwet - a_maxdry) * wetness;
+
+            double a_res;
             if (IsBreak(section))
             {
                 double ts = t - (section * sectionLengthSeconds); //time through the current section
-                var breakLength = Randomizer.GetRandom() * (Constants.MaxBreakLength - Constants.MinBreakLength) + Constants.MinBreakLength;
-                var p = new TabletopParams
-                {
-                    RampLength = Constants.BreakRampLength,
-                    TopLength = breakLength,
-                    RampsUseSin2 = true
-                };
-                double a = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, baseA, 0, p);
-                return a;
+                var p = GetBreakParams(section);
+                a_res = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, a, 0, p);
             }
             else
-                return baseA;
+            {
+                a_res = a;
+            }
+            return a_res;
         }
 
         protected override TabletopParams CreateTabletopParamsForSection(int section)
@@ -53,7 +64,7 @@ namespace wavegenerator
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
             double progression = ((float)section + 1) / numSections; // <= 1
-            var isTabletop = Randomizer.Probability(progression, true) ;
+            var isTabletop = Randomizer.Probability(progression, true);
             if (isTabletop)
             {
                 //if it's a tabletop:
@@ -96,10 +107,12 @@ namespace wavegenerator
         }
 
         private readonly ConcurrentDictionary<int, double> wetnessCache = new ConcurrentDictionary<int, double>();
-        public override double Wetness(double t, int n)
+        private double Wetness(double t, int n)
         {
             // rise in a sin^2 fashion from MinWetness to MaxWetness
             int section = Section(n);
+            double ts = t - (section * sectionLengthSeconds); //time through the current section
+
             double maxWetnessForSection = wetnessCache.GetOrAdd(section, s =>
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
@@ -108,7 +121,6 @@ namespace wavegenerator
                 return maxWetness;
             });
 
-            double ts = t - (section * sectionLengthSeconds); //time through the current section
             double wetness;
             if (Constants.LinkWetnessToFrequency)
             {

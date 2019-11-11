@@ -4,7 +4,6 @@ namespace wavegenerator
 {
     public class Program
     {
-
         public static void Main()
         {
             CheckConstants();
@@ -13,7 +12,9 @@ namespace wavegenerator
                 sectionLengthSeconds: Constants.SectionLength,
                 numSections: Constants.NumSections,
                 channels: 2);
-            var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator, 600);
+            var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
+                carrierFrequencyRight: 600,
+                carrierFrequencyLeft: 600);
             carrierFrequencyApplier.Write($"composition_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.wav");
 
         }
