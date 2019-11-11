@@ -38,11 +38,13 @@ namespace wavegenerator
             var section = Section(n);
             double baseA = base.Amplitude(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
+            //first apply wetness,
             double wetness = Wetness(t, n);
-            double a_maxdry = Math.Abs(baseA);
-            double a_maxwet = 1;
-            double a = a_maxdry + (a_maxwet - a_maxdry) * wetness;
+            double apos = (baseA + 1) / 2; //base amplitude, always positive - but with proper curves unlike abs
+            double dryness = 1 - wetness;
+            double a = 1 - dryness * apos;
 
+            //then apply break
             double a_res;
             if (IsBreak(section))
             {

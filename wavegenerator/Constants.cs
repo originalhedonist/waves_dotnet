@@ -4,7 +4,7 @@ namespace wavegenerator
     public class Constants
     {
         public const int SectionLength = 30;// length of each 'section' (a 'section' containing one 'tabletop' of either rising, or falling, pulse frequency in the middle)
-        public static readonly TimeSpan TrackLength = TimeSpan.FromMinutes(10);
+        public static readonly TimeSpan TrackLength = TimeSpan.FromMinutes(5);
         public static readonly int NumSections = (int)(TrackLength.TotalSeconds / SectionLength);// number of sections in the track
         public const double MinTabletopLength = 4;// min length of the 'top' part of the table top frequency
         public const double MaxTabletopLength = 15;// max length of the 'top' part of the table top frequency
@@ -30,6 +30,6 @@ namespace wavegenerator
         public const double MaxBreakLength = 10;
         public const double BreakRampLength = 5; //BreakRampLength * 2 + MaxBreakLength must be <= SectionLength
 
-        public const double ChanceOfRise = 0.1; // the chance of the frequency rising as opposed to falling
+        public const double ChanceOfRise = 0.7; // the chance of the frequency rising as opposed to falling
     }
 }

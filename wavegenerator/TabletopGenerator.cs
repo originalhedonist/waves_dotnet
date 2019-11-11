@@ -49,7 +49,7 @@ namespace wavegenerator
             double ts = t - (section * sectionLengthSeconds); //time through the current section
 
             double frequency = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, baseFrequency, topFrequency, p);
-            return frequency/2; //we're Abs-ing the amplitude, so one full pulse with plus and minus is actually two pulse
+            return frequency;
         }
 
         private void ValidateParams(TabletopParams p)
