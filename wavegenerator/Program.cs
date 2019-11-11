@@ -13,7 +13,7 @@ namespace wavegenerator
                 sectionLengthSeconds: Constants.SectionLength,
                 numSections: Constants.NumSections,
                 channels: 2);
-            var carrierFrequencyApplier = new CarrierFrequencyApplier<PulseGenerator>(pulseGenerator, 600);
+            var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator, 600);
             carrierFrequencyApplier.Write($"composition_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.wav");
 
         }

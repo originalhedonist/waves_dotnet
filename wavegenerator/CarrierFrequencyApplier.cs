@@ -2,12 +2,12 @@
 
 namespace wavegenerator
 {
-    public class CarrierFrequencyApplier<T> : WaveFile where T : WaveFile, IDecideWetness
+    public class CarrierFrequencyApplier : WaveFile
     {
-        private readonly T pattern;
+        private readonly WaveFile pattern;
         private readonly double carrierFrequency;
 
-        public CarrierFrequencyApplier(T pattern, double carrierFrequency) : base(pattern.LengthSeconds, pattern.Channels)
+        public CarrierFrequencyApplier(WaveFile pattern, double carrierFrequency) : base(pattern.LengthSeconds, pattern.Channels)
         {
             this.pattern = pattern;
             this.carrierFrequency = carrierFrequency;
@@ -26,15 +26,6 @@ namespace wavegenerator
             double a_maxwet = carrierAmplitude;
             double a = a_maxdry + (a_maxwet - a_maxdry) * wetness;
             return a;
-
-            //double patternAmplitudeToUse = patternAmplitude + wetness * (1 - patternAmplitude);
-            //double a = patternAmplitudeToUse * carrierAmplitude;
-
-            //if(t > 7.137 && t < 7.265)
-            //{
-            //    //Console.WriteLine();
-            //}
-            //return a;
         }
     }
 }

@@ -70,5 +70,6 @@ namespace wavegenerator
         }
 
         public abstract double Amplitude(double t, int n, int channel);
+        public virtual double Wetness(double t, int n) => 0;
     }
 }

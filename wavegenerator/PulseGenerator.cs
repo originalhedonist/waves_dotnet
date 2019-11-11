@@ -3,16 +3,15 @@ using System.Collections.Concurrent;
 
 namespace wavegenerator
 {
-    public class PulseGenerator : TabletopGenerator, IDecideWetness
+    public class PulseGenerator : TabletopGenerator
     {
-        private readonly ConcurrentDictionary<int, bool> isBreakCache = new ConcurrentDictionary<int, bool>();
-
 
         public PulseGenerator(int sectionLengthSeconds, int numSections, short channels) : base(Constants.BasePulseFrequency, sectionLengthSeconds, numSections, channels)
         {
         }
 
 #if RANDOM
+        private readonly ConcurrentDictionary<int, bool> isBreakCache = new ConcurrentDictionary<int, bool>();
         private bool IsBreak(int section) => isBreakCache.GetOrAdd(section, s =>
         {
             //no breaks in the first ten minutes
@@ -97,7 +96,7 @@ namespace wavegenerator
         }
 
         private readonly ConcurrentDictionary<int, double> wetnessCache = new ConcurrentDictionary<int, double>();
-        public double Wetness(double t, int n)
+        public override double Wetness(double t, int n)
         {
             // rise in a sin^2 fashion from MinWetness to MaxWetness
             int section = Section(n);
@@ -108,13 +107,22 @@ namespace wavegenerator
                 Console.WriteLine($"The max wetness for section {s} is {maxWetness}");
                 return maxWetness;
             });
-            
+
             double ts = t - (section * sectionLengthSeconds); //time through the current section
-            double ps = ts / sectionLengthSeconds; // progression through section
-            double x = ps * Math.PI;// max wetness in the middle (x = pi/2)
-            double w = Constants.MinWetness + 
-                Math.Pow(Math.Sin(x), 2) * (Constants.MaxWetness - Constants.MinWetness);
-            return w;
+            double wetness;
+            if (Constants.LinkWetnessToFrequency)
+            {
+                var p = GetTabletopParamsBySection(section);
+                wetness = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, Constants.MinWetness, maxWetnessForSection, p);
+            }
+            else
+            {
+                double ps = ts / sectionLengthSeconds; // progression through section
+                double x = ps * Math.PI;// max wetness in the middle (x = pi/2)
+                wetness = Constants.MinWetness +
+                    Math.Pow(Math.Sin(x), 2) * (Constants.MaxWetness - Constants.MinWetness);
+            }
+            return wetness;
         }
     }
 }
