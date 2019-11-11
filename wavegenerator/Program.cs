@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 
 namespace wavegenerator
 {
     public class Program
     {
+        private static string compositionName;
+        
         public static void Main()
         {
             CheckConstants();
@@ -15,16 +18,22 @@ namespace wavegenerator
             var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
                 carrierFrequencyRight: 600,
                 carrierFrequencyLeft: 600);
-            carrierFrequencyApplier.Write($"composition_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}.wav");
+            compositionName = $"composition_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}"; // think of something more imaginative...
+            carrierFrequencyApplier.Write($"{compositionName}.wav");
+        }
 
+        public static void WriteLine(string line)
+        {
+            Console.WriteLine(line);
+            File.AppendAllLines($"{compositionName}.txt", new[] { line });
         }
 
         private static void CheckConstants()
         {
-            if (Constants.MaxTabletopLength >= Constants.SectionLength - 2 * Constants.MinRampLength)
+            if (Constants.MaxTabletopLength > Constants.SectionLength - 2 * Constants.MinRampLength)
                 throw new InvalidOperationException($"MaxTabletopLength must be < SectionLength - 2*MinRampLength");
 
-            if (Constants.MaxBreakLength >= Constants.SectionLength - 2 * Constants.BreakRampLength)
+            if (Constants.MaxBreakLength > Constants.SectionLength - 2 * Constants.BreakRampLength)
                 throw new InvalidOperationException($"MaxBreakLength must be < SectionLength - 2*BreakRampLength");
         }
     }

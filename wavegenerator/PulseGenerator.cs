@@ -17,7 +17,7 @@ namespace wavegenerator
         {
             if (s * sectionLengthSeconds < Constants.MinTimeBeforeBreak) return false;
             var retval = Randomizer.Probability(0.1, s % 2 == 1); //10% chance of being a break after ten mins
-            if (retval) Console.WriteLine($"Section {s} is a break");
+            if (retval) Program.WriteLine($"Section {s} is a break");
             return retval;
         });
 
@@ -64,11 +64,14 @@ namespace wavegenerator
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
             double progression = ((float)section + 1) / numSections; // <= 1
-            var isTabletop = Randomizer.Probability(progression, true);
+            var isTabletop = Randomizer.Probability(Math.Pow(progression, Constants.TabletopChanceRiseSlownessFactor), true);
             if (isTabletop)
             {
                 //if it's a tabletop:
-                double topLength = Randomizer.GetRandom() * progression * (Constants.MaxTabletopLength - Constants.MinTabletopLength) + Constants.MinTabletopLength;
+                double topLength = 
+                    Randomizer.GetRandom() * 
+                    Math.Pow(progression, Constants.TabletopLengthRiseSlownessFactor) *
+                    (Constants.MaxTabletopLength - Constants.MinTabletopLength) + Constants.MinTabletopLength;
                 double maxRampLength = (sectionLengthSeconds - topLength) / 2;
                 if (Constants.MinRampLength > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
 
@@ -80,12 +83,12 @@ namespace wavegenerator
                     TopLength = topLength,
                     RampsUseSin2 = true
                 };
-                Console.WriteLine($"Section {section} is a tabletop with length {result.TopLength}, rampLength = {result.RampLength}");
+                Program.WriteLine($"Section {section} is a tabletop with length {result.TopLength}, rampLength = {result.RampLength}");
                 return result;
             }
             else
             {
-                Console.WriteLine($"Section {section} is not a tabletop");
+                Program.WriteLine($"Section {section} is not a tabletop");
                 var result = new TabletopParams();
                 return result;
             }
@@ -102,7 +105,7 @@ namespace wavegenerator
             if (topFrequency <= 0)
                 throw new InvalidOperationException("TopFrequency must be > 0");
 
-            Console.WriteLine($"Section {section} using top frequency of {topFrequency}");
+            Program.WriteLine($"Section {section} (at {TimeSpan.FromSeconds(section * sectionLengthSeconds)} using top frequency of {topFrequency}");
             return topFrequency;
         }
 
@@ -117,7 +120,7 @@ namespace wavegenerator
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
                 double maxWetness = Constants.MinWetness + progression * Randomizer.GetRandom() * (Constants.MaxWetness - Constants.MinWetness);
-                Console.WriteLine($"The max wetness for section {s} is {maxWetness}");
+                Program.WriteLine($"The max wetness for section {s} is {maxWetness}");
                 return maxWetness;
             });
 
