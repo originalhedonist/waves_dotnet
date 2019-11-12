@@ -4,9 +4,11 @@ To just run from the command line:
 Download dotnet from here: https://dotnet.microsoft.com/download
 (Click 'Download .NET Core Runtime' and then install it)
 
-`git clone https://github.com/originalhedonist/waves_dotnet
-`cd waves_dotnet
-`dotnet run --project wavegenerator\wavegenerator.csproj
+```
+git clone https://github.com/originalhedonist/waves_dotnet
+cd waves_dotnet
+dotnet run --project wavegenerator\wavegenerator.csproj
+```
 
 
 
