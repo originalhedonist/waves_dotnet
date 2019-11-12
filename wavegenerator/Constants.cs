@@ -92,7 +92,7 @@ namespace wavegenerator
         [Description("The soonest in the track there can be a 'break' (seconds)")]
         public static double MinTimeBeforeBreak = 600;
 
-        [Description("The chance of a break")]
+        [Description("The chance of any section after the above time being a break")]
         public static double ChanceOfBreak = 0.1;
 
         [Description("Minimum break length, in seconds")]
