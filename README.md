@@ -1,7 +1,9 @@
 # waves_dotnet
 
-To just run from the command line:
+## To just run from the command line:
+
 Download dotnet from here: https://dotnet.microsoft.com/download
+
 (Click 'Download .NET Core Runtime' and then install it)
 
 ```
@@ -11,9 +13,7 @@ dotnet run --project wavegenerator\wavegenerator.csproj
 ```
 
 
-
-
-To develop using Visual Studio:
+## To develop using Visual Studio:
 
 * Download any version of Visual Studio from Microsoft
 * Open wavegenerator.sln
