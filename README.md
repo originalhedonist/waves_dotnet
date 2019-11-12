@@ -6,10 +6,11 @@ Download dotnet from here: https://dotnet.microsoft.com/download
 
 (Click 'Download .NET Core Runtime' and then install it)
 
+Then:
 ```
 git clone https://github.com/originalhedonist/waves_dotnet
 cd waves_dotnet
-dotnet run --project wavegenerator\wavegenerator.csproj
+dotnet run --project wavegenerator/wavegenerator.csproj
 ```
 
 
