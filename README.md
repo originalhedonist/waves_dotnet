@@ -10,7 +10,7 @@ Then:
 ```
 git clone https://github.com/originalhedonist/waves_dotnet
 cd waves_dotnet
-dotnet run --project wavegenerator/wavegenerator.csproj
+dotnet run --project wavegenerator/wavegenerator.csproj --configuration Release
 ```
 
 
