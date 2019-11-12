@@ -30,7 +30,8 @@ namespace wavegenerator
 
         public async Task Write(string filePath)
         {
-            using (var fileStream = File.OpenWrite(filePath))
+            //don't write direct to the file - otherwise it's well slow.
+            using (var fileStream = new BufferedStream(File.OpenWrite(filePath))) 
             {
                 await fileStream.WriteAsync(Encoding.ASCII.GetBytes("RIFF"));
                 await fileStream.WriteAsync(overallFileSize - 8);
@@ -59,6 +60,7 @@ namespace wavegenerator
                         }
 
                         short a = (short)(((A + 1) * (65535f / 2)) - 32768);
+
                         await fileStream.WriteAsync(a);
                     }
                 }

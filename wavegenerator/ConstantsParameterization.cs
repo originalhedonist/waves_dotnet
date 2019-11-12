@@ -28,24 +28,26 @@ namespace wavegenerator
 
                     ConsoleWriter.Write($"{field.Name}? ({field.GetValue(null)}) : ", ConsoleColor.White);
                     var newValString = Console.ReadLine();
-                    if (!string.IsNullOrEmpty(newValString))
+                    try
                     {
-                        try
+                        if (!string.IsNullOrEmpty(newValString))
                         {
+
                             var newVal = Parse(newValString, field.FieldType);
-                            Validate(field, newVal);
+
                             field.SetValue(null, newVal);
                         }
-                        catch(TargetInvocationException e)
-                        {
-                            ConsoleWriter.WriteLine(e.InnerException.Message, ConsoleColor.Red);
-                            isValid = false;
-                        }
-                        catch (Exception e)
-                        {
-                            ConsoleWriter.WriteLine(e.Message, ConsoleColor.Red);
-                            isValid = false;
-                        }
+                        Validate(field);
+                    }
+                    catch (TargetInvocationException e)
+                    {
+                        ConsoleWriter.WriteLine(e.InnerException.Message, ConsoleColor.Red);
+                        isValid = false;
+                    }
+                    catch (Exception e)
+                    {
+                        ConsoleWriter.WriteLine(e.Message, ConsoleColor.Red);
+                        isValid = false;
                     }
                     ConsoleWriter.WriteLine($"{field.Name} = {field.GetValue(null)}", ConsoleColor.Gray);
                     Console.WriteLine();
@@ -54,11 +56,12 @@ namespace wavegenerator
             }
         }
 
-        public static void Validate(FieldInfo field, object newVal)
+        public static void Validate(FieldInfo field)
         {
+            var value = field.GetValue(null);
             if (
-                (newVal is double d && d < 0) ||
-                (newVal is int i && i < 0)
+                (value is double d && d < 0) ||
+                (value is int i && i < 0)
                 ) //nothing's allowed to be negative unless specifically marked
             {
                 throw new InvalidOperationException($"{field.Name} must be >= 0");
@@ -68,7 +71,7 @@ namespace wavegenerator
             var validationMethod = typeof(Constants).GetMethod($"{field.Name}Validation", BindingFlags.Public | BindingFlags.Static);
             if (validationMethod != null)
             {
-                validationMethod.Invoke(null, new[] { newVal });
+                validationMethod.Invoke(null, new object[] { });
             }
         }
 

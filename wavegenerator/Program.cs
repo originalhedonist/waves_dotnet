@@ -13,7 +13,7 @@ namespace wavegenerator
         {
             ConstantsParameterization.ParameterizeConstants();
             var tasks = Enumerable.Range(0, Constants.NumFiles)
-                .Select(i => Task.Run(() => WriteFile(i)))
+                .Select(i => WriteFile(i))
                 .ToArray();
             await Task.WhenAll(tasks);
 
@@ -43,7 +43,7 @@ namespace wavegenerator
         public static string GetRandomName()
         {
             var possibleNameListFiles = new[] { "female-first-names.txt", "male-first-names.txt" };
-            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => (i & Constants.Naming) != 0).ToArray();
+            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i+1) & Constants.Naming) != 0).ToArray();
             var nameListFile = nameListFilesToUse[random.Next(0, nameListFilesToUse.Length)];
             var nameList = nameListCache.GetOrAdd(nameListFile, s => File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, s)).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray());
             string randomName = nameList[random.Next(0, nameList.Length)];

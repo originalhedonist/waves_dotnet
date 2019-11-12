@@ -13,23 +13,24 @@ namespace wavegenerator
 
         [Description("Naming strategy (1 = random female name, 2 = random male name, 3 = random any name)")]
         public static int Naming = 3;
-        public static void NamingValidation(int newVal)
+        public static void NamingValidation()
         {
-            if (!(newVal >= 1 && newVal <= 3)) throw new InvalidOperationException($"Naming must be 1, 2 or 3.");
+            if (!(Naming >= 1 && Naming <= 3)) throw new InvalidOperationException($"Naming must be 1, 2 or 3.");
         }
 
         [Description("The total length of the track (must be in h:mm:ss format, even if h is zero)")]
         public static TimeSpan TrackLength = TimeSpan.FromMinutes(5);
-        public static void TrackLengthValidation(TimeSpan newVal)
+        public static void TrackLengthValidation()
         {
-            if (newVal.TotalSeconds * WaveFile.SamplingFrequency > int.MaxValue) throw new InvalidOperationException($"Don't be silly. (Max track length is {TimeSpan.FromSeconds(int.MaxValue/WaveFile.SamplingFrequency)}. Which is a long time.)");
+            if (TrackLength.TotalSeconds * WaveFile.SamplingFrequency > int.MaxValue) throw new InvalidOperationException($"Don't be silly. (Max track length is {TimeSpan.FromSeconds(int.MaxValue/WaveFile.SamplingFrequency)}. Which is a long time.)");
         }
 
-        [Description("The length of each section of the track")]
+        [Description("The length of each section of the track, in seconds. (There will only be a whole number of sections - so a 40s track with 30s sections will only be 30s long)")]
         public static int SectionLength = 30;
-        public static void SectionLengthValidate(int newVal)
+        public static void SectionLengthValidation()
         {
-            if (newVal <= 0) throw new InvalidOperationException($"{nameof(SectionLength)} must be > 0");
+            if (SectionLength <= 0) throw new InvalidOperationException($"{nameof(SectionLength)} must be > 0");
+            if (SectionLength > TrackLength.TotalSeconds) throw new InvalidOperationException($"{nameof(SectionLength)} must be greater than {nameof(TrackLength)} ({TrackLength})");
         }
 
         public static int NumSections => (int)(TrackLength.TotalSeconds / SectionLength);// number of sections in the track
@@ -42,9 +43,10 @@ namespace wavegenerator
               The maximum length of the tabletop on any given section will be anything up to MaxTabletopLength, depending on the progression through the track.
               The actual length of the tabletop on any given section will be anything up to the maximum for the section.")]
         public static double MaxTabletopLength = 15;// max length of the 'top' part of the table top frequency
-        public static void MaxTabletopLengthValidate(double newVal)
+        public static void MaxTabletopLengthValidate()
         {
-            if (newVal < MinTabletopLength) throw new InvalidOperationException($"{nameof(MaxTabletopLength)} must be greater than MinTabletoplength ({MinTabletopLength})");
+            if (MaxTabletopLength < MinTabletopLength) throw new InvalidOperationException($"{nameof(MaxTabletopLength)} must be greater than MinTabletoplength ({MinTabletopLength})");
+            if (MaxTabletopLength + 2 * MinRampLength > SectionLength) throw new InvalidOperationException($"{nameof(MaxTabletopLength)} must be less than {nameof(SectionLength)} - 2 x {nameof(MinRampLength)}");
         }
 
         [Description(@"
@@ -98,6 +100,10 @@ namespace wavegenerator
 
         [Description("Maximum break length, in seconds")]
         public static double MaxBreakLength = 10;
+        public static void MaxBreakLengthValidation()
+        {
+            if (MaxBreakLength + 2 * BreakRampLength > SectionLength) throw new InvalidOperationException($"{nameof(MaxBreakLength)} must be < {nameof(SectionLength)} - 2 x {nameof(BreakRampLength)}");
+        }
 
         [Description("The length of the 'fadeout' before, and 'fade in' after a break")]
         public static double BreakRampLength = 5;
