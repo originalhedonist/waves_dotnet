@@ -16,7 +16,6 @@ namespace wavegenerator
             Console.WriteLine("Note that if you use randomization, the program will likely never be able to exactly reproduce a track again - even with the same parameters, so make sure you keep it in case it's good!");
             Console.WriteLine();
 
-            var consoleWriter = new ColorConsole.ConsoleWriter();
             foreach (var field in typeof(Constants).GetFields(BindingFlags.Public | BindingFlags.Static))
             {
                 bool isValid;
@@ -24,10 +23,10 @@ namespace wavegenerator
                 {
                     isValid = true;
                     var descriptionAttribute = field.GetCustomAttribute<DescriptionAttribute>();
-                    consoleWriter.Write($"{field.Name}: ", ConsoleColor.Yellow);
-                    consoleWriter.WriteLine(Regex.Replace(descriptionAttribute?.Description ?? string.Empty, @"\n\s*", "\n"));
+                    ConsoleWriter.Write($"{field.Name}: ", ConsoleColor.Yellow);
+                    Console.WriteLine(Regex.Replace(descriptionAttribute?.Description ?? string.Empty, @"\n\s*", "\n"));
 
-                    consoleWriter.Write($"{field.Name}? ({field.GetValue(null)}) : ", ConsoleColor.White);
+                    ConsoleWriter.Write($"{field.Name}? ({field.GetValue(null)}) : ", ConsoleColor.White);
                     var newValString = Console.ReadLine();
                     if (!string.IsNullOrEmpty(newValString))
                     {
@@ -39,16 +38,16 @@ namespace wavegenerator
                         }
                         catch(TargetInvocationException e)
                         {
-                            consoleWriter.WriteLine(e.InnerException.Message, ConsoleColor.Red);
+                            ConsoleWriter.WriteLine(e.InnerException.Message, ConsoleColor.Red);
                             isValid = false;
                         }
                         catch (Exception e)
                         {
-                            consoleWriter.WriteLine(e.Message, ConsoleColor.Red);
+                            ConsoleWriter.WriteLine(e.Message, ConsoleColor.Red);
                             isValid = false;
                         }
                     }
-                    consoleWriter.WriteLine($"{field.Name} = {field.GetValue(null)}", ConsoleColor.Gray);
+                    ConsoleWriter.WriteLine($"{field.Name} = {field.GetValue(null)}", ConsoleColor.Gray);
                     Console.WriteLine();
                 } while (!isValid);
 

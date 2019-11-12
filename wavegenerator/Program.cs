@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace wavegenerator
 {
@@ -7,10 +11,19 @@ namespace wavegenerator
     {
         private static string compositionName;
 
-        public static void Main()
+        public static async Task Main()
         {
             ConstantsParameterization.ParameterizeConstants();
+            var tasks = Enumerable.Range(0, Constants.NumFiles)
+                .Select(i => Task.Run(() => WriteFile(i)))
+                .ToArray();
+            await Task.WhenAll(tasks);
 
+            ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
+        }
+
+        private static async Task WriteFile(int uniqueifier)
+        {
             var pulseGenerator = new PulseGenerator(
                 sectionLengthSeconds: Constants.SectionLength,
                 numSections: Constants.NumSections,
@@ -18,14 +31,29 @@ namespace wavegenerator
             var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
                 carrierFrequencyRight: 600,
                 carrierFrequencyLeft: 600);
-            compositionName = $"composition_{DateTime.Now.ToString("yyyyMMdd_HHmmss")}"; // think of something more imaginative...
-            carrierFrequencyApplier.Write($"{compositionName}.wav");
+            compositionName = $"{GetRandomName()}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
+            var constantsStrings = typeof(Constants).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+                .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();
+            await File.AppendAllLinesAsync($"{compositionName}.parameters.txt", constantsStrings);
+            await Console.Out.WriteLineAsync($"Writing {compositionName}...");
+            await carrierFrequencyApplier.Write($"{compositionName}.wav");
         }
 
         public static void WriteLine(string line)
         {
-            Console.WriteLine(line);
-            File.AppendAllLines($"{compositionName}.txt", new[] { line });
+            File.AppendAllLines($"{compositionName}.report.txt", new[] { line });
+        }
+
+        private static readonly Random random = new Random();
+        private static readonly ConcurrentDictionary<string, string[]> nameListCache = new ConcurrentDictionary<string, string[]>();
+        public static string GetRandomName()
+        {
+            var possibleNameListFiles = new[] { "female-first-names.txt", "male-first-names.txt" };
+            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => (i & Constants.Naming) != 0).ToArray();
+            var nameListFile = nameListFilesToUse[random.Next(0, nameListFilesToUse.Length)];
+            var nameList = nameListCache.GetOrAdd(nameListFile, s => File.ReadAllLines(s).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray());
+            var randomName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(nameList[random.Next(0, nameList.Length)]);
+            return randomName;
         }
     }
 

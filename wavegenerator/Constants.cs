@@ -8,6 +8,16 @@ namespace wavegenerator
         [Description("Whether to use randomization")]
         public static bool Randomization = true;
 
+        [Description("The number of files to create (there is only any point in creating more than 1 if using Randomization, otherwise they will be identical)")]
+        public static int NumFiles = 1;
+
+        [Description("Naming strategy (1 = random female name, 2 = random male name, 3 = random any name)")]
+        public static int Naming = 3;
+        public static void NamingValidation(int newVal)
+        {
+            if (!(newVal >= 1 && newVal <= 3)) throw new InvalidOperationException($"Naming must be 1, 2 or 3.");
+        }
+
         [Description("The total length of the track (must be in h:mm:ss format, even if h is zero)")]
         public static TimeSpan TrackLength = TimeSpan.FromMinutes(5);
         public static void TrackLengthValidation(TimeSpan newVal)
