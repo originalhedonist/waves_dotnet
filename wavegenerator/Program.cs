@@ -6,10 +6,10 @@ namespace wavegenerator
     public class Program
     {
         private static string compositionName;
-        
+
         public static void Main()
         {
-            CheckConstants();
+            ConstantsParameterization.ParameterizeConstants();
 
             var pulseGenerator = new PulseGenerator(
                 sectionLengthSeconds: Constants.SectionLength,
@@ -26,15 +26,6 @@ namespace wavegenerator
         {
             Console.WriteLine(line);
             File.AppendAllLines($"{compositionName}.txt", new[] { line });
-        }
-
-        private static void CheckConstants()
-        {
-            if (Constants.MaxTabletopLength > Constants.SectionLength - 2 * Constants.MinRampLength)
-                throw new InvalidOperationException($"MaxTabletopLength must be < SectionLength - 2*MinRampLength");
-
-            if (Constants.MaxBreakLength > Constants.SectionLength - 2 * Constants.BreakRampLength)
-                throw new InvalidOperationException($"MaxBreakLength must be < SectionLength - 2*BreakRampLength");
         }
     }
 

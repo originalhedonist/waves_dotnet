@@ -8,7 +8,7 @@ namespace wavegenerator
 {
     public abstract class WaveFile
     {
-        protected const int samplingFrequency = 44100;
+        public const int SamplingFrequency = 44100;
         protected const short bytesPerSample = 2;
         public int LengthSeconds { get; }
         public short Channels { get; }
@@ -20,7 +20,7 @@ namespace wavegenerator
         {
             this.LengthSeconds = lengthSeconds;
             this.Channels = channels;
-            this.N = lengthSeconds * samplingFrequency;
+            this.N = lengthSeconds * SamplingFrequency;
             this.overallDataSize = N * channels * bytesPerSample;
             this.overallFileSize = this.overallDataSize + 44;
             if(channels < 1 || channels > 2)
@@ -42,8 +42,8 @@ namespace wavegenerator
                     binaryWriter.Write((int)16); //length of format data
                     binaryWriter.Write((short)1); //type of format (1 = PCM)
                     binaryWriter.Write(Channels);
-                    binaryWriter.Write(samplingFrequency);
-                    binaryWriter.Write((int)(samplingFrequency * bytesPerSample * Channels));
+                    binaryWriter.Write(SamplingFrequency);
+                    binaryWriter.Write((int)(SamplingFrequency * bytesPerSample * Channels));
                     binaryWriter.Write((short)(bytesPerSample * Channels));
                     binaryWriter.Write((short)(bytesPerSample * 8)); // bits per sample
                     fileStream.Write(Encoding.ASCII.GetBytes("data"));

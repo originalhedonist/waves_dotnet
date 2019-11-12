@@ -13,7 +13,7 @@ namespace wavegenerator
         public override double Amplitude(double t, int n, int channel)
         {
             var f = Frequency(t, n, channel);
-            var dx = Math.PI * f / samplingFrequency;
+            var dx = Math.PI * f / SamplingFrequency;
             x += dx;
             return Math.Sin(x);
         }

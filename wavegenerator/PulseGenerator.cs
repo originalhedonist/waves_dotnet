@@ -4,8 +4,7 @@ using System.Collections.Concurrent;
 namespace wavegenerator
 {
     public class PulseGenerator : TabletopGenerator
-    {
-
+    { 
         public PulseGenerator(int sectionLengthSeconds, int numSections, short channels) : base(Constants.BasePulseFrequency, sectionLengthSeconds, numSections, channels)
         {
         }

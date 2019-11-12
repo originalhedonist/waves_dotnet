@@ -6,10 +6,25 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;RANDOM</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="EmptyTextFile.txt" />
+    <None Remove="female-first-names.txt" />
+    <None Remove="male-first-names.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="female-first-names.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="male-first-names.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="colorconsole" Version="1.0.1" />
   </ItemGroup>
 </Project>
