@@ -9,8 +9,6 @@ namespace wavegenerator
 {
     public class Program
     {
-        private static string compositionName;
-
         public static async Task Main()
         {
             ConstantsParameterization.ParameterizeConstants();
@@ -24,24 +22,20 @@ namespace wavegenerator
 
         private static async Task WriteFile(int uniqueifier)
         {
+            var compositionName = $"{GetRandomName()}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
             var pulseGenerator = new PulseGenerator(
+                compositionName,
                 sectionLengthSeconds: Constants.SectionLength,
                 numSections: Constants.NumSections,
                 channels: 2);
             var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
                 carrierFrequencyRight: 600,
                 carrierFrequencyLeft: 600);
-            compositionName = $"{GetRandomName()}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
             var constantsStrings = typeof(Constants).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();
-            await File.AppendAllLinesAsync($"{compositionName}.parameters.txt", constantsStrings);
+            await File.WriteAllLinesAsync($"{compositionName}.parameters.txt", constantsStrings);
             await Console.Out.WriteLineAsync($"Writing {compositionName}...");
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
-        }
-
-        public static void WriteLine(string line)
-        {
-            File.AppendAllLines($"{compositionName}.report.txt", new[] { line });
         }
 
         private static readonly Random random = new Random();
@@ -51,9 +45,10 @@ namespace wavegenerator
             var possibleNameListFiles = new[] { "female-first-names.txt", "male-first-names.txt" };
             var nameListFilesToUse = possibleNameListFiles.Where((l, i) => (i & Constants.Naming) != 0).ToArray();
             var nameListFile = nameListFilesToUse[random.Next(0, nameListFilesToUse.Length)];
-            var nameList = nameListCache.GetOrAdd(nameListFile, s => File.ReadAllLines(s).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray());
-            var randomName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(nameList[random.Next(0, nameList.Length)]);
-            return randomName;
+            var nameList = nameListCache.GetOrAdd(nameListFile, s => File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, s)).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray());
+            string randomName = nameList[random.Next(0, nameList.Length)];
+            var randomNameCased = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(randomName.ToLower());
+            return randomNameCased;
         }
     }
 

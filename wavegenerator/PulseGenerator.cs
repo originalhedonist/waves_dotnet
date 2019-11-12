@@ -1,12 +1,14 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Concurrent;
 
 namespace wavegenerator
 {
     public class PulseGenerator : TabletopGenerator
     { 
-        public PulseGenerator(int sectionLengthSeconds, int numSections, short channels) : base(Constants.BasePulseFrequency, sectionLengthSeconds, numSections, channels)
+        public PulseGenerator(string compositionName, int sectionLengthSeconds, int numSections, short channels) : base(Constants.BasePulseFrequency, sectionLengthSeconds, numSections, channels)
         {
+            this.compositionName = compositionName;
         }
 
         private readonly ConcurrentDictionary<int, bool> isBreakCache = new ConcurrentDictionary<int, bool>();
@@ -16,7 +18,7 @@ namespace wavegenerator
         {
             if (s * sectionLengthSeconds < Constants.MinTimeBeforeBreak) return false;
             var retval = Randomizer.Probability(0.1, s % 2 == 1); //10% chance of being a break after ten mins
-            if (retval) Program.WriteLine($"Section {s} is a break");
+            if (retval) File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {s} is a break" });
             return retval;
         });
 
@@ -84,12 +86,12 @@ namespace wavegenerator
                     TopLength = topLength,
                     RampsUseSin2 = true
                 };
-                Program.WriteLine($"Section {section} is a tabletop with length {result.TopLength}, rampLength = {result.RampLength}");
+                File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {section} is a tabletop with length {result.TopLength}, rampLength = {result.RampLength}" });
                 return result;
             }
             else
             {
-                Program.WriteLine($"Section {section} is not a tabletop");
+                File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {section} is not a tabletop" });
                 var result = new TabletopParams();
                 return result;
             }
@@ -106,11 +108,13 @@ namespace wavegenerator
             if (topFrequency <= 0)
                 throw new InvalidOperationException("TopFrequency must be > 0");
 
-            Program.WriteLine($"Section {section} (at {TimeSpan.FromSeconds(section * sectionLengthSeconds)} using top frequency of {topFrequency}");
+            File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {section} (at {TimeSpan.FromSeconds(section * sectionLengthSeconds)} using top frequency of {topFrequency}"});
             return topFrequency;
         }
 
         private readonly ConcurrentDictionary<int, double> wetnessCache = new ConcurrentDictionary<int, double>();
+        private readonly string compositionName;
+
         private double Wetness(double t, int n)
         {
             // rise in a sin^2 fashion from MinWetness to MaxWetness
@@ -121,7 +125,7 @@ namespace wavegenerator
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
                 double maxWetness = Constants.MinWetness + progression * Randomizer.GetRandom() * (Constants.MaxWetness - Constants.MinWetness);
-                Program.WriteLine($"The max wetness for section {s} is {maxWetness}");
+                File.AppendAllLines($"{compositionName}.report.txt", new[] { $"The max wetness for section {s} is {maxWetness}" });
                 return maxWetness;
             });
 
