@@ -104,7 +104,7 @@ namespace wavegenerator
             var isRise = Randomizer.Probability(Constants.ChanceOfRise, true);
             double frequencyLimit = isRise ? Constants.MaxPulseFrequency : Constants.MinPulseFrequency;
             double frequencyChangeLimit = frequencyLimit - baseFrequency;
-            double topFrequency = baseFrequency + Randomizer.GetRandom() * frequencyChangeLimit * progression;
+            double topFrequency = baseFrequency + Randomizer.GetRandom() * frequencyChangeLimit * Math.Pow(progression, Constants.TabletopFrequencyRiseSlownessFactor);
             if (topFrequency <= 0)
                 throw new InvalidOperationException("TopFrequency must be > 0");
 

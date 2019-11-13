@@ -49,6 +49,15 @@ namespace wavegenerator
             if (MaxTabletopLength + 2 * MinRampLength > SectionLength) throw new InvalidOperationException($"{nameof(MaxTabletopLength)} must be less than {nameof(SectionLength)} - 2 x {nameof(MinRampLength)}");
         }
 
+        [Description("The 'normal', quiescent frequency that it normally pulses at")]
+        public static double BasePulseFrequency = 0.5;
+
+        [Description("The lowest frequency the pulsing in a section can fall to")]
+        public static double MinPulseFrequency = 0.2;
+
+        [Description("The highest frequency the pulsing in a section can rise to")]
+        public static double MaxPulseFrequency = 1.5;
+
         [Description(@"
             Tabletop length rise factor. How fast the maximum tabletop length for a section approaches MaxTabletopLength as the track progresses.
             =0      : Rises to MaxTabletopLength instantly.
@@ -56,6 +65,22 @@ namespace wavegenerator
             =1 =>   : Rises linearly, to half MaxTabletopLength halfway through the track
             >1 =>   : Rises quicker at the end")]
         public static double TabletopLengthRiseSlownessFactor = 0.7; // see below (similar to ~ChanceRiseSlownessFactor)
+
+        [Description(@"
+            Tabletop chance rise factor. How fast the probability of a tabletop for a section rises as the track progresses.
+            =0      : Rises to 'certain' instantly.
+            >0, <1  : Rises quicker at the start
+            =1 =>   : Rises linearly, to a 50% chance halfway through the track
+            >1 =>   : Rises quicker at the end")]
+        public static double TabletopChanceRiseSlownessFactor = 0.5;
+
+        [Description(@"
+            Tabletop frequency rise factor. How fast the variation in frequency of a tabletop for a section rises as the track progresses.
+            =0      : Rises to 'MaxPulseFrequency' instantly.
+            >0, <1  : Rises quicker at the start
+            =1 =>   : Rises linearly, to half way between BasePulseFrequency and MaxPulseFrequency/MinPulseFrequency halfway through the track
+            >1 =>   : Rises quicker at the end")]
+        public static double TabletopFrequencyRiseSlownessFactor = 0.5;
 
         [Description("Minimum length of the 'ramp' part of the table top")]
         public static double MinRampLength = 1; //
@@ -69,25 +94,8 @@ namespace wavegenerator
         [Description("Whether the wetness rises in line with the frequency change")]
         public static bool LinkWetnessToFrequency = true; 
 
-        [Description("The 'normal', quiescent frequency that it normally pulses at")]
-        public static double BasePulseFrequency = 0.5;
-
-        [Description("The lowest frequency the pulsing in a section can fall to")]
-        public static double MinPulseFrequency = 0.2;
-
-        [Description("The highest frequency the pulsing in a section can rise to")]
-        public static double MaxPulseFrequency = 1.5;
-
         [Description("The chance of the pulse frequency speeding up to MaxPulseFrequency as opposed to slowing down to MinPulseFrequency")]
         public static double ChanceOfRise = 0.7; // the chance of the frequency rising as opposed to falling
-
-        [Description(@"
-            Tabletop chance rise factor. How fast the probability of a tabletop for a section rises as the track progresses.
-            =0      : Rises to 'certain' instantly.
-            >0, <1  : Rises quicker at the start
-            =1 =>   : Rises linearly, to a 50% chance halfway through the track
-            >1 =>   : Rises quicker at the end")]
-        public static double TabletopChanceRiseSlownessFactor = 0.5;
 
         [Description("The soonest in the track there can be a 'break' (seconds)")]
         public static double MinTimeBeforeBreak = 600;
