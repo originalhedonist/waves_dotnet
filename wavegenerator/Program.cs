@@ -29,8 +29,7 @@ namespace wavegenerator
                 numSections: Constants.NumSections,
                 channels: 2);
             var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
-                carrierFrequencyRight: 600,
-                carrierFrequencyLeft: 600);
+                250, 500, 250, 125);
             var constantsStrings = typeof(Constants).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();
             await File.WriteAllLinesAsync($"{compositionName}.parameters.txt", constantsStrings);
@@ -74,31 +73,4 @@ namespace wavegenerator
         }
     }
 
-
-    public class Jump : FrequencyFunctionWaveFile
-    {
-        public Jump(int lengthSeconds, short channels) : base(lengthSeconds, channels)
-        {
-        }
-
-        protected override double Frequency(double t, int n, int channel)
-        {
-            if (t < 1)
-                return 261.6;
-            else
-                return 261.1 * 2;
-        }
-    }
-
-    public class Rising : FrequencyFunctionWaveFile
-    {
-        public Rising(int lengthSeconds, short channels) : base(lengthSeconds, channels)
-        {
-        }
-
-        protected override double Frequency(double t, int n, int channel)
-        {
-            return 261.6 * (1 + (float)n / N);
-        }
-    }
 }

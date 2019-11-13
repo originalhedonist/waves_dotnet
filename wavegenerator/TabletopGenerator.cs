@@ -12,7 +12,7 @@ namespace wavegenerator
 
     public abstract class TabletopGenerator : FrequencyFunctionWaveFile
     {
-        public TabletopGenerator(double baseFrequency, int sectionLengthSeconds, int numSections, short channels) : base(sectionLengthSeconds * numSections, channels)
+        public TabletopGenerator(double baseFrequency, int sectionLengthSeconds, int numSections, short channels) : base(sectionLengthSeconds * numSections, channels, false /*TODO: parameterize this?*/)
         {
             this.baseFrequency = baseFrequency;
             this.sectionLengthSeconds = sectionLengthSeconds;

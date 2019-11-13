@@ -2,26 +2,47 @@
 
 namespace wavegenerator
 {
-    public class CarrierFrequencyApplier : WaveFile
+    public class CarrierFrequencyApplier : FrequencyFunctionWaveFile
     {
         private readonly WaveFile pattern;
-        private readonly double carrierFrequencyRight;
-        private readonly double carrierFrequencyLeft;
+        private readonly double carrierFrequencyLeftStart;
+        private readonly double carrierFrequencyLeftEnd;
+        private readonly double carrierFrequencyRightStart;
+        private readonly double carrierFrequencyRightEnd;
 
-        public CarrierFrequencyApplier(WaveFile pattern, double carrierFrequencyRight, double carrierFrequencyLeft) : base(pattern.LengthSeconds, pattern.Channels)
+        public CarrierFrequencyApplier(WaveFile pattern, 
+            double carrierFrequencyLeftStart, double carrierFrequencyLeftEnd,
+            double carrierFrequencyRightStart, double carrierFrequencyRightEnd) :
+            base(pattern.LengthSeconds, pattern.Channels, phaseShiftChannels: true)
         {
             this.pattern = pattern;
-            this.carrierFrequencyRight = carrierFrequencyRight;
-            this.carrierFrequencyLeft = carrierFrequencyLeft;
+            this.carrierFrequencyLeftStart = carrierFrequencyLeftStart;
+            this.carrierFrequencyLeftEnd = carrierFrequencyLeftEnd;
+            this.carrierFrequencyRightStart = carrierFrequencyRightStart;
+            this.carrierFrequencyRightEnd = carrierFrequencyRightEnd;
         }
 
         public override double Amplitude(double t, int n, int channel)
         {
-            double carrierFrequency = channel == 0 ? carrierFrequencyLeft : carrierFrequencyRight;
-            double x = 2 * Math.PI * carrierFrequency * t;
-            double carrierAmplitude = channel == 0 ? Math.Sin(x) : Math.Cos(x); //this is the amplitude if it were constant.
+            double carrierAmplitude = base.Amplitude(t, n, channel);
             double patternAmplitude = Math.Abs(pattern.Amplitude(t, n, channel));
             return carrierAmplitude * patternAmplitude;
+        }
+
+        protected override double Frequency(double t, int n, int channel)
+        {
+            var carrierFrequencies = channel == 0 ?
+                new { Start = carrierFrequencyLeftStart, End = carrierFrequencyLeftEnd } :
+                new { Start = carrierFrequencyRightStart, End = carrierFrequencyRightEnd };
+            return carrierFrequencies.End;
+
+            //double progression = ((double)n / N);
+            //if(progression > 0.5)
+            //{
+
+            //}
+            //double carrierFrequency = carrierFrequencies.Start + (carrierFrequencies.End - carrierFrequencies.Start) * progression;
+            //return carrierFrequency;
         }
     }
 }
