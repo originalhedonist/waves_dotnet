@@ -34,15 +34,9 @@ namespace wavegenerator
             var carrierFrequencies = channel == 0 ?
                 new { Start = carrierFrequencyLeftStart, End = carrierFrequencyLeftEnd } :
                 new { Start = carrierFrequencyRightStart, End = carrierFrequencyRightEnd };
-            return 2 * carrierFrequencies.End;
-
-            //double progression = ((double)n / N);
-            //if(progression > 0.5)
-            //{
-
-            //}
-            //double carrierFrequency = carrierFrequencies.Start + (carrierFrequencies.End - carrierFrequencies.Start) * progression;
-            //return carrierFrequency;
+            double progression = (double)n / N;
+            double carrierFrequency = carrierFrequencies.Start + (carrierFrequencies.End - carrierFrequencies.Start) * progression;
+            return carrierFrequency * 2; //need to double it 'cos we're Abs-ing the pattern amplitude
         }
     }
 }

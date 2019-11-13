@@ -12,15 +12,13 @@ namespace wavegenerator
         public static async Task Main()
         {
             var pulseTest = new PulseGenerator("test", 30, 1, 1);
-            var carrier = new CarrierFrequencyApplier(pulseTest, 600, 600, 600, 600);
-            await carrier.Write("test.wav");
-            //ConstantsParameterization.ParameterizeConstants();
-            //var tasks = Enumerable.Range(0, Constants.NumFiles)
-            //    .Select(i => WriteFile(i))
-            //    .ToArray();
-            //await Task.WhenAll(tasks);
+            ConstantsParameterization.ParameterizeConstants();
+            var tasks = Enumerable.Range(0, Constants.NumFiles)
+                .Select(i => WriteFile(i))
+                .ToArray();
+            await Task.WhenAll(tasks);
 
-            //ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
+            ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
         }
 
         private static async Task WriteFile(int uniqueifier)
@@ -32,7 +30,11 @@ namespace wavegenerator
                 numSections: Constants.NumSections,
                 channels: 2);
             var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
-                250, 500, 250, 125);
+                Constants.CarrierFrequencyLeftStart,
+                Constants.CarrierFrequencyLeftEnd,
+                Constants.CarrierFrequencyRightStart,
+                Constants.CarrierFrequencyRightEnd);
+
             var constantsStrings = typeof(Constants).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();
             await File.WriteAllLinesAsync($"{compositionName}.parameters.txt", constantsStrings);

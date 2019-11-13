@@ -6,7 +6,11 @@ namespace wavegenerator
     public class Constants
     {
         [Description("Whether to use randomization")]
+#if DEBUG
+        public static bool Randomization = false;
+#else
         public static bool Randomization = true;
+#endif
 
         [Description("The number of files to create (there is only any point in creating more than 1 if using Randomization, otherwise they will be identical)")]
         public static int NumFiles = 1;
@@ -34,6 +38,20 @@ namespace wavegenerator
         }
 
         public static int NumSections => (int)(TrackLength.TotalSeconds / SectionLength);// number of sections in the track
+
+        [Description("The carrier frequency of the LEFT channel at the START of the track. Does not have to be an integer, so for instance you can have 600.0 left and 600.1 right")]
+        public static double CarrierFrequencyLeftStart;
+
+        [Description("The carrier frequency of the LEFT channel at the END of the track (if different from start, it rises linearly)")]
+        public static double CarrierFrequencyLeftEnd;
+
+        [Description("The carrier frequency of the RIGHT channel at the START of the track")]
+        public static double CarrierFrequencyRightStart;
+
+        [Description("The carrier frequency of the RIGHT channel at the END of the track (if different from start, it rises linearly)")]
+        public static double CarrierFrequencyRightEnd;
+
+        
 
         [Description("Minimum length of each 'tabletop' section in seconds")]
         public static double MinTabletopLength = 4;// min length of the 'top' part of the table top frequency
