@@ -11,13 +11,16 @@ namespace wavegenerator
     {
         public static async Task Main()
         {
-            ConstantsParameterization.ParameterizeConstants();
-            var tasks = Enumerable.Range(0, Constants.NumFiles)
-                .Select(i => WriteFile(i))
-                .ToArray();
-            await Task.WhenAll(tasks);
+            var pulseTest = new PulseGenerator("test", 30, 1, 1);
+            var carrier = new CarrierFrequencyApplier(pulseTest, 600, 600, 600, 600);
+            await carrier.Write("test.wav");
+            //ConstantsParameterization.ParameterizeConstants();
+            //var tasks = Enumerable.Range(0, Constants.NumFiles)
+            //    .Select(i => WriteFile(i))
+            //    .ToArray();
+            //await Task.WhenAll(tasks);
 
-            ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
+            //ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
         }
 
         private static async Task WriteFile(int uniqueifier)

@@ -34,7 +34,7 @@ namespace wavegenerator
             var carrierFrequencies = channel == 0 ?
                 new { Start = carrierFrequencyLeftStart, End = carrierFrequencyLeftEnd } :
                 new { Start = carrierFrequencyRightStart, End = carrierFrequencyRightEnd };
-            return carrierFrequencies.End;
+            return 2 * carrierFrequencies.End;
 
             //double progression = ((double)n / N);
             //if(progression > 0.5)
