@@ -19,7 +19,11 @@ namespace wavegenerator
         }
 
         [Description("The total length of the track (must be in h:mm:ss format, even if h is zero)")]
+#if DEBUG
+        public static TimeSpan TrackLength = TimeSpan.FromSeconds(30);
+#else
         public static TimeSpan TrackLength = TimeSpan.FromMinutes(5);
+#endif
         public static void TrackLengthValidation()
         {
             if (TrackLength.TotalSeconds * WaveFile.SamplingFrequency > int.MaxValue) throw new InvalidOperationException($"Don't be silly. (Max track length is {TimeSpan.FromSeconds(int.MaxValue/WaveFile.SamplingFrequency)}. Which is a long time.)");
