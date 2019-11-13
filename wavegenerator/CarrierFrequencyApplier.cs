@@ -36,7 +36,7 @@ namespace wavegenerator
                 new { Start = carrierFrequencyRightStart, End = carrierFrequencyRightEnd };
             double progression = (double)n / N;
             double carrierFrequency = carrierFrequencies.Start + (carrierFrequencies.End - carrierFrequencies.Start) * progression;
-            return carrierFrequency * 2; //need to double it 'cos we're Abs-ing the pattern amplitude
+            return carrierFrequency;
         }
     }
 }

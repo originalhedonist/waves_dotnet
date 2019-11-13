@@ -30,7 +30,7 @@ namespace wavegenerator
 #endif
         public static void TrackLengthValidation()
         {
-            if (TrackLength.TotalSeconds * WaveFile.SamplingFrequency > int.MaxValue) throw new InvalidOperationException($"Don't be silly. (Max track length is {TimeSpan.FromSeconds(int.MaxValue/WaveFile.SamplingFrequency)}. Which is a long time.)");
+            if (TrackLength.TotalSeconds * WaveFile.SamplingFrequency > int.MaxValue) throw new InvalidOperationException($"Don't be silly. (Max track length is {TimeSpan.FromSeconds(int.MaxValue / WaveFile.SamplingFrequency)}. Which is a long time.)");
         }
 
         [Description("The length of each section of the track, in seconds. (There will only be a whole number of sections - so a 40s track with 30s sections will only be 30s long)")]
@@ -44,18 +44,21 @@ namespace wavegenerator
         public static int NumSections => (int)(TrackLength.TotalSeconds / SectionLength);// number of sections in the track
 
         [Description("The carrier frequency of the LEFT channel at the START of the track. Does not have to be an integer, so for instance you can have 600.0 left and 600.1 right")]
-        public static double CarrierFrequencyLeftStart;
+        public static double CarrierFrequencyLeftStart = 600;
 
         [Description("The carrier frequency of the LEFT channel at the END of the track (if different from start, it rises linearly)")]
-        public static double CarrierFrequencyLeftEnd;
+        public static double CarrierFrequencyLeftEnd = 600;
 
         [Description("The carrier frequency of the RIGHT channel at the START of the track")]
-        public static double CarrierFrequencyRightStart;
+        public static double CarrierFrequencyRightStart = 600;
 
         [Description("The carrier frequency of the RIGHT channel at the END of the track (if different from start, it rises linearly)")]
-        public static double CarrierFrequencyRightEnd;
+        public static double CarrierFrequencyRightEnd = 600;
 
-        
+        public static void CarrierFrequencyLeftStartValidation() {if(CarrierFrequencyLeftStart <= 0) throw new InvalidOperationException($"{nameof(CarrierFrequencyLeftStart)} must be > 0"); }
+        public static void CarrierFrequencyRightStartValidation() {if(CarrierFrequencyRightStart <= 0) throw new InvalidOperationException($"{nameof(CarrierFrequencyRightStart)} must be > 0"); }
+        public static void CarrierFrequencyLeftEndValidation() {if(CarrierFrequencyLeftEnd <= 0) throw new InvalidOperationException($"{nameof(CarrierFrequencyLeftEnd)} must be > 0"); }
+        public static void CarrierFrequencyRightEndValidation() {if(CarrierFrequencyRightEnd <= 0) throw new InvalidOperationException($"{nameof(CarrierFrequencyRightEnd)} must be > 0"); }
 
         [Description("Minimum length of each 'tabletop' section in seconds")]
         public static double MinTabletopLength = 4;// min length of the 'top' part of the table top frequency

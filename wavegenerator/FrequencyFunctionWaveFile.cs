@@ -3,10 +3,11 @@ namespace wavegenerator
 {
     public abstract class FrequencyFunctionWaveFile : WaveFile
     {
-        private double x;
+        private readonly double[] x;
         private readonly bool phaseShiftChannels = false;
         public FrequencyFunctionWaveFile(int lengthSeconds, short channels, bool phaseShiftChannels) : base(lengthSeconds, channels)
         {
+            x = new double[channels];
             this.phaseShiftChannels = phaseShiftChannels;
         }
 
@@ -15,9 +16,9 @@ namespace wavegenerator
         public override double Amplitude(double t, int n, int channel)
         {
             var f = Frequency(t, n, channel);
-            var dx = Math.PI * f / SamplingFrequency;
-            x += dx;
-            return (phaseShiftChannels && channel == 1) ? Math.Cos(x) : Math.Sin(x);
+            var dx = 2 * Math.PI * f / SamplingFrequency;
+            x[channel] += dx;
+            return (phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]);
         }
     }
 }
