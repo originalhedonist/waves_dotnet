@@ -131,14 +131,14 @@ namespace wavegenerator
         [Description("Minimum break length, in seconds")]
         public static double MinBreakLength = 2;
 
+        [Description("The length of the 'fadeout' before, and 'fade in' after a break")]
+        public static double BreakRampLength = 5;
+
         [Description("Maximum break length, in seconds")]
         public static double MaxBreakLength = 10;
         public static void MaxBreakLengthValidation()
         {
             if (MaxBreakLength + 2 * BreakRampLength > SectionLength) throw new InvalidOperationException($"{nameof(MaxBreakLength)} must be < {nameof(SectionLength)} - 2 x {nameof(BreakRampLength)}");
         }
-
-        [Description("The length of the 'fadeout' before, and 'fade in' after a break")]
-        public static double BreakRampLength = 5;
     }
 }
