@@ -13,7 +13,7 @@ namespace wavegenerator
         public CarrierFrequencyApplier(WaveFile pattern, 
             double carrierFrequencyLeftStart, double carrierFrequencyLeftEnd,
             double carrierFrequencyRightStart, double carrierFrequencyRightEnd) :
-            base(pattern.LengthSeconds, pattern.Channels, phaseShiftChannels: true)
+            base(pattern.LengthSeconds, pattern.Channels, phaseShiftChannels: Constants.PhaseShiftCarrier)
         {
             this.pattern = pattern;
             this.carrierFrequencyLeftStart = carrierFrequencyLeftStart;

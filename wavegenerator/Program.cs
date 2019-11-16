@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace wavegenerator
 {
     public class Program
     {
-        public static async Task Main()
-        {
-            ConstantsParameterization.ParameterizeConstants();
-            var tasks = Enumerable.Range(0, Constants.NumFiles)
-                .Select(i => WriteFile(i))
-                .ToArray();
-            await Task.WhenAll(tasks);
+        private static bool hasLame;
 
-            ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
+        public static async Task Main(string[] args)
+        {
+            ConvertToMp3($"Arvid_20191116_2117_2.wav");
+            //var constantProviderOverrides = args.Where(a => File.Exists(a)).Select(a => new FileConstantProvider(a)).ToArray();
+            //ConstantsParameterization.ParameterizeConstants(constantProviderOverrides);
+            //hasLame = Constants.ConvertToMp3 && TestForLame();
+            //var tasks = Enumerable.Range(0, Constants.NumFiles)
+            //    .Select(i => WriteFile(i))
+            //    .ToArray();
+            //await Task.WhenAll(tasks);
+
+            //ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
         }
 
         private static async Task WriteFile(int uniqueifier)
@@ -39,6 +46,64 @@ namespace wavegenerator
             await File.WriteAllLinesAsync($"{compositionName}.parameters.txt", constantsStrings);
             await Console.Out.WriteLineAsync($"Writing {compositionName}...");
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
+            if (Constants.ConvertToMp3 && hasLame)
+            {
+                if (ConvertToMp3($"{compositionName}.wav"))
+                {
+                    await Console.Out.WriteLineAsync($"Converted {compositionName} to .mp3 using lame. Removing wav.");
+                    File.Delete($"{compositionName}.wav");
+                }
+                else
+                {
+                    await Console.Out.WriteLineAsync($"    (could not convert {compositionName} to .mp3)");
+                }
+            }
+        }
+
+        private static bool TestForLame()
+        {
+            ProcessStartInfo processStartInfo = new ProcessStartInfo("lame", "--version")
+            {
+                UseShellExecute = true,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+            try
+            {
+                using (var process = new Process { StartInfo = processStartInfo })
+                {
+                    process.Start();
+                    process.WaitForExit();
+                    return process.ExitCode == 0;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        private static bool ConvertToMp3(string fileName)
+        {
+            ProcessStartInfo processStartInfo = new ProcessStartInfo("lame", $"-V0 \"{fileName}\"")
+            {
+                UseShellExecute = true,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+            try
+            {
+                using (var lameProcess = new Process { StartInfo = processStartInfo })
+                {
+                    lameProcess.Start();
+                    lameProcess.WaitForExit();
+                    return lameProcess.ExitCode == 0;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private static readonly Random random = new Random();

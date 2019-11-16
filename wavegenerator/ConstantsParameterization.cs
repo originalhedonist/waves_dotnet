@@ -10,7 +10,7 @@ namespace wavegenerator
 {
     public class ConstantsParameterization
     {
-        public static void ParameterizeConstants()
+        public static void ParameterizeConstants(IConstantProvider[] constantProviderOverrides)
         {
             Console.WriteLine("You can now configure the parameters which will influence the track generation.");
             Console.WriteLine("Note that if you use randomization, the program will likely never be able to exactly reproduce a track again - even with the same parameters, so make sure you keep it in case it's good!");
@@ -27,12 +27,19 @@ namespace wavegenerator
                     Console.WriteLine(Regex.Replace(descriptionAttribute?.Description ?? string.Empty, @"\n\s*", "\n"));
 
                     ConsoleWriter.Write($"{field.Name}? ({field.GetValue(null)}) : ", ConsoleColor.White);
-                    var newValString = Console.ReadLine();
+                    string newValString = null;
+                    for(var i = 0; i < constantProviderOverrides.Length && newValString == null; i++)
+                    {
+                        newValString = constantProviderOverrides[i].GetValue(field.Name);
+                    }
+                    if (newValString == null)
+                    {
+                        newValString = Console.ReadLine();
+                    }
                     try
                     {
                         if (!string.IsNullOrEmpty(newValString))
                         {
-
                             var newVal = Parse(newValString, field.FieldType);
 
                             field.SetValue(null, newVal);

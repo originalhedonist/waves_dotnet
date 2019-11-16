@@ -78,7 +78,7 @@ namespace wavegenerator
                 double maxRampLength = (sectionLengthSeconds - topLength) / 2;
                 if (Constants.MinRampLength > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
 
-                // TODO: could feasibly be MinRampLength at the start of the track. Desirable?
+                // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
                 double rampLength = Constants.MinRampLength + Randomizer.GetRandom() * (maxRampLength - Constants.MinRampLength);
                 var result = new TabletopParams
                 {
@@ -124,13 +124,13 @@ namespace wavegenerator
             double maxWetnessForSection = wetnessCache.GetOrAdd(section, s =>
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
-                double maxWetness = Constants.MinWetness + progression * Randomizer.GetRandom() * (Constants.MaxWetness - Constants.MinWetness);
+                double maxWetness = Constants.MinWetness + Math.Pow(progression, Constants.WetnessRiseSlownessFactor) * Randomizer.GetRandom() * (Constants.MaxWetness - Constants.MinWetness);
                 File.AppendAllLines($"{compositionName}.report.txt", new[] { $"The max wetness for section {s} is {maxWetness}" });
                 return maxWetness;
             });
 
             double wetness;
-            if (Constants.LinkWetnessToFrequency)
+            if (Constants.LinkWetnessToTabletop)
             {
                 var p = GetTabletopParamsBySection(section);
                 wetness = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, Constants.MinWetness, maxWetnessForSection, p);
@@ -140,7 +140,7 @@ namespace wavegenerator
                 double ps = ts / sectionLengthSeconds; // progression through section
                 double x = ps * Math.PI;// max wetness in the middle (x = pi/2)
                 wetness = Constants.MinWetness +
-                    Math.Pow(Math.Sin(x), 2) * (Constants.MaxWetness - Constants.MinWetness);
+                    Math.Pow(Math.Sin(x), 2) * (maxWetnessForSection - Constants.MinWetness);
             }
             return wetness;
         }

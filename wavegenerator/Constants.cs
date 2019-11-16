@@ -12,6 +12,9 @@ namespace wavegenerator
         public static bool Randomization = true;
 #endif
 
+        [Description("Whether to try to use lame (if it is in the PATH) to convert to mp3. If so, and it succeeds, the wav will be deleted, otherwise, it will be left as a wav.")]
+        public static bool ConvertToMp3 = true;
+
         [Description("The number of files to create (there is only any point in creating more than 1 if using Randomization, otherwise they will be identical)")]
         public static int NumFiles = 1;
 
@@ -43,6 +46,9 @@ namespace wavegenerator
 
         public static int NumSections => (int)(TrackLength.TotalSeconds / SectionLength);// number of sections in the track
 
+        [Description("Whether the right channel's carrier signal will be phase shifted from the left's")]
+        public static bool PhaseShiftCarrier = true;
+
         [Description("The carrier frequency of the LEFT channel at the START of the track. Does not have to be an integer, so for instance you can have 600.0 left and 600.1 right")]
         public static double CarrierFrequencyLeftStart = 600;
 
@@ -73,6 +79,9 @@ namespace wavegenerator
             if (MaxTabletopLength < MinTabletopLength) throw new InvalidOperationException($"{nameof(MaxTabletopLength)} must be greater than MinTabletoplength ({MinTabletopLength})");
             if (MaxTabletopLength + 2 * MinRampLength > SectionLength) throw new InvalidOperationException($"{nameof(MaxTabletopLength)} must be less than {nameof(SectionLength)} - 2 x {nameof(MinRampLength)}");
         }
+
+        [Description("Whether the pulsing of the right channel will be phase-shifted from the left")]
+        public static bool PhaseShiftPulses;
 
         [Description("The 'normal', quiescent frequency that it normally pulses at")]
         public static double BasePulseFrequency = 0.5;
@@ -107,6 +116,14 @@ namespace wavegenerator
             >1 =>   : Rises quicker at the end")]
         public static double TabletopFrequencyRiseSlownessFactor = 0.5;
 
+        [Description(@"
+            Wetness rise factor. How fast the max wetness (in the middle of the tabletop) for a section rises as the track progresses.
+            =0      : Rises to 'MaxWetness' instantly.
+            >0, <1  : Rises quicker at the start
+            =1 =>   : Rises linearly, to half way between MinWetness and MaxWetness halfway through the track
+            >1 =>   : Rises quicker at the end")]
+        public static double WetnessRiseSlownessFactor = 0.5;
+
         [Description("Minimum length of the 'ramp' part of the table top")]
         public static double MinRampLength = 1; //
 
@@ -116,8 +133,8 @@ namespace wavegenerator
         [Description("Maximum wetness. Wetness rises from MinWetness to anything up to MaxWetness by the end of the track.")]
         public static double MaxWetness = 0.9; 
 
-        [Description("Whether the wetness rises in line with the frequency change")]
-        public static bool LinkWetnessToFrequency = true; 
+        [Description("Whether the wetness rises on the same timeframe as the tabletop (but it's still independent of the scale of the frequency variation)")]
+        public static bool LinkWetnessToTabletop = true; 
 
         [Description("The chance of the pulse frequency speeding up to MaxPulseFrequency as opposed to slowing down to MinPulseFrequency")]
         public static double ChanceOfRise = 0.7; // the chance of the frequency rising as opposed to falling
