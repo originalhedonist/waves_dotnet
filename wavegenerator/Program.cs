@@ -15,16 +15,15 @@ namespace wavegenerator
 
         public static async Task Main(string[] args)
         {
-            ConvertToMp3($"Arvid_20191116_2117_2.wav");
-            //var constantProviderOverrides = args.Where(a => File.Exists(a)).Select(a => new FileConstantProvider(a)).ToArray();
-            //ConstantsParameterization.ParameterizeConstants(constantProviderOverrides);
-            //hasLame = Constants.ConvertToMp3 && TestForLame();
-            //var tasks = Enumerable.Range(0, Constants.NumFiles)
-            //    .Select(i => WriteFile(i))
-            //    .ToArray();
-            //await Task.WhenAll(tasks);
+            var constantProviderOverrides = args.Where(a => File.Exists(a)).Select(a => new FileConstantProvider(a)).ToArray();
+            ConstantsParameterization.ParameterizeConstants(constantProviderOverrides);
+            hasLame = Constants.ConvertToMp3 && TestForLame();
+            var tasks = Enumerable.Range(0, Constants.NumFiles)
+                .Select(i => WriteFile(i))
+                .ToArray();
+            await Task.WhenAll(tasks);
 
-            //ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
+            ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
         }
 
         private static async Task WriteFile(int uniqueifier)
