@@ -1,1 +1,1 @@
-dotnet run wavegenerator/wavegenerator.csproj --config=Release
+dotnet run --project wavegenerator/wavegenerator.csproj --config=Release
