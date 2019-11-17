@@ -49,6 +49,7 @@ namespace wavegenerator
             {
                 if (ConvertToMp3($"{compositionName}.wav"))
                 {
+                    await Console.Out.WriteLineAsync($"Converting {compositionName} to .mp3...");
                     await Console.Out.WriteLineAsync($"Converted {compositionName} to .mp3 using lame. Removing wav.");
                     File.Delete($"{compositionName}.wav");
                 }
