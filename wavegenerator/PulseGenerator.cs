@@ -17,7 +17,7 @@ namespace wavegenerator
         private bool IsBreak(int section) => isBreakCache.GetOrAdd(section, s =>
         {
             if (s * sectionLengthSeconds < Constants.MinTimeBeforeBreak) return false;
-            var retval = Randomizer.Probability(0.1, s % 2 == 1); //10% chance of being a break after ten mins
+            var retval = Randomizer.Probability(Constants.ChanceOfBreak, false); //10% chance of being a break after ten mins
             if (retval) File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {s} is a break" });
             return retval;
         });
@@ -99,7 +99,7 @@ namespace wavegenerator
 
         protected override double CreateTopFrequency(int section)
         {
-            double progression = ((float)section + 1) / numSections; // <= 1
+            double progression = ((float)section) / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
             var isRise = Randomizer.Probability(Constants.ChanceOfRise, true);
             double frequencyLimit = isRise ? Constants.MaxPulseFrequency : Constants.MinPulseFrequency;
