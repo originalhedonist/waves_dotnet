@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace wavegenerator
 {
@@ -15,6 +16,9 @@ namespace wavegenerator
         public bool Randomization = true;
 #endif
 
+        [RegularExpression("abc"), Required]
+        public string SomeString { get; set; }
+
         [Description("Whether to try to use lame (if it is in the PATH) to convert to mp3. If so, and it succeeds, the wav will be deleted, otherwise, it will be left as a wav.")]
         public bool ConvertToMp3 = true;
 
@@ -22,11 +26,8 @@ namespace wavegenerator
         public int NumFiles = 1;
 
         [Description("Naming strategy (1 = random female name, 2 = random male name, 3 = random any name)")]
+        [Range(1, 3)]
         public int Naming = 3;
-        public void NamingValidation()
-        {
-            if (!(Naming >= 1 && Naming <= 3)) throw new InvalidOperationException($"Naming must be 1, 2 or 3.");
-        }
 
         [Description("The total length of the track (must be in h:mm:ss format, even if h is zero)")]
 #if DEBUG

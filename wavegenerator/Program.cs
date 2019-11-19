@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -20,9 +21,10 @@ namespace wavegenerator
             try
             {
                 var settingsFile = args.FirstOrDefault();
+                var dir = Environment.CurrentDirectory;
                 if (settingsFile == null || !File.Exists(settingsFile))
                 {
-                    var defaultSettingsFile = "defaultSettings.json";
+                    var defaultSettingsFile = "default.settings.json";
                     await File.WriteAllTextAsync(defaultSettingsFile, JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
                     await Console.Out.WriteLineAsync($"No settings file passed, or the file does not exist.\nThe default settings have been written to {defaultSettingsFile}.\nPlease copy and modify this, then pass the modified file to the program on the command line.");
                 }
@@ -36,7 +38,10 @@ namespace wavegenerator
                         MergeArrayHandling = MergeArrayHandling.Replace
                     });
                     Settings.Instance = existingSettings.ToObject<Settings>();
+                    var validationContext = new ValidationContext(Settings.Instance);
+                    Validator.ValidateObject(Settings.Instance, validationContext);
 
+                    return;
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
                         .Select(i => WriteFile(i))
@@ -45,7 +50,6 @@ namespace wavegenerator
 
                     ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
                 }
-
             }
             catch (Exception ex)
             {
