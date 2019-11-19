@@ -1,3 +1,4 @@
+*.settings.json
 *.mp3
 *.wav
 *.report.txt

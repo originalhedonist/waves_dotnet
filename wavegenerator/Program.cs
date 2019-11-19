@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace wavegenerator
 {
@@ -15,15 +17,40 @@ namespace wavegenerator
 
         public static async Task Main(string[] args)
         {
-            var constantProviderOverrides = args.Where(a => File.Exists(a)).Select(a => new FileConstantProvider(a)).ToArray();
-            ConstantsParameterization.ParameterizeConstants(constantProviderOverrides);
-            hasLame = Constants.ConvertToMp3 && TestForLame();
-            var tasks = Enumerable.Range(0, Constants.NumFiles)
-                .Select(i => WriteFile(i))
-                .ToArray();
-            await Task.WhenAll(tasks);
+            try
+            {
+                var settingsFile = args.FirstOrDefault();
+                if (settingsFile == null || !File.Exists(settingsFile))
+                {
+                    var defaultSettingsFile = "defaultSettings.json";
+                    await File.WriteAllTextAsync(defaultSettingsFile, JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
+                    await Console.Out.WriteLineAsync($"No settings file passed, or the file does not exist.\nThe default settings have been written to {defaultSettingsFile}.\nPlease copy and modify this, then pass the modified file to the program on the command line.");
+                }
+                else
+                {
+                    var newSettings = JObject.Parse(await File.ReadAllTextAsync(settingsFile));
+                    var existingSettings = JObject.FromObject(Settings.Instance);
+                    existingSettings.Merge(newSettings, new JsonMergeSettings
+                    {
+                        MergeNullValueHandling = MergeNullValueHandling.Ignore,
+                        MergeArrayHandling = MergeArrayHandling.Replace
+                    });
+                    Settings.Instance = existingSettings.ToObject<Settings>();
 
-            ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
+                    hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
+                    var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
+                        .Select(i => WriteFile(i))
+                        .ToArray();
+                    await Task.WhenAll(tasks);
+
+                    ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ConsoleWriter.WriteLine(ex.Message, ConsoleColor.Red);
+            }
         }
 
         private static async Task WriteFile(int uniqueifier)
@@ -31,21 +58,21 @@ namespace wavegenerator
             var compositionName = $"{GetRandomName()}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
             var pulseGenerator = new PulseGenerator(
                 compositionName,
-                sectionLengthSeconds: Constants.SectionLength,
-                numSections: Constants.NumSections,
+                sectionLengthSeconds: Settings.Instance.SectionLength,
+                numSections: Settings.Instance.NumSections,
                 channels: 2);
             var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
-                Constants.CarrierFrequencyLeftStart,
-                Constants.CarrierFrequencyLeftEnd,
-                Constants.CarrierFrequencyRightStart,
-                Constants.CarrierFrequencyRightEnd);
+                Settings.Instance.CarrierFrequencyLeftStart,
+                Settings.Instance.CarrierFrequencyLeftEnd,
+                Settings.Instance.CarrierFrequencyRightStart,
+                Settings.Instance.CarrierFrequencyRightEnd);
 
-            var constantsStrings = typeof(Constants).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+            var constantsStrings = typeof(Settings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();
             await File.WriteAllLinesAsync($"{compositionName}.parameters.txt", constantsStrings);
             await Console.Out.WriteLineAsync($"Writing {compositionName}...");
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
-            if (Constants.ConvertToMp3 && hasLame)
+            if (Settings.Instance.ConvertToMp3 && hasLame)
             {
                 if (ConvertToMp3($"{compositionName}.wav"))
                 {
@@ -111,7 +138,7 @@ namespace wavegenerator
         public static string GetRandomName()
         {
             var possibleNameListFiles = new[] { "female-first-names.txt", "male-first-names.txt" };
-            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & Constants.Naming) != 0).ToArray();
+            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & Settings.Instance.Naming) != 0).ToArray();
             var nameListFile = nameListFilesToUse[random.Next(0, nameListFilesToUse.Length)];
             var nameList = nameListCache.GetOrAdd(nameListFile, s => File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, s)).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray());
             string randomName = nameList[random.Next(0, nameList.Length)];

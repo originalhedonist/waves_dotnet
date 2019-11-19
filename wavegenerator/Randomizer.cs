@@ -6,8 +6,8 @@ namespace wavegenerator
     {
         public static Random random = new Random();
         public static double GetRandom() => 
-            Constants.Randomization ? random.NextDouble() : 1.0;
+            Settings.Instance.Randomization ? random.NextDouble() : 1.0;
         public static bool Probability(double prob, bool defaultValue) =>  
-            Constants.Randomization ? GetRandom() < prob : defaultValue;
+            Settings.Instance.Randomization ? GetRandom() < prob : defaultValue;
     }
 }
