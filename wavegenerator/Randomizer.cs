@@ -10,8 +10,8 @@ namespace wavegenerator
 
         public static double MakeValue(this VarianceModel variance, double progress)
         {
-            int isTopHalf = Randomizer.GetRandom() >= 0.5 ? -1 : 1;
-            return Math.Min(1, Math.Pow(Randomizer.GetRandom(), isTopHalf * variance.Randomness) * Math.Pow(progress, variance.Progression));
+            int isTopHalf = GetRandom() >= 0.5 ? -1 : 1;
+            return Math.Min(1, Math.Pow(GetRandom(), isTopHalf * variance.Randomness) * Math.Pow(progress, variance.Progression));
         }
 
         public static double ProportionAlong(this VarianceModel variance, double progress, double minValue, double maxValue)

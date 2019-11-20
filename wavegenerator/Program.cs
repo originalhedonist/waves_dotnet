@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -40,6 +39,7 @@ namespace wavegenerator
                     Settings.Instance = existingSettings.ToObject<Settings>();
                     var validationContext = new ValidationContext(Settings.Instance);
                     Validator.ValidateObject(Settings.Instance, validationContext, true);
+                    ConsoleWriter.WriteLine("Settings are all valid", ConsoleColor.Green);
                     return;
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)

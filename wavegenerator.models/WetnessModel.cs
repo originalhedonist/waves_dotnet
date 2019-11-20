@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
+using wavegenerator.models;
 
 namespace wavegenerator
 {
@@ -27,6 +28,7 @@ namespace wavegenerator
         public double Maximum { get; set; }
 
         [Required]
+        [ValidateObject]
         public VarianceModel Variation { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using wavegenerator.models;
 
 namespace wavegenerator
 {
@@ -28,25 +29,27 @@ namespace wavegenerator
             ChanceOfFeature = 0.8
         };
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:05", "13:31:35")]
         public TimeSpan TotalLength { get; set;}
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]
         public TimeSpan MinFeatureLength { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]
         public TimeSpan MaxFeatureLength { get; set; }
 
         [Required]
+        [ValidateObject]
         public VarianceModel FeatureLengthVariance { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]
         public TimeSpan MinRampLength { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]
         public TimeSpan MaxRampLength { get; set; }
 
         [Required]
+        [ValidateObject]
         public VarianceModel RampLengthVariance { get; set; }
 
         [Range(0.0, 1.0)]

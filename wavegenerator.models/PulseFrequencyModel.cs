@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using wavegenerator.models;
 
 namespace wavegenerator
 {
@@ -26,6 +27,7 @@ namespace wavegenerator
         [Range(0.0, 1.0)]
         public double ChanceOfHigh { get; set; }
 
+        [ValidateObject]
         public VarianceModel Variation { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using wavegenerator.models;
 
 namespace wavegenerator
 {
@@ -31,6 +32,7 @@ namespace wavegenerator
 
         [Required]
         [SectionModelValidation(nameof(Sections))]
+        [ValidateObject]
         public SectionModel Sections { get; set; } = SectionModel.Default;
 
         [JsonIgnore]
@@ -39,15 +41,19 @@ namespace wavegenerator
         [Description("Whether the right channel's carrier signal will be phase shifted from the left's")]
         public bool PhaseShiftCarrier {get; set;} = true;
 
+        [ValidateObject]
         public CarrierFrequencyModel CarrierFrequency { get; set; } = CarrierFrequencyModel.Default;
 
         [Description("Whether the pulsing of the right channel will be phase-shifted from the left")]
         public bool PhaseShiftPulses {get; set;}
 
+        [ValidateObject]
         public PulseFrequencyModel PulseFrequency { get; set; } = PulseFrequencyModel.Default;
 
+        [ValidateObject]
         public WetnessModel Wetness { get; set; } = WetnessModel.Default;
 
+        [ValidateObject]
         public BreakModel Breaks { get; set; } = BreakModel.Default;
     }
 }
