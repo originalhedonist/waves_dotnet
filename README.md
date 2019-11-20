@@ -13,6 +13,25 @@ cd waves_dotnet
 wavegenerator.bat
 ```
 
+
+### To explain variance:
+Variance is a measure of how much a value is dependent on randomness, and the progression through the track.
+
+If you have Excel, you can open `VariationIllustration.xlsx` and tweak `Progression` and `Randomness` to see the spread of values.
+
+If `Progression` is 1, the value will rise linearly as the track progresses.
+
+If `Progression` is >1, the value will rise faster towards the start of the track, whereas if it is <1, the value will rise faster towards the start of the track.
+
+If `Randomness` is high, the 'spread' of values around the progression will be wider.
+
+These two images show the spread of values. The red line is the proportion of values that are at the maximum value.
+
+![Randomness](https://github.com/originalhedonist/waves_dotnet/blob/master/randomness.png)
+
+![Progression](https://github.com/originalhedonist/waves_dotnet/blob/master/progression.png)
+
+
 The parameters are supplied in JSON format with the .json file being passed to the program on the command line.
 An example of the parameters is as follows, but to make the program write out the default parameters so you can copy and edit it, just run the program with no command line arguments, and `default.parameters.json` will be saved.
 ```json
@@ -73,26 +92,6 @@ An example of the parameters is as follows, but to make the program write out th
   }
 }
 ```
-
-### To explain variance:
-Variance is a measure of how much a value is dependent on randomness, and the progression through the track.
-
-If you have Excel, you can open `VariationIllustration.xlsx` and tweak `Progression` and `Randomness` to see the spread of values.
-
-If `Progression` is 1, the value will rise linearly as the track progresses.
-
-If `Progression` is >1, the value will rise faster towards the start of the track, whereas if it is <1, the value will rise faster towards the start of the track.
-
-If `Randomness` is high, the 'spread' of values around the progression will be wider.
-
-These two images show the spread of values. The red line is the proportion of values that are at the maximum value.
-
-![Randomness](https://github.com/originalhedonist/waves_dotnet/blob/master/randomness.png)
-
-![Progression](https://github.com/originalhedonist/waves_dotnet/blob/master/progression.png)
-
-
-
 
 ## To develop using Visual Studio:
 
