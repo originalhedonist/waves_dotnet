@@ -1,34 +1,48 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace wavegenerator
 {
     public class PulseGenerator : TabletopGenerator
-    { 
-        public PulseGenerator(string compositionName, int sectionLengthSeconds, int numSections, short channels) : base(Settings.Instance.BasePulseFrequency, sectionLengthSeconds, numSections, channels)
+    {
+        private readonly int[] sectionsThatAreBreaks;
+        public PulseGenerator(string compositionName, double sectionLengthSeconds, int numSections, short channels) : base(Settings.Instance.PulseFrequency.Quiescent, sectionLengthSeconds, numSections, channels)
         {
             this.compositionName = compositionName;
+            this.sectionsThatAreBreaks = MakeBreaks(numSections).ToArray();
+        }
+
+        private static IEnumerable<int> MakeBreaks(int numSections)
+        {
+            int? lastBreakSection = null;
+            do
+            {
+                var minTime = lastBreakSection == null ?
+                    (Settings.Instance.Breaks.MinTimeSinceStartOfTrack) :
+                    ((lastBreakSection.Value + 1) * Settings.Instance.Sections.TotalLength) + Settings.Instance.Breaks.MinTimeBetweenBreaks;
+                //add 1 to lastBreakSection because we want the time since the END of that section
+                var maxTime = minTime + Settings.Instance.Breaks.MaxTimeBetweenBreaks;
+                var breakTime = minTime + (Randomizer.GetRandom() * (maxTime - minTime));
+                lastBreakSection = (int)(breakTime / Settings.Instance.Sections.TotalLength);
+                yield return lastBreakSection.Value;
+            } while (lastBreakSection.Value <= numSections);
         }
 
         private readonly ConcurrentDictionary<int, bool> isBreakCache = new ConcurrentDictionary<int, bool>();
         private readonly ConcurrentDictionary<int, TabletopParams> breakParamsCache = new ConcurrentDictionary<int, TabletopParams>();
 
-        private bool IsBreak(int section) => isBreakCache.GetOrAdd(section, s =>
-        {
-            if (s * sectionLengthSeconds < Settings.Instance.MinTimeBeforeBreak) return false;
-            var retval = Randomizer.Probability(Settings.Instance.ChanceOfBreak, false); //10% chance of being a break after ten mins
-            if (retval) File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {s} is a break" });
-            return retval;
-        });
+        private bool IsBreak(int section) => sectionsThatAreBreaks.Contains(section);
 
         public TabletopParams GetBreakParams(int section) => breakParamsCache.GetOrAdd(section, s =>
         {
-            var breakLength = Randomizer.GetRandom() * (Settings.Instance.MaxBreakLength - Settings.Instance.MinBreakLength) + Settings.Instance.MinBreakLength;
+            var breakLength = Settings.Instance.Breaks.MinLength + (Settings.Instance.Breaks.MaxLength - Settings.Instance.Breaks.MinLength) * Randomizer.GetRandom();
             var p = new TabletopParams
             {
-                RampLength = Settings.Instance.BreakRampLength,
-                TopLength = breakLength,
+                RampLength = Settings.Instance.Breaks.RampLength.TotalSeconds,
+                TopLength = breakLength.TotalSeconds,
                 RampsUseSin2 = true
             };
             return p;
@@ -60,26 +74,32 @@ namespace wavegenerator
             return a_res;
         }
 
-        protected override TabletopParams CreateTabletopParamsForSection(int section)
+        protected override TabletopParams CreateFeatureParamsForSection(int section)
         {
             if (IsBreak(section)) return new TabletopParams { RampLength = 0, TopLength = 0, RampsUseSin2 = false };//don't apply a table top if we're on a break
 
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
             double progression = ((float)section + 1) / numSections; // <= 1
-            var isTabletop = Randomizer.Probability(Math.Pow(progression, Settings.Instance.TabletopChanceRiseSlownessFactor), true);
+            var isTabletop = Probability.Resolve(
+                Settings.Instance.Sections.ChanceOfFeatureVariance.MakeValue(progression),
+                Settings.Instance.Sections.ChanceOfFeature,
+                true);
             if (isTabletop)
             {
                 //if it's a tabletop:
-                double topLength = 
-                    Randomizer.GetRandom() * 
-                    Math.Pow(progression, Settings.Instance.TabletopLengthRiseSlownessFactor) *
-                    (Settings.Instance.MaxTabletopLength - Settings.Instance.MinTabletopLength) + Settings.Instance.MinTabletopLength;
+                double topLength =
+                    Settings.Instance.Sections.FeatureLengthVariance.ProportionAlong(progression,
+                        Settings.Instance.Sections.MinFeatureLength.TotalSeconds,
+                        Settings.Instance.Sections.MaxFeatureLength.TotalSeconds);
                 double maxRampLength = (sectionLengthSeconds - topLength) / 2;
-                if (Settings.Instance.MinRampLength > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
+                if (Settings.Instance.Sections.MinRampLength.TotalSeconds > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
 
                 // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
-                double rampLength = Settings.Instance.MinRampLength + Randomizer.GetRandom() * (maxRampLength - Settings.Instance.MinRampLength);
+                double rampLength =
+                    Settings.Instance.Sections.RampLengthVariance.ProportionAlong(progression,
+                        Settings.Instance.Sections.MaxRampLength.TotalSeconds,
+                        Settings.Instance.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
                 var result = new TabletopParams
                 {
                     RampLength = rampLength,
@@ -101,10 +121,13 @@ namespace wavegenerator
         {
             double progression = ((float)section) / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
-            var isRise = Randomizer.Probability(Settings.Instance.ChanceOfRise, true);
-            double frequencyLimit = isRise ? Settings.Instance.MaxPulseFrequency : Settings.Instance.MinPulseFrequency;
-            double frequencyChangeLimit = frequencyLimit - baseFrequency;
-            double topFrequency = baseFrequency + Randomizer.GetRandom() * frequencyChangeLimit * Math.Pow(progression, Settings.Instance.TabletopFrequencyRiseSlownessFactor);
+            var isRise = Probability.Resolve(
+                Randomizer.GetRandom(),
+                Settings.Instance.PulseFrequency.ChanceOfHigh, true);
+            double frequencyLimit = isRise ? Settings.Instance.PulseFrequency.High : Settings.Instance.PulseFrequency.Low;
+            double topFrequency = Settings.Instance.PulseFrequency.Variation.ProportionAlong(progression,
+                Settings.Instance.PulseFrequency.Quiescent,
+                frequencyLimit);
             if (topFrequency <= 0)
                 throw new InvalidOperationException("TopFrequency must be > 0");
 

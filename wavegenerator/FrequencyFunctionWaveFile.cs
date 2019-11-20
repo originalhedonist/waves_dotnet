@@ -5,7 +5,7 @@ namespace wavegenerator
     {
         private readonly double[] x;
         private readonly bool phaseShiftChannels = false;
-        public FrequencyFunctionWaveFile(int lengthSeconds, short channels, bool phaseShiftChannels) : base(lengthSeconds, channels)
+        public FrequencyFunctionWaveFile(double lengthSeconds, short channels, bool phaseShiftChannels) : base(lengthSeconds, channels)
         {
             x = new double[channels];
             this.phaseShiftChannels = phaseShiftChannels;

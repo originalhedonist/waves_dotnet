@@ -5,21 +5,15 @@ namespace wavegenerator
     public class CarrierFrequencyApplier : FrequencyFunctionWaveFile
     {
         private readonly WaveFile pattern;
-        private readonly double carrierFrequencyLeftStart;
-        private readonly double carrierFrequencyLeftEnd;
-        private readonly double carrierFrequencyRightStart;
-        private readonly double carrierFrequencyRightEnd;
+        private readonly double carrierFrequencyLeft;
+        private readonly double carrierFrequencyRight;
 
-        public CarrierFrequencyApplier(WaveFile pattern, 
-            double carrierFrequencyLeftStart, double carrierFrequencyLeftEnd,
-            double carrierFrequencyRightStart, double carrierFrequencyRightEnd) :
+        public CarrierFrequencyApplier(WaveFile pattern, double carrierFrequencyLeft, double carrierFrequencyRight) :
             base(pattern.LengthSeconds, pattern.Channels, phaseShiftChannels: Settings.Instance.PhaseShiftCarrier)
         {
             this.pattern = pattern;
-            this.carrierFrequencyLeftStart = carrierFrequencyLeftStart;
-            this.carrierFrequencyLeftEnd = carrierFrequencyLeftEnd;
-            this.carrierFrequencyRightStart = carrierFrequencyRightStart;
-            this.carrierFrequencyRightEnd = carrierFrequencyRightEnd;
+            this.carrierFrequencyLeft = carrierFrequencyLeft;
+            this.carrierFrequencyRight = carrierFrequencyRight;
         }
 
         public override double Amplitude(double t, int n, int channel)
@@ -31,12 +25,7 @@ namespace wavegenerator
 
         protected override double Frequency(double t, int n, int channel)
         {
-            var carrierFrequencies = channel == 0 ?
-                new { Start = carrierFrequencyLeftStart, End = carrierFrequencyLeftEnd } :
-                new { Start = carrierFrequencyRightStart, End = carrierFrequencyRightEnd };
-            double progression = (double)n / N;
-            double carrierFrequency = carrierFrequencies.Start + (carrierFrequencies.End - carrierFrequencies.Start) * progression;
-            return carrierFrequency;
+            return channel == 0 ? carrierFrequencyLeft : carrierFrequencyRight;
         }
     }
 }

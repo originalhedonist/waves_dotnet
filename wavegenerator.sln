@@ -1,9 +1,10 @@
-
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wavegenerator", "wavegenerator\wavegenerator.csproj", "{4726D732-39DB-4800-82ED-7E7611B0CD2A}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29409.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wavegenerator", "wavegenerator\wavegenerator.csproj", "{4726D732-39DB-4800-82ED-7E7611B0CD2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wavereader", "wavereader\wavereader.csproj", "{9B8C1458-80F6-4A71-B2AD-61CDDE6F2F0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wavereader", "wavereader\wavereader.csproj", "{9B8C1458-80F6-4A71-B2AD-61CDDE6F2F0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,5 +20,11 @@ Global
 		{9B8C1458-80F6-4A71-B2AD-61CDDE6F2F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9B8C1458-80F6-4A71-B2AD-61CDDE6F2F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9B8C1458-80F6-4A71-B2AD-61CDDE6F2F0C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B4CE5346-67D9-4988-8221-6223DA0A582C}
 	EndGlobalSection
 EndGlobal

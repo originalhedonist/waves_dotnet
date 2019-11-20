@@ -39,9 +39,8 @@ namespace wavegenerator
                     });
                     Settings.Instance = existingSettings.ToObject<Settings>();
                     var validationContext = new ValidationContext(Settings.Instance);
-                    Validator.ValidateObject(Settings.Instance, validationContext);
-
-                    return;
+                    Validator.ValidateObject(Settings.Instance, validationContext, true);
+                    //return;
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
                         .Select(i => WriteFile(i))
@@ -57,19 +56,35 @@ namespace wavegenerator
             }
         }
 
+        public class MyValidationAttribute : ValidationAttribute
+        {
+            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+            {
+                return base.IsValid(value, validationContext);
+            }
+
+            public override bool IsValid(object value)
+            {
+                return base.IsValid(value);
+            }
+
+            public override bool Match(object obj)
+            {
+                return base.Match(obj);
+            }
+        }
+
         private static async Task WriteFile(int uniqueifier)
         {
             var compositionName = $"{GetRandomName()}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
             var pulseGenerator = new PulseGenerator(
                 compositionName,
-                sectionLengthSeconds: Settings.Instance.SectionLength,
+                sectionLengthSeconds: Settings.Instance.Sections.TotalLength.TotalSeconds,
                 numSections: Settings.Instance.NumSections,
                 channels: 2);
             var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
-                Settings.Instance.CarrierFrequencyLeftStart,
-                Settings.Instance.CarrierFrequencyLeftEnd,
-                Settings.Instance.CarrierFrequencyRightStart,
-                Settings.Instance.CarrierFrequencyRightEnd);
+                Settings.Instance.CarrierFrequency.Left,
+                Settings.Instance.CarrierFrequency.Right);
 
             var constantsStrings = typeof(Settings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();
@@ -142,7 +157,7 @@ namespace wavegenerator
         public static string GetRandomName()
         {
             var possibleNameListFiles = new[] { "female-first-names.txt", "male-first-names.txt" };
-            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & Settings.Instance.Naming) != 0).ToArray();
+            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & (int)Settings.Instance.Naming) != 0).ToArray();
             var nameListFile = nameListFilesToUse[random.Next(0, nameListFilesToUse.Length)];
             var nameList = nameListCache.GetOrAdd(nameListFile, s => File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, s)).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray());
             string randomName = nameList[random.Next(0, nameList.Length)];
@@ -157,7 +172,7 @@ namespace wavegenerator
         {
         }
 
-        protected override TabletopParams CreateTabletopParamsForSection(int section)
+        protected override TabletopParams CreateFeatureParamsForSection(int section)
         {
             return new TabletopParams
             {

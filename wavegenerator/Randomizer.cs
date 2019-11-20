@@ -6,8 +6,12 @@ namespace wavegenerator
     {
         public static Random random = new Random();
         public static double GetRandom() => 
-            Settings.Instance.Randomization ? random.NextDouble() : 1.0;
-        public static bool Probability(double prob, bool defaultValue) =>  
-            Settings.Instance.Randomization ? GetRandom() < prob : defaultValue;
+            Settings.Instance.Randomization ? random.NextDouble() : 0.0;
+    }
+
+    public static class Probability
+    {
+        public static bool Resolve(double currentValue, double probability, bool defaultValue) =>
+            Settings.Instance.Randomization ? currentValue >= 1 - probability : defaultValue;
     }
 }

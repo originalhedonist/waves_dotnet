@@ -9,17 +9,17 @@ namespace wavegenerator
     {
         public const int SamplingFrequency = 44100;
         protected const short bytesPerSample = 2;
-        public int LengthSeconds { get; }
+        public double LengthSeconds { get; }
         public short Channels { get; }
         protected readonly int overallDataSize;
         protected readonly int overallFileSize;
         protected readonly int N;
 
-        public WaveFile(int lengthSeconds, short channels)
+        public WaveFile(double lengthSeconds, short channels)
         {
             this.LengthSeconds = lengthSeconds;
             this.Channels = channels;
-            this.N = lengthSeconds * SamplingFrequency;
+            this.N = (int)(lengthSeconds * SamplingFrequency);
             this.overallDataSize = N * channels * bytesPerSample;
             this.overallFileSize = this.overallDataSize + 44;
             if (channels < 1 || channels > 2)

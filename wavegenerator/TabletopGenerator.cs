@@ -12,7 +12,7 @@ namespace wavegenerator
 
     public abstract class TabletopGenerator : FrequencyFunctionWaveFile
     {
-        public TabletopGenerator(double baseFrequency, int sectionLengthSeconds, int numSections, short channels) : 
+        public TabletopGenerator(double baseFrequency, double sectionLengthSeconds, int numSections, short channels) : 
             base(sectionLengthSeconds * numSections, channels, phaseShiftChannels: Settings.Instance.PhaseShiftPulses)
         {
             this.baseFrequency = baseFrequency;
@@ -21,14 +21,14 @@ namespace wavegenerator
         }
 
         protected readonly double baseFrequency;
-        protected readonly int sectionLengthSeconds;
+        protected readonly double sectionLengthSeconds;
         protected readonly int numSections;
 
         protected abstract double CreateTopFrequency(int section);
-        protected abstract TabletopParams CreateTabletopParamsForSection(int section);
+        protected abstract TabletopParams CreateFeatureParamsForSection(int section);
         protected TabletopParams GetTabletopParamsBySection(int section) => paramsCache.GetOrAdd(section, s =>
         {
-            var p = CreateTabletopParamsForSection(section);
+            var p = CreateFeatureParamsForSection(section);
             ValidateParams(p);
             return p;
         });
