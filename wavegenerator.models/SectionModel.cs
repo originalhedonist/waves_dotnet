@@ -25,12 +25,7 @@ namespace wavegenerator
                 Randomness = 0.2
             },
 
-            ChanceOfFeature = 0.8,
-            ChanceOfFeatureVariance = new VarianceModel
-            {
-                Progression = 0.2,
-                Randomness = 1.0
-            }
+            ChanceOfFeature = 0.8
         };
 
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
@@ -56,9 +51,6 @@ namespace wavegenerator
 
         [Range(0.0, 1.0)]
         public double ChanceOfFeature { get; set; }
-
-        [Required]
-        public VarianceModel ChanceOfFeatureVariance { get; set; }
     }
 
     public class SectionModelValidation : ValidationAttribute

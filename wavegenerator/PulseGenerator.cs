@@ -82,7 +82,7 @@ namespace wavegenerator
             //the chance of it being something at all rises from 0% to 100%.
             double progression = ((float)section + 1) / numSections; // <= 1
             var isTabletop = Probability.Resolve(
-                Settings.Instance.Sections.ChanceOfFeatureVariance.MakeValue(progression),
+                Randomizer.GetRandom(),
                 Settings.Instance.Sections.ChanceOfFeature,
                 true);
             if (isTabletop)
@@ -126,7 +126,7 @@ namespace wavegenerator
                 Settings.Instance.PulseFrequency.ChanceOfHigh, true);
             double frequencyLimit = isRise ? Settings.Instance.PulseFrequency.High : Settings.Instance.PulseFrequency.Low;
             double topFrequency = Settings.Instance.PulseFrequency.Variation.ProportionAlong(progression,
-                Settings.Instance.PulseFrequency.Quiescent,
+                baseFrequency,
                 frequencyLimit);
             if (topFrequency <= 0)
                 throw new InvalidOperationException("TopFrequency must be > 0");
@@ -147,23 +147,25 @@ namespace wavegenerator
             double maxWetnessForSection = wetnessCache.GetOrAdd(section, s =>
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
-                double maxWetness = Settings.Instance.MinWetness + Math.Pow(progression, Settings.Instance.WetnessRiseSlownessFactor) * Randomizer.GetRandom() * (Settings.Instance.MaxWetness - Settings.Instance.MinWetness);
+                double maxWetness = Settings.Instance.Wetness.Variation.ProportionAlong(progression,
+                    Settings.Instance.Wetness.Minimum,
+                    Settings.Instance.Wetness.Maximum);
                 File.AppendAllLines($"{compositionName}.report.txt", new[] { $"The max wetness for section {s} is {maxWetness}" });
                 return maxWetness;
             });
 
             double wetness;
-            if (Settings.Instance.LinkWetnessToTabletop)
+            if (Settings.Instance.Wetness.LinkToFeature)
             {
                 var p = GetTabletopParamsBySection(section);
-                wetness = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, Settings.Instance.MinWetness, maxWetnessForSection, p);
+                wetness = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, Settings.Instance.Wetness.Minimum, maxWetnessForSection, p);
             }
             else
             {
                 double ps = ts / sectionLengthSeconds; // progression through section
                 double x = ps * Math.PI;// max wetness in the middle (x = pi/2)
-                wetness = Settings.Instance.MinWetness +
-                    Math.Pow(Math.Sin(x), 2) * (maxWetnessForSection - Settings.Instance.MinWetness);
+                wetness = Settings.Instance.Wetness.Minimum +
+                    Math.Pow(Math.Sin(x), 2) * (maxWetnessForSection - Settings.Instance.Wetness.Minimum);
             }
             return wetness;
         }

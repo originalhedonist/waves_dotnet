@@ -5,22 +5,32 @@ namespace wavegenerator
 {
     public class BreakModel
     {
+        public static BreakModel Default = new BreakModel
+        {
+            MinTimeSinceStartOfTrack = TimeSpan.FromMinutes(10),
+            MinLength = TimeSpan.FromSeconds(2),
+            MaxLength = TimeSpan.FromSeconds(25),
+            MinTimeBetweenBreaks = TimeSpan.FromMinutes(5),
+            MaxTimeBetweenBreaks = TimeSpan.FromMinutes(30),
+            RampLength = TimeSpan.FromSeconds(5)
+        };
+
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
         public TimeSpan MinTimeSinceStartOfTrack { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:00", "13:31:35")]
         public TimeSpan MinTimeBetweenBreaks { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:00", "13:31:35")]
         public TimeSpan MaxTimeBetweenBreaks { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]
         public TimeSpan MinLength { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]
         public TimeSpan MaxLength { get; set; }
 
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]
         public TimeSpan RampLength { get; set; }
     }
 

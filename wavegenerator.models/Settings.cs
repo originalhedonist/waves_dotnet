@@ -46,25 +46,8 @@ namespace wavegenerator
 
         public PulseFrequencyModel PulseFrequency { get; set; } = PulseFrequencyModel.Default;
 
-        [Description(@"
-            Wetness rise factor. How fast the max wetness (in the middle of the tabletop) for a section rises as the track progresses.
-            =0      : Rises to 'MaxWetness' instantly.
-            >0, <1  : Rises quicker at the start
-            =1 =>   : Rises linearly, to half way between MinWetness and MaxWetness halfway through the track
-            >1 =>   : Rises quicker at the end")]
-        public double WetnessRiseSlownessFactor {get; set;} = 0.5;
+        public WetnessModel Wetness { get; set; } = WetnessModel.Default;
 
-        [Description("Minimum wetness. Wetness stays near MinWetness near the start of the track.")]
-        public double MinWetness {get; set;} = 0.5; 
-
-        [Description("Maximum wetness. Wetness rises from MinWetness to anything up to MaxWetness by the end of the track.")]
-        public double MaxWetness {get; set;} = 0.9; 
-
-        [Description("Whether the wetness rises on the same timeframe as the tabletop (but it's still independent of the scale of the frequency variation)")]
-        public bool LinkWetnessToTabletop {get; set;} = true; 
-
-        public BreakModel Breaks { get; set; }
+        public BreakModel Breaks { get; set; } = BreakModel.Default;
     }
-
-
 }

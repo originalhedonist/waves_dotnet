@@ -40,7 +40,7 @@ namespace wavegenerator
                     Settings.Instance = existingSettings.ToObject<Settings>();
                     var validationContext = new ValidationContext(Settings.Instance);
                     Validator.ValidateObject(Settings.Instance, validationContext, true);
-                    //return;
+                    return;
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
                         .Select(i => WriteFile(i))
