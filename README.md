@@ -21,7 +21,7 @@ If you have Excel, you can open `VariationIllustration.xlsx` and tweak `Progress
 
 If `Progression` is 1, the value will rise linearly as the track progresses.
 
-If `Progression` is >1, the value will rise faster towards the start of the track, whereas if it is <1, the value will rise faster towards the start of the track.
+If `Progression` is <1, the value will rise faster towards the start of the track, whereas if it is >1, the value will rise faster towards the end of the track.
 
 If `Randomness` is high, the 'spread' of values around the progression will be wider.
 
