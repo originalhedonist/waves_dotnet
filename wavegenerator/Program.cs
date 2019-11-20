@@ -56,24 +56,6 @@ namespace wavegenerator
             }
         }
 
-        public class MyValidationAttribute : ValidationAttribute
-        {
-            protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-            {
-                return base.IsValid(value, validationContext);
-            }
-
-            public override bool IsValid(object value)
-            {
-                return base.IsValid(value);
-            }
-
-            public override bool Match(object obj)
-            {
-                return base.Match(obj);
-            }
-        }
-
         private static async Task WriteFile(int uniqueifier)
         {
             var compositionName = $"{GetRandomName()}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";

@@ -29,4 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\wavegenerator.models\wavegenerator.models.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>
