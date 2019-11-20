@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -32,7 +33,8 @@ namespace wavegenerator
         [SectionModelValidation(nameof(Sections))]
         public SectionModel Sections { get; set; } = SectionModel.Default;
 
-        internal int NumSections => (int)(TrackLength.TotalSeconds / Sections.TotalLength.TotalSeconds);// number of sections in the track
+        [JsonIgnore]
+        public int NumSections => (int)(TrackLength.TotalSeconds / Sections.TotalLength.TotalSeconds);// number of sections in the track
 
         [Description("Whether the right channel's carrier signal will be phase shifted from the left's")]
         public bool PhaseShiftCarrier {get; set;} = true;
