@@ -43,7 +43,7 @@ namespace wavegenerator
 
             if (breakModel.MaxTimeBetweenBreaks < breakModel.MinTimeBetweenBreaks) return new ValidationResult($"{nameof(BreakModel.MaxTimeBetweenBreaks)} must be >= {nameof(BreakModel.MinTimeBetweenBreaks)}");
             if (breakModel.MaxLength < breakModel.MinLength) return new ValidationResult($"{nameof(BreakModel.MaxLength)} must be >= {nameof(BreakModel.MinLength)}");
-            if (breakModel.MaxLength + 2 * breakModel.RampLength > settings.Sections.TotalLength) return new ValidationResult($"{nameof(BreakModel.MaxLength)} + 2x{nameof(BreakModel.RampLength)} must be <= {nameof(Settings.Sections)}.{nameof(Settings.Sections.TotalLength)}");
+            //if (breakModel.MaxLength + 2 * breakModel.RampLength > settings.Sections.TotalLength) return new ValidationResult($"{nameof(BreakModel.MaxLength)} + 2x{nameof(BreakModel.RampLength)} must be <= {nameof(Settings.Sections)}.{nameof(Settings.Sections.TotalLength)}");
             return ValidationResult.Success;
         }
         public override bool RequiresValidationContext => true;

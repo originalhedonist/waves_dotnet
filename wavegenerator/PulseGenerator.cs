@@ -9,24 +9,26 @@ namespace wavegenerator
     public class PulseGenerator : TabletopGenerator
     {
         private readonly int[] sectionsThatAreBreaks;
-        public PulseGenerator(string compositionName, double sectionLengthSeconds, int numSections, short channels) : base(Settings.Instance.PulseFrequency.Quiescent, sectionLengthSeconds, numSections, channels)
+        public PulseGenerator(ChannelSettingsModel channelSettings) :
+            base(channelSettings.PulseFrequency.Quiescent, channelSettings.Sections.TotalLength.TotalSeconds, channelSettings.NumSections(), channels: 2)
         {
-            this.compositionName = compositionName;
-            this.sectionsThatAreBreaks = MakeBreaks(numSections).ToArray();
+            this.sectionsThatAreBreaks = MakeBreaks(channelSettings).ToArray();
+            this.channelSettings = channelSettings;
         }
 
-        private static IEnumerable<int> MakeBreaks(int numSections)
+        private static IEnumerable<int> MakeBreaks(ChannelSettingsModel channelSettings)
         {
             int? lastBreakSection = null;
+            var numSections = channelSettings.NumSections();
             do
             {
                 var minTime = lastBreakSection == null ?
-                    (Settings.Instance.Breaks.MinTimeSinceStartOfTrack) :
-                    ((lastBreakSection.Value + 1) * Settings.Instance.Sections.TotalLength) + Settings.Instance.Breaks.MinTimeBetweenBreaks;
+                    (channelSettings.Breaks.MinTimeSinceStartOfTrack) :
+                    ((lastBreakSection.Value + 1) * channelSettings.Sections.TotalLength) + channelSettings.Breaks.MinTimeBetweenBreaks;
                 //add 1 to lastBreakSection because we want the time since the END of that section
-                var maxTime = minTime + Settings.Instance.Breaks.MaxTimeBetweenBreaks;
+                var maxTime = minTime + channelSettings.Breaks.MaxTimeBetweenBreaks;
                 var breakTime = minTime + (Randomizer.GetRandom() * (maxTime - minTime));
-                lastBreakSection = (int)(breakTime / Settings.Instance.Sections.TotalLength);
+                lastBreakSection = (int)(breakTime / channelSettings.Sections.TotalLength);
                 yield return lastBreakSection.Value;
             } while (lastBreakSection.Value <= numSections);
         }
@@ -38,10 +40,10 @@ namespace wavegenerator
 
         public TabletopParams GetBreakParams(int section) => breakParamsCache.GetOrAdd(section, s =>
         {
-            var breakLength = Settings.Instance.Breaks.MinLength + (Settings.Instance.Breaks.MaxLength - Settings.Instance.Breaks.MinLength) * Randomizer.GetRandom();
+            var breakLength = channelSettings.Breaks.MinLength + (channelSettings.Breaks.MaxLength - channelSettings.Breaks.MinLength) * Randomizer.GetRandom();
             var p = new TabletopParams
             {
-                RampLength = Settings.Instance.Breaks.RampLength.TotalSeconds,
+                RampLength = channelSettings.Breaks.RampLength.TotalSeconds,
                 TopLength = breakLength.TotalSeconds,
                 RampsUseSin2 = true
             };
@@ -54,7 +56,7 @@ namespace wavegenerator
             double baseA = base.Amplitude(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
             //first apply wetness,
-            double wetness = Wetness(t, n);
+            double wetness = Wetness(t, n, channel);
             double apos = (baseA + 1) / 2; //base amplitude, always positive - but with proper curves unlike abs
             double dryness = 1 - wetness;
             double a = 1 - dryness * apos;
@@ -74,98 +76,95 @@ namespace wavegenerator
             return a_res;
         }
 
-        protected override TabletopParams CreateFeatureParamsForSection(int section)
+        protected override TabletopParams CreateFeatureParamsForSection(SectionId section)
         {
-            if (IsBreak(section)) return new TabletopParams { RampLength = 0, TopLength = 0, RampsUseSin2 = false };//don't apply a table top if we're on a break
+            if (IsBreak(section.Section)) return new TabletopParams { RampLength = 0, TopLength = 0, RampsUseSin2 = false };//don't apply a table top if we're on a break
 
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
-            double progression = ((float)section + 1) / numSections; // <= 1
+            double progression = ((float)section.Section + 1) / numSections; // <= 1
             var isTabletop = Probability.Resolve(
                 Randomizer.GetRandom(),
-                Settings.Instance.Sections.ChanceOfFeature,
+                channelSettings.Sections.ChanceOfFeature,
                 true);
             if (isTabletop)
             {
                 //if it's a tabletop:
                 double topLength =
-                    Settings.Instance.Sections.FeatureLengthVariance.ProportionAlong(progression,
-                        Settings.Instance.Sections.MinFeatureLength.TotalSeconds,
-                        Settings.Instance.Sections.MaxFeatureLength.TotalSeconds);
+                    channelSettings.Sections.FeatureLengthVariance.ProportionAlong(progression,
+                        channelSettings.Sections.MinFeatureLength.TotalSeconds,
+                        channelSettings.Sections.MaxFeatureLength.TotalSeconds);
                 double maxRampLength = (sectionLengthSeconds - topLength) / 2;
-                if (Settings.Instance.Sections.MinRampLength.TotalSeconds > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
+                if (channelSettings.Sections.MinRampLength.TotalSeconds > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
 
                 // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
                 double rampLength =
-                    Settings.Instance.Sections.RampLengthVariance.ProportionAlong(progression,
-                        Settings.Instance.Sections.MaxRampLength.TotalSeconds,
-                        Settings.Instance.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
+                    channelSettings.Sections.RampLengthVariance.ProportionAlong(progression,
+                        channelSettings.Sections.MaxRampLength.TotalSeconds,
+                        channelSettings.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
                 var result = new TabletopParams
                 {
                     RampLength = rampLength,
                     TopLength = topLength,
                     RampsUseSin2 = true
                 };
-                File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {section} is a tabletop with length {result.TopLength}, rampLength = {result.RampLength}" });
                 return result;
             }
             else
             {
-                File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {section} is not a tabletop" });
                 var result = new TabletopParams();
                 return result;
             }
         }
 
-        protected override double CreateTopFrequency(int section)
+        protected override double CreateTopFrequency(SectionId section)
         {
-            double progression = ((float)section) / numSections; // <= 1
+            double progression = ((float)section.Section) / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
             var isRise = Probability.Resolve(
                 Randomizer.GetRandom(),
-                Settings.Instance.PulseFrequency.ChanceOfHigh, true);
-            double frequencyLimit = isRise ? Settings.Instance.PulseFrequency.High : Settings.Instance.PulseFrequency.Low;
-            double topFrequency = Settings.Instance.PulseFrequency.Variation.ProportionAlong(progression,
+                channelSettings.PulseFrequency.ChanceOfHigh, true);
+            double frequencyLimit = isRise ? channelSettings.PulseFrequency.High : channelSettings.PulseFrequency.Low;
+            double topFrequency = channelSettings.PulseFrequency.Variation.ProportionAlong(progression,
                 baseFrequency,
                 frequencyLimit);
             if (topFrequency <= 0)
                 throw new InvalidOperationException("TopFrequency must be > 0");
 
-            File.AppendAllLines($"{compositionName}.report.txt", new[] { $"Section {section} (at {TimeSpan.FromSeconds(section * sectionLengthSeconds)} using top frequency of {topFrequency}"});
             return topFrequency;
         }
 
-        private readonly ConcurrentDictionary<int, double> wetnessCache = new ConcurrentDictionary<int, double>();
-        private readonly string compositionName;
+        private readonly ConcurrentDictionary<SectionId, double> wetnessCache = new ConcurrentDictionary<SectionId, double>();
+        private readonly ChannelSettingsModel channelSettings;
 
-        private double Wetness(double t, int n)
+        private double Wetness(double t, int n, int channel)
         {
             // rise in a sin^2 fashion from MinWetness to MaxWetness
             int section = Section(n);
+            var sectionId = new SectionId(section, channel);
             double ts = t - (section * sectionLengthSeconds); //time through the current section
 
-            double maxWetnessForSection = wetnessCache.GetOrAdd(section, s =>
+            double maxWetnessForSection = wetnessCache.GetOrAdd(new SectionId(section, channel), s =>
             {
-                double progression = ((float)s + 1) / numSections; // <= 1
-                double maxWetness = Settings.Instance.Wetness.Variation.ProportionAlong(progression,
-                    Settings.Instance.Wetness.Minimum,
-                    Settings.Instance.Wetness.Maximum);
-                File.AppendAllLines($"{compositionName}.report.txt", new[] { $"The max wetness for section {s} is {maxWetness}" });
+                double progression = ((float)s.Section + 1) / numSections; // <= 1
+                double maxWetness = channelSettings.Wetness.Variation.ProportionAlong(progression,
+                    channelSettings.Wetness.Minimum,
+                    channelSettings.Wetness.Maximum);
                 return maxWetness;
             });
 
             double wetness;
-            if (Settings.Instance.Wetness.LinkToFeature)
+            if (channelSettings.Wetness.LinkToFeature)
             {
-                var p = GetTabletopParamsBySection(section);
-                wetness = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, Settings.Instance.Wetness.Minimum, maxWetnessForSection, p);
+                var p = GetTabletopParamsBySection(sectionId);
+                wetness = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, channelSettings.Wetness.Minimum, maxWetnessForSection, p);
             }
             else
             {
                 double ps = ts / sectionLengthSeconds; // progression through section
                 double x = ps * Math.PI;// max wetness in the middle (x = pi/2)
-                wetness = Settings.Instance.Wetness.Minimum +
-                    Math.Pow(Math.Sin(x), 2) * (maxWetnessForSection - Settings.Instance.Wetness.Minimum);
+                wetness = channelSettings.Wetness.Minimum +
+                    Math.Pow(Math.Sin(x), 2) * (maxWetnessForSection - channelSettings.Wetness.Minimum);
             }
             return wetness;
         }

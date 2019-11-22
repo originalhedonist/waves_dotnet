@@ -19,28 +19,23 @@ namespace wavegenerator
         {
             try
             {
-                var settingsFile = args.FirstOrDefault();
-                var dir = Environment.CurrentDirectory;
-                if (settingsFile == null || !File.Exists(settingsFile))
+                if (args.Length == 0)
                 {
                     var defaultSettingsFile = "default.settings.json";
                     await File.WriteAllTextAsync(defaultSettingsFile, JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
                     await Console.Out.WriteLineAsync($"No settings file passed, or the file does not exist.\nThe default settings have been written to {defaultSettingsFile}.\nPlease copy and modify this, then pass the modified file to the program on the command line.");
                 }
+                else if(args.Length > 2)
+                {
+                    throw new InvalidOperationException($"Too many files passed. Please only pass one file.");
+                }
                 else
                 {
-                    var newSettings = JObject.Parse(await File.ReadAllTextAsync(settingsFile));
-                    var existingSettings = JObject.FromObject(Settings.Instance);
-                    existingSettings.Merge(newSettings, new JsonMergeSettings
-                    {
-                        MergeNullValueHandling = MergeNullValueHandling.Ignore,
-                        MergeArrayHandling = MergeArrayHandling.Replace
-                    });
-                    Settings.Instance = existingSettings.ToObject<Settings>();
-                    var validationContext = new ValidationContext(Settings.Instance);
-                    Validator.ValidateObject(Settings.Instance, validationContext, true);
-                    ConsoleWriter.WriteLine("Settings are all valid", ConsoleColor.Green);
-                    return;
+                    var filePath = args.Single();
+
+                    Settings.Instance = LoadAndValidateSettings(filePath);
+
+                    //return;
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
                         .Select(i => WriteFile(i))
@@ -56,17 +51,18 @@ namespace wavegenerator
             }
         }
 
+        private static Settings LoadAndValidateSettings(string filePath)
+        {
+            var newSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(filePath));
+            Validator.ValidateObject(newSettings, new ValidationContext(newSettings));
+            return newSettings;
+        }
+
         private static async Task WriteFile(int uniqueifier)
         {
             var compositionName = $"{GetRandomName()}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
-            var pulseGenerator = new PulseGenerator(
-                compositionName,
-                sectionLengthSeconds: Settings.Instance.Sections.TotalLength.TotalSeconds,
-                numSections: Settings.Instance.NumSections,
-                channels: 2);
-            var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerator,
-                Settings.Instance.CarrierFrequency.Left,
-                Settings.Instance.CarrierFrequency.Right);
+            var pulseGenerators = Settings.Instance.ChannelSettings.Select(c => new PulseGenerator(c)).ToArray();
+            var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerators);
 
             var constantsStrings = typeof(Settings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();
@@ -147,27 +143,4 @@ namespace wavegenerator
             return randomNameCased;
         }
     }
-
-    public class TabletopTest : TabletopGenerator
-    {
-        public TabletopTest(double baseFrequency, int sectionLengthSeconds, int numSections, short channels) : base(baseFrequency, sectionLengthSeconds, numSections, channels)
-        {
-        }
-
-        protected override TabletopParams CreateFeatureParamsForSection(int section)
-        {
-            return new TabletopParams
-            {
-                RampLength = 1,
-                TopLength = 4,
-                RampsUseSin2 = true
-            };
-        }
-
-        protected override double CreateTopFrequency(int section)
-        {
-            return 261.6 * 2;
-        }
-    }
-
 }

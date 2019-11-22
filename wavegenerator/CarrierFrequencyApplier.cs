@@ -4,22 +4,22 @@ namespace wavegenerator
 {
     public class CarrierFrequencyApplier : FrequencyFunctionWaveFile
     {
-        private readonly WaveFile pattern;
         private readonly double carrierFrequencyLeft;
         private readonly double carrierFrequencyRight;
+        private readonly WaveFile[] patterns;
 
-        public CarrierFrequencyApplier(WaveFile pattern, double carrierFrequencyLeft, double carrierFrequencyRight) :
-            base(pattern.LengthSeconds, pattern.Channels, phaseShiftChannels: Settings.Instance.PhaseShiftCarrier)
+        public CarrierFrequencyApplier(WaveFile[] patterns) : 
+            base(lengthSeconds: Settings.Instance.TrackLength.TotalSeconds,
+                channels: Settings.Instance.NumberOfChannels,
+                phaseShiftChannels: Settings.Instance.PhaseShiftCarrier)
         {
-            this.pattern = pattern;
-            this.carrierFrequencyLeft = carrierFrequencyLeft;
-            this.carrierFrequencyRight = carrierFrequencyRight;
+            this.patterns = patterns;
         }
 
         public override double Amplitude(double t, int n, int channel)
         {
             double carrierAmplitude = base.Amplitude(t, n, channel);
-            double patternAmplitude = Math.Abs(pattern.Amplitude(t, n, channel));
+            double patternAmplitude = Math.Abs(patterns[channel].Amplitude(t, n, channel));
             return carrierAmplitude * patternAmplitude;
         }
 

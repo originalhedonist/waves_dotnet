@@ -24,9 +24,9 @@ namespace wavegenerator
         protected readonly double sectionLengthSeconds;
         protected readonly int numSections;
 
-        protected abstract double CreateTopFrequency(int section);
-        protected abstract TabletopParams CreateFeatureParamsForSection(int section);
-        protected TabletopParams GetTabletopParamsBySection(int section) => paramsCache.GetOrAdd(section, s =>
+        protected abstract double CreateTopFrequency(SectionId section);
+        protected abstract TabletopParams CreateFeatureParamsForSection(SectionId section);
+        protected TabletopParams GetTabletopParamsBySection(SectionId section) => paramsCache.GetOrAdd(section, s =>
         {
             var p = CreateFeatureParamsForSection(section);
             ValidateParams(p);
@@ -36,15 +36,16 @@ namespace wavegenerator
         //should only be called once, and cached.
         // It might (and very probably will) do 'Random' operations, so want the same one for the whole segment!
 
-        private readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
-        private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
+        private readonly ConcurrentDictionary<SectionId, TabletopParams> paramsCache = new ConcurrentDictionary<SectionId, TabletopParams>();
+        private readonly ConcurrentDictionary<SectionId, double> topFrequencyCache = new ConcurrentDictionary<SectionId, double>();
         protected int Section(int n) => (int)(((float)n / N) * numSections);
         protected override double Frequency(double t, int n, int channel)
         {
             int section = Section(n);
-            var p = GetTabletopParamsBySection(section);
+            var sectionId = new SectionId(section, channel);
+            var p = GetTabletopParamsBySection(sectionId);
             
-            var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
+            var topFrequency = topFrequencyCache.GetOrAdd(sectionId, CreateTopFrequency);
             if (topFrequency <= 0) throw new InvalidOperationException("TopFrequency must be >= 0");
 
             double ts = t - (section * sectionLengthSeconds); //time through the current section
