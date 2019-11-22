@@ -33,7 +33,6 @@ namespace wavegenerator
             } while (lastBreakSection.Value <= numSections);
         }
 
-        private readonly ConcurrentDictionary<int, bool> isBreakCache = new ConcurrentDictionary<int, bool>();
         private readonly ConcurrentDictionary<int, TabletopParams> breakParamsCache = new ConcurrentDictionary<int, TabletopParams>();
 
         private bool IsBreak(int section) => sectionsThatAreBreaks.Contains(section);

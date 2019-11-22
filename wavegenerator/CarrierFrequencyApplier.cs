@@ -17,13 +17,13 @@ namespace wavegenerator
         public override double Amplitude(double t, int n, int channel)
         {
             double carrierAmplitude = base.Amplitude(t, n, channel);
-            double patternAmplitude = Math.Abs(patterns[channel].Amplitude(t, n, channel));
+            double patternAmplitude = Math.Abs(patterns.ForChannel(channel).Amplitude(t, n, channel));
             return carrierAmplitude * patternAmplitude;
         }
 
         protected override double Frequency(double t, int n, int channel)
         {
-            ChannelSettingsModel channelSettingsModel = Settings.Instance.Channel(n);
+            ChannelSettingsModel channelSettingsModel = Settings.Instance.ChannelSettings.ForChannel(channel);
             return channel == 0 ?
                 channelSettingsModel.CarrierFrequency.Left :
                 channelSettingsModel.CarrierFrequency.Right;

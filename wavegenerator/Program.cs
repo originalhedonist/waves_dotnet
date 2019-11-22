@@ -35,7 +35,7 @@ namespace wavegenerator
 
                     Settings.Instance = LoadAndValidateSettings(filePath);
 
-                    return;
+                    //return;
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
                         .Select(i => WriteFile(i))

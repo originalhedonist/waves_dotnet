@@ -44,9 +44,14 @@ namespace wavegenerator
         [ValidateChannelSettings]
         public ChannelSettingsModel[] ChannelSettings { get; set; } = new[] { new ChannelSettingsModel() };// default one - but there can be two, to be unlinked
 
-        public ChannelSettingsModel Channel(int channel) => ChannelSettings.Length > 1 ? ChannelSettings[channel] : ChannelSettings.Single();
-        public int NumSections(int channel) => (int)(TrackLength / Channel(channel).Sections.TotalLength);
+        public int NumSections(int channel) => (int)(TrackLength / ChannelSettings.ForChannel(channel).Sections.TotalLength);
     }
+
+    public static class SettingsExtensions
+    {
+        public static T ForChannel<T>(this T[] items, int channel) => Settings.Instance.ChannelSettings.Length > 1 ? items[channel] : items.Single();
+    }
+
 
     public class ValidateChannelSettings : ValidationAttribute
     {
