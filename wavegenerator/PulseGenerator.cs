@@ -75,13 +75,13 @@ namespace wavegenerator
             return a_res;
         }
 
-        protected override TabletopParams CreateFeatureParamsForSection(SectionId section)
+        protected override TabletopParams CreateFeatureParamsForSection(int section)
         {
-            if (IsBreak(section.Section)) return new TabletopParams { RampLength = 0, TopLength = 0, RampsUseSin2 = false };//don't apply a table top if we're on a break
+            if (IsBreak(section)) return new TabletopParams { RampLength = 0, TopLength = 0, RampsUseSin2 = false };//don't apply a table top if we're on a break
 
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
-            double progression = ((float)section.Section + 1) / numSections; // <= 1
+            double progression = ((float)section + 1) / numSections; // <= 1
             var isTabletop = Probability.Resolve(
                 Randomizer.GetRandom(),
                 channelSettings.Sections.ChanceOfFeature,
@@ -116,9 +116,9 @@ namespace wavegenerator
             }
         }
 
-        protected override double CreateTopFrequency(SectionId section)
+        protected override double CreateTopFrequency(int section)
         {
-            double progression = ((float)section.Section) / numSections; // <= 1
+            double progression = ((float)section) / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
             var isRise = Probability.Resolve(
                 Randomizer.GetRandom(),
@@ -133,19 +133,18 @@ namespace wavegenerator
             return topFrequency;
         }
 
-        private readonly ConcurrentDictionary<SectionId, double> wetnessCache = new ConcurrentDictionary<SectionId, double>();
+        private readonly ConcurrentDictionary<int, double> wetnessCache = new ConcurrentDictionary<int, double>();
         private readonly ChannelSettingsModel channelSettings;
 
         private double Wetness(double t, int n, int channel)
         {
             // rise in a sin^2 fashion from MinWetness to MaxWetness
             int section = Section(n);
-            var sectionId = new SectionId(section, channel);
             double ts = t - (section * sectionLengthSeconds); //time through the current section
 
-            double maxWetnessForSection = wetnessCache.GetOrAdd(new SectionId(section, channel), s =>
+            double maxWetnessForSection = wetnessCache.GetOrAdd(section, s =>
             {
-                double progression = ((float)s.Section + 1) / numSections; // <= 1
+                double progression = ((float)s + 1) / numSections; // <= 1
                 double maxWetness = channelSettings.Wetness.Variation.ProportionAlong(progression,
                     channelSettings.Wetness.Minimum,
                     channelSettings.Wetness.Maximum);
@@ -155,7 +154,7 @@ namespace wavegenerator
             double wetness;
             if (channelSettings.Wetness.LinkToFeature)
             {
-                var p = GetTabletopParamsBySection(sectionId);
+                var p = GetTabletopParamsBySection(section);
                 wetness = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, channelSettings.Wetness.Minimum, maxWetnessForSection, p);
             }
             else
