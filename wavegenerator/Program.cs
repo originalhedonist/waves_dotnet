@@ -22,7 +22,7 @@ namespace wavegenerator
                 if (args.Length == 0)
                 {
                     var defaultSettingsFile = "default.settings.json";
-                    await File.WriteAllTextAsync(defaultSettingsFile, JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
+                    await File.WriteAllTextAsync(defaultSettingsFile, JsonConvert.SerializeObject(Settings.Default, Formatting.Indented));
                     await Console.Out.WriteLineAsync($"No settings file passed, or the file does not exist.\nThe default settings have been written to {defaultSettingsFile}.\nPlease copy and modify this, then pass the modified file to the program on the command line.");
                 }
                 else if(args.Length > 2)
@@ -35,7 +35,7 @@ namespace wavegenerator
 
                     Settings.Instance = LoadAndValidateSettings(filePath);
 
-                    //return;
+                    return;
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
                         .Select(i => WriteFile(i))
@@ -54,7 +54,7 @@ namespace wavegenerator
         private static Settings LoadAndValidateSettings(string filePath)
         {
             var newSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(filePath));
-            Validator.ValidateObject(newSettings, new ValidationContext(newSettings));
+            Validator.ValidateObject(newSettings, new ValidationContext(newSettings), true);
             return newSettings;
         }
 

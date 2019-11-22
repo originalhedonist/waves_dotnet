@@ -4,8 +4,6 @@ namespace wavegenerator
 {
     public class CarrierFrequencyApplier : FrequencyFunctionWaveFile
     {
-        private readonly double carrierFrequencyLeft;
-        private readonly double carrierFrequencyRight;
         private readonly WaveFile[] patterns;
 
         public CarrierFrequencyApplier(WaveFile[] patterns) : 
@@ -25,7 +23,10 @@ namespace wavegenerator
 
         protected override double Frequency(double t, int n, int channel)
         {
-            return channel == 0 ? carrierFrequencyLeft : carrierFrequencyRight;
+            ChannelSettingsModel channelSettingsModel = Settings.Instance.Channel(n);
+            return channel == 0 ?
+                channelSettingsModel.CarrierFrequency.Left :
+                channelSettingsModel.CarrierFrequency.Right;
         }
     }
 }

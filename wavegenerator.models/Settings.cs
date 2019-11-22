@@ -31,8 +31,8 @@ namespace wavegenerator
 #else
         public TimeSpan TrackLength {get; set;} = TimeSpan.FromMinutes(5);
 #endif
-        [Range(1,2)]
-        public short NumberOfChannels { get; set; }
+        [Range(1, 2)]
+        public short NumberOfChannels { get; set; } = 2;
 
         [Description("Whether the right channel's carrier signal will be phase shifted from the left's")]
         public bool PhaseShiftCarrier { get; set; } = true;
@@ -42,7 +42,7 @@ namespace wavegenerator
 
         [ValidateObject]
         [ValidateChannelSettings]
-        public ChannelSettingsModel[] ChannelSettings { get; set; }
+        public ChannelSettingsModel[] ChannelSettings { get; set; } = new[] { new ChannelSettingsModel() };// default one - but there can be two, to be unlinked
 
         public ChannelSettingsModel Channel(int channel) => ChannelSettings.Length > 1 ? ChannelSettings[channel] : ChannelSettings.Single();
         public int NumSections(int channel) => (int)(TrackLength / Channel(channel).Sections.TotalLength);

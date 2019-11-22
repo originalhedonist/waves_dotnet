@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,7 +13,18 @@ namespace wavegenerator.models
             var results = new List<ValidationResult>();
             var context = new ValidationContext(value, null, null);
 
-            Validator.TryValidateObject(value, context, results, true);
+            if(value is IEnumerable e)
+            {
+                foreach(var obj in e)
+                {
+                    Validator.TryValidateObject(obj, new ValidationContext(obj), results, true);
+                }
+            }
+            else
+            {
+                Validator.TryValidateObject(value, context, results, true);
+            }
+            
 
             if (results.Count != 0)
             {
