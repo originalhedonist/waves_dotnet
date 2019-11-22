@@ -1,0 +1,110 @@
+{
+  "Randomization": true,
+  "ConvertToMp3": true,
+  "NumFiles": 1,
+  "Naming": "RandomFemaleName",
+  "TrackLength": "00:05:00",
+  "NumberOfChannels": 2,
+  "PhaseShiftCarrier": true,
+  "PhaseShiftPulses": true,
+  "ChannelSettings": [
+    {
+      "Sections": {
+        "TotalLength": "00:00:30",
+        "MinFeatureLength": "00:00:05",
+        "MaxFeatureLength": "00:00:15",
+        "FeatureLengthVariance": {
+          "Randomness": 1.0,
+          "Progression": 0.5
+        },
+        "MinRampLength": "00:00:05",
+        "MaxRampLength": "00:00:07.5",
+        "RampLengthVariance": {
+          "Randomness": 0.2,
+          "Progression": 0.8
+        },
+        "ChanceOfFeature": 0.8
+      },
+      "CarrierFrequency": {
+        "Left": 600.0,
+        "Right": 600.0
+      },
+      "PulseFrequency": {
+        "Quiescent": 0.5,
+        "Low": 0.2,
+        "High": 1.2,
+        "ChanceOfHigh": 0.8,
+        "Variation": {
+          "Randomness": 0.5,
+          "Progression": 0.8
+        }
+      },
+      "Wetness": {
+        "LinkToFeature": false,
+        "Minimum": 0.4,
+        "Maximum": 0.9,
+        "Variation": {
+          "Randomness": 0.2,
+          "Progression": 1.5
+        }
+      },
+      "Breaks": {
+        "MinTimeSinceStartOfTrack": "00:10:00",
+        "MinTimeBetweenBreaks": "00:05:00",
+        "MaxTimeBetweenBreaks": "00:30:00",
+        "MinLength": "00:00:02",
+        "MaxLength": "00:00:25",
+        "RampLength": "00:00:05"
+      }
+    },
+    {
+      "Sections": {
+        "TotalLength": "00:00:30",
+        "MinFeatureLength": "00:00:05",
+        "MaxFeatureLength": "00:00:15",
+        "FeatureLengthVariance": {
+          "Randomness": 1.0,
+          "Progression": 0.5
+        },
+        "MinRampLength": "00:00:05",
+        "MaxRampLength": "00:00:07.5",
+        "RampLengthVariance": {
+          "Randomness": 0.2,
+          "Progression": 0.8
+        },
+        "ChanceOfFeature": 0.8
+      },
+      "CarrierFrequency": {
+        "Left": 600.0,
+        "Right": 600.0
+      },
+      "PulseFrequency": {
+        "Quiescent": 0.5,
+        "Low": 0.2,
+        "High": 1.2,
+        "ChanceOfHigh": 0.8,
+        "Variation": {
+          "Randomness": 0.5,
+          "Progression": 0.8
+        }
+      },
+      "Wetness": {
+        "LinkToFeature": false,
+        "Minimum": 0.4,
+        "Maximum": 0.9,
+        "Variation": {
+          "Randomness": 0.2,
+          "Progression": 1.5
+        }
+      },
+      "Breaks": {
+        "MinTimeSinceStartOfTrack": "00:10:00",
+        "MinTimeBetweenBreaks": "00:05:00",
+        "MaxTimeBetweenBreaks": "00:30:00",
+        "MinLength": "00:00:02",
+        "MaxLength": "00:00:25",
+        "RampLength": "00:00:05"
+      }
+    }
+  ]
+}
