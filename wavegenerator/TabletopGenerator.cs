@@ -12,8 +12,7 @@ namespace wavegenerator
 
     public abstract class TabletopGenerator : FrequencyFunctionWaveFile
     {
-        public TabletopGenerator(double baseFrequency, double sectionLengthSeconds, int numSections, short channels) : 
-            base(sectionLengthSeconds * numSections, channels, phaseShiftChannels: Settings.Instance.PhaseShiftPulses)
+        public TabletopGenerator(double baseFrequency, double sectionLengthSeconds, int numSections) : base(phaseShiftChannels: Settings.Instance.PhaseShiftPulses)
         {
             this.baseFrequency = baseFrequency;
             this.sectionLengthSeconds = sectionLengthSeconds;

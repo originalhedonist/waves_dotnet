@@ -40,7 +40,8 @@ namespace wavegenerator
         public bool PhaseShiftPulses { get; set; }
 
         [ValidateObject]
-        [ValidateChannelSettings]
+        [ValidateChannelCount]
+        [ValidateRiserLength]
         public ChannelSettingsModel[] ChannelSettings { get; set; } = new[] {
             new ChannelSettingsModel(),
             new ChannelSettingsModel()

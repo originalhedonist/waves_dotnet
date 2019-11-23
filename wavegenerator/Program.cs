@@ -62,8 +62,8 @@ namespace wavegenerator
         private static async Task WriteFile(int uniqueifier)
         {
             var compositionName = $"{GetRandomName()}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
-            var pulseGenerators = Settings.Instance.ChannelSettings.Select(c => new PulseGenerator(c)).ToArray();
-            var carrierFrequencyApplier = new CarrierFrequencyApplier(pulseGenerators);
+            var patterns = Settings.Instance.ChannelSettings.Select(c => new RiseApplier(c.Rises, new PulseGenerator(c))).ToArray();
+            var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
 
             var constantsStrings = typeof(Settings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
                 .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();

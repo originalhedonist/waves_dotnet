@@ -5,7 +5,7 @@ namespace wavegenerator
     {
         private readonly double frequency;
 
-        public ConstantFrequencyWaveFile(double frequency, int lengthSeconds, short channels) : base(lengthSeconds, channels)
+        public ConstantFrequencyWaveFile(double frequency)
         {
             this.frequency = frequency;
         }

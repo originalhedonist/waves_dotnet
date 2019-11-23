@@ -5,8 +5,8 @@ namespace wavegenerator
     public static class Randomizer
     {
         public static Random random = new Random();
-        public static double GetRandom() => 
-            Settings.Instance.Randomization ? random.NextDouble() : 1.0;
+        public static double GetRandom(double defaultValue = 1.0) => 
+            Settings.Instance.Randomization ? random.NextDouble() : defaultValue;
 
         public static double MakeValue(this VarianceModel variance, double progress)
         {

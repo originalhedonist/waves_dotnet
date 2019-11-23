@@ -10,7 +10,7 @@ namespace wavegenerator
     {
         private readonly int[] sectionsThatAreBreaks;
         public PulseGenerator(ChannelSettingsModel channelSettings) :
-            base(channelSettings.PulseFrequency.Quiescent, channelSettings.Sections.TotalLength.TotalSeconds, channelSettings.NumSections(), channels: 2)
+            base(channelSettings.PulseFrequency.Quiescent, channelSettings.Sections.TotalLength.TotalSeconds, channelSettings.NumSections())
         {
             this.sectionsThatAreBreaks = MakeBreaks(channelSettings).ToArray();
             this.channelSettings = channelSettings;

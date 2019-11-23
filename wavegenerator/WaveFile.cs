@@ -15,14 +15,14 @@ namespace wavegenerator
         protected readonly int overallFileSize;
         protected readonly int N;
 
-        public WaveFile(double lengthSeconds, short channels)
+        public WaveFile()
         {
-            this.LengthSeconds = lengthSeconds;
-            this.Channels = channels;
-            this.N = (int)(lengthSeconds * SamplingFrequency);
-            this.overallDataSize = N * channels * bytesPerSample;
+            this.LengthSeconds = Settings.Instance.TrackLength.TotalSeconds;
+            this.Channels = Settings.Instance.NumberOfChannels;
+            this.N = (int)(this.LengthSeconds * SamplingFrequency);
+            this.overallDataSize = N * this.Channels * bytesPerSample;
             this.overallFileSize = this.overallDataSize + 44;
-            if (channels < 1 || channels > 2)
+            if (this.Channels < 1 || this.Channels > 2)
             {
                 throw new InvalidOperationException("Channels must be either 1 or 2.");
             }
