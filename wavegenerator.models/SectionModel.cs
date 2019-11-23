@@ -6,29 +6,6 @@ namespace wavegenerator
 {
     public class SectionModel
     {
-        public static SectionModel Default() => new SectionModel
-        {
-            TotalLength = TimeSpan.FromSeconds(30),
-
-            MinFeatureLength = TimeSpan.FromSeconds(5),
-            MaxFeatureLength = TimeSpan.FromSeconds(20),
-            FeatureLengthVariance = new VarianceModel
-            {
-                Progression = 0.5,
-                Randomness = 1
-            },
-
-            MinRampLength = TimeSpan.FromSeconds(1),
-            MaxRampLength = TimeSpan.FromSeconds(5),
-            RampLengthVariance = new VarianceModel
-            {
-                Progression = 0.8,
-                Randomness = 0.2
-            },
-
-            ChanceOfFeature = 0.8
-        };
-
         [Range(typeof(TimeSpan), "00:00:05", "13:31:35")]
         public TimeSpan TotalLength { get; set;}
 

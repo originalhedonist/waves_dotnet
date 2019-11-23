@@ -6,15 +6,6 @@ namespace wavegenerator
 {
     public class PulseFrequencyModel
     {
-        public static PulseFrequencyModel Default() => new PulseFrequencyModel
-        {
-            ChanceOfHigh = 0.8,
-            Quiescent = 0.5,
-            Low = 0.2,
-            High = 1.2,
-            Variation = new VarianceModel { Progression = 0.8, Randomness = 0.5 }
-        };
-
         [Range(0.001, 44100)]
         public double Quiescent { get; set; }
 

@@ -19,6 +19,8 @@ namespace wavegenerator
 
         private static TimeSpan[] MakeTimes(RiserModel riserModel)
         {
+            if (riserModel == null) return new TimeSpan[] { };
+
             var riseIndexes = Enumerable.Range(0, riserModel.Count);
             var totalAllowedTime = Settings.Instance.TrackLength - riserModel.EarliestTime;
             var times = riseIndexes.Select(s =>
@@ -37,23 +39,29 @@ namespace wavegenerator
         {
             //Inclusive at start, exclusive at end, always have 't' at LHS for consistency.
             double proportionOfPattern;
-
-            var numRisesAfter = riseStartTimes.Count(rst => t < rst.TotalSeconds); //wholly after, i.e. yet to start
-            var maxAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter);
-            //are we in a rise?
-            var spanning = riseStartTimes.Where(rst => t >= rst.TotalSeconds && t < (rst + riseModel.LengthEach).TotalSeconds).ToArray(); //FirstOrDefault doesn't return null as TimeSpan is a struct
-            if (spanning.Any())
+            if (riseStartTimes.Length == 0)
             {
-                var riseStartTime = spanning.First();
-                double proportionAlongRise = (t - riseStartTime.TotalSeconds) / riseModel.LengthEach.TotalSeconds;
-                if(proportionAlongRise <0 || proportionAlongRise > 1) throw new InvalidOperationException($"Invalid proportionAlongRise, should be between 0 and 1"); // sanity check
-                double proportionUpRise = Math.Pow(Math.Sin(proportionAlongRise * Math.PI / 2), 2);//sin^2 from 0 to 1 to give a smooth rise
-                double minAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter + 1);
-                proportionOfPattern = minAmplitude + (maxAmplitude - minAmplitude) * proportionUpRise;
+                proportionOfPattern = 1;
             }
             else
             {
-                proportionOfPattern = maxAmplitude;
+                var numRisesAfter = riseStartTimes.Count(rst => t < rst.TotalSeconds); //wholly after, i.e. yet to start
+                var maxAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter);
+                //are we in a rise?
+                var spanning = riseStartTimes.Where(rst => t >= rst.TotalSeconds && t < (rst + riseModel.LengthEach).TotalSeconds).ToArray(); //FirstOrDefault doesn't return null as TimeSpan is a struct
+                if (spanning.Any())
+                {
+                    var riseStartTime = spanning.First();
+                    double proportionAlongRise = (t - riseStartTime.TotalSeconds) / riseModel.LengthEach.TotalSeconds;
+                    if (proportionAlongRise < 0 || proportionAlongRise > 1) throw new InvalidOperationException($"Invalid proportionAlongRise, should be between 0 and 1"); // sanity check
+                    double proportionUpRise = Math.Pow(Math.Sin(proportionAlongRise * Math.PI / 2), 2);//sin^2 from 0 to 1 to give a smooth rise
+                    double minAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter + 1);
+                    proportionOfPattern = minAmplitude + (maxAmplitude - minAmplitude) * proportionUpRise;
+                }
+                else
+                {
+                    proportionOfPattern = maxAmplitude;
+                }
             }
 
             return proportionOfPattern * pattern.Amplitude(t, n, channel);

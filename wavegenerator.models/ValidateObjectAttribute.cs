@@ -11,20 +11,22 @@ namespace wavegenerator.models
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
             var results = new List<ValidationResult>();
-            var context = new ValidationContext(value, null, null);
-
-            if(value is IEnumerable e)
+            if (value != null) // if it is null, then [Required] should pick it up, if it's unacceptable for it to be null
             {
-                foreach(var obj in e)
+                var context = new ValidationContext(value, null, null);
+
+                if (value is IEnumerable e)
                 {
-                    Validator.TryValidateObject(obj, new ValidationContext(obj), results, true);
+                    foreach (var obj in e)
+                    {
+                        Validator.TryValidateObject(obj, new ValidationContext(obj), results, true);
+                    }
+                }
+                else
+                {
+                    Validator.TryValidateObject(value, context, results, true);
                 }
             }
-            else
-            {
-                Validator.TryValidateObject(value, context, results, true);
-            }
-            
 
             if (results.Count != 0)
             {

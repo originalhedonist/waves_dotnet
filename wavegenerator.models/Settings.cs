@@ -13,28 +13,28 @@ namespace wavegenerator
 
         [Description("Whether to use randomization")]
 #if DEBUG
-        public bool Randomization { get; set; } = false;
+        public bool Randomization { get; set; }
 #else
-        public bool Randomization {get; set;} = true;
+        public bool Randomization {get; set;};
 #endif
 
-        public bool ConvertToMp3 { get; set; } = true;
+        public bool ConvertToMp3 { get; set; }
 
-        public int NumFiles { get; set; } = 1;
+        public int NumFiles { get; set; }
 
-        public NamingConvention Naming { get; set; } = NamingConvention.RandomFemaleName;
+        public NamingConvention Naming { get; set; }
 
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
 #if DEBUG
-        public TimeSpan TrackLength { get; set; } = TimeSpan.FromSeconds(30);
+        public TimeSpan TrackLength { get; set; }
 #else
-        public TimeSpan TrackLength {get; set;} = TimeSpan.FromMinutes(5);
+        public TimeSpan TrackLength {get; set;}
 #endif
         [Range(1, 2)]
-        public short NumberOfChannels { get; set; } = 2;
+        public short NumberOfChannels { get; set; }
 
         [Description("Whether the right channel's carrier signal will be phase shifted from the left's")]
-        public bool PhaseShiftCarrier { get; set; } = true;
+        public bool PhaseShiftCarrier { get; set; }
 
         [Description("Whether the pulsing of the right channel will be phase-shifted from the left")]
         public bool PhaseShiftPulses { get; set; }
@@ -42,10 +42,7 @@ namespace wavegenerator
         [ValidateObject]
         [ValidateChannelCount]
         [ValidateRiserLength]
-        public ChannelSettingsModel[] ChannelSettings { get; set; } = new[] {
-            new ChannelSettingsModel(),
-            new ChannelSettingsModel()
-        };
+        public ChannelSettingsModel[] ChannelSettings { get; set; }
 
         public int NumSections(int channel) => (int)(TrackLength / ChannelSettings.ForChannel(channel).Sections.TotalLength);
     }

@@ -20,17 +20,20 @@ namespace wavegenerator
         {
             int? lastBreakSection = null;
             var numSections = channelSettings.NumSections();
-            do
+            if (channelSettings.Breaks != null)
             {
-                var minTime = lastBreakSection == null ?
-                    (channelSettings.Breaks.MinTimeSinceStartOfTrack) :
-                    ((lastBreakSection.Value + 1) * channelSettings.Sections.TotalLength) + channelSettings.Breaks.MinTimeBetweenBreaks;
-                //add 1 to lastBreakSection because we want the time since the END of that section
-                var maxTime = minTime + channelSettings.Breaks.MaxTimeBetweenBreaks;
-                var breakTime = minTime + (Randomizer.GetRandom() * (maxTime - minTime));
-                lastBreakSection = (int)(breakTime / channelSettings.Sections.TotalLength);
-                yield return lastBreakSection.Value;
-            } while (lastBreakSection.Value <= numSections);
+                do
+                {
+                    var minTime = lastBreakSection == null ?
+                        (channelSettings.Breaks.MinTimeSinceStartOfTrack) :
+                        ((lastBreakSection.Value + 1) * channelSettings.Sections.TotalLength) + channelSettings.Breaks.MinTimeBetweenBreaks;
+                    //add 1 to lastBreakSection because we want the time since the END of that section
+                    var maxTime = minTime + channelSettings.Breaks.MaxTimeBetweenBreaks;
+                    var breakTime = minTime + (Randomizer.GetRandom() * (maxTime - minTime));
+                    lastBreakSection = (int)(breakTime / channelSettings.Sections.TotalLength);
+                    yield return lastBreakSection.Value;
+                } while (lastBreakSection.Value <= numSections);
+            }
         }
 
         private readonly ConcurrentDictionary<int, TabletopParams> breakParamsCache = new ConcurrentDictionary<int, TabletopParams>();

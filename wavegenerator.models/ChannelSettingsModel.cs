@@ -11,22 +11,25 @@ namespace wavegenerator
         [Required]
         [SectionModelValidation(nameof(Sections))]
         [ValidateObject]
-        public SectionModel Sections { get; set; } = SectionModel.Default();
+        public SectionModel Sections { get; set; }
+
+        [Required]
+        [ValidateObject]
+        public CarrierFrequencyModel CarrierFrequency { get; set; }
+
+        [Required]
+        [ValidateObject]
+        public PulseFrequencyModel PulseFrequency { get; set; }
+
+        [Required]
+        [ValidateObject]
+        public WetnessModel Wetness { get; set; }
 
         [ValidateObject]
-        public CarrierFrequencyModel CarrierFrequency { get; set; } = CarrierFrequencyModel.Default();
+        public BreakModel Breaks { get; set; }
 
         [ValidateObject]
-        public PulseFrequencyModel PulseFrequency { get; set; } = PulseFrequencyModel.Default();
-
-        [ValidateObject]
-        public WetnessModel Wetness { get; set; } = WetnessModel.Default();
-
-        [ValidateObject]
-        public BreakModel Breaks { get; set; } = BreakModel.Default();
-
-        [ValidateObject]
-        public RiserModel Rises { get; set; } = RiserModel.Default();
+        public RiserModel Rises { get; set; }
     }
 
     public class ValidateChannelCount : ValidationAttribute

@@ -21,9 +21,7 @@ namespace wavegenerator
             {
                 if (args.Length == 0)
                 {
-                    var defaultSettingsFile = "default.settings.json";
-                    await File.WriteAllTextAsync(defaultSettingsFile, JsonConvert.SerializeObject(Settings.Default, Formatting.Indented));
-                    await Console.Out.WriteLineAsync($"No settings file passed, or the file does not exist.\nThe default settings have been written to {defaultSettingsFile}.\nPlease copy and modify this, then pass the modified file to the program on the command line.");
+                    await Console.Out.WriteLineAsync($"No settings file passed, or the file does not exist.\nPlease copy and modify one of the example settings files to <name>.settings.json, then pass the modified file to the program on the command line.");
                 }
                 else if(args.Length > 2)
                 {
@@ -65,9 +63,7 @@ namespace wavegenerator
             var patterns = Settings.Instance.ChannelSettings.Select(c => new RiseApplier(c.Rises, new PulseGenerator(c))).ToArray();
             var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
 
-            var constantsStrings = typeof(Settings).GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
-                .Select(f => $"{f.Name} = {f.GetValue(null)}").ToArray();
-            await File.WriteAllLinesAsync($"{compositionName}.parameters.txt", constantsStrings);
+            await File.WriteAllTextAsync($"{compositionName}.parameters.txt", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
             await Console.Out.WriteLineAsync($"Writing {compositionName}...");
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
             if (Settings.Instance.ConvertToMp3 && hasLame)
