@@ -12,11 +12,7 @@ namespace wavegenerator
         public static Settings Instance { get; set; }
 
         [Description("Whether to use randomization")]
-#if DEBUG
         public bool Randomization { get; set; }
-#else
-        public bool Randomization {get; set;}
-#endif
 
         public bool ConvertToMp3 { get; set; }
 
@@ -25,11 +21,8 @@ namespace wavegenerator
         public NamingConvention Naming { get; set; }
 
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
-#if DEBUG
         public TimeSpan TrackLength { get; set; }
-#else
-        public TimeSpan TrackLength {get; set;}
-#endif
+
         [Range(1, 2)]
         public short NumberOfChannels { get; set; }
 

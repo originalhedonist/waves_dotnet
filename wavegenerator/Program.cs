@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace wavegenerator
 {
@@ -21,7 +20,7 @@ namespace wavegenerator
             {
                 if (args.Length == 0)
                 {
-                    await Console.Out.WriteLineAsync($"No settings file passed, or the file does not exist.\nPlease copy and modify one of the example settings files to <name>.settings.json, then pass the modified file to the program on the command line.");
+                    await Console.Out.WriteLineAsync($"No settings file passed.\nPlease copy and modify one of the example settings files to <name>.settings.json, then pass the modified file to the program on the command line.");
                 }
                 else if(args.Length > 2)
                 {
@@ -33,7 +32,6 @@ namespace wavegenerator
 
                     Settings.Instance = LoadAndValidateSettings(filePath);
 
-                    //return;
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
                         .Select(i => WriteFile(i))
