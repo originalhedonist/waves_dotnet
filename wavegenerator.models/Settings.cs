@@ -15,7 +15,7 @@ namespace wavegenerator
 #if DEBUG
         public bool Randomization { get; set; }
 #else
-        public bool Randomization {get; set;};
+        public bool Randomization {get; set;}
 #endif
 
         public bool ConvertToMp3 { get; set; }
