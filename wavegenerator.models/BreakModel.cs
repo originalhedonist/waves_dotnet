@@ -5,7 +5,7 @@ namespace wavegenerator
 {
     public class BreakModel
     {
-        public static BreakModel Default = new BreakModel
+        public static BreakModel Default() => new BreakModel
         {
             MinTimeSinceStartOfTrack = TimeSpan.FromMinutes(10),
             MinLength = TimeSpan.FromSeconds(2),

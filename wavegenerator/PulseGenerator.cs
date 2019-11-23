@@ -93,13 +93,13 @@ namespace wavegenerator
                     channelSettings.Sections.FeatureLengthVariance.ProportionAlong(progression,
                         channelSettings.Sections.MinFeatureLength.TotalSeconds,
                         channelSettings.Sections.MaxFeatureLength.TotalSeconds);
-                double maxRampLength = (sectionLengthSeconds - topLength) / 2;
+                double maxRampLength = Math.Min(channelSettings.Sections.MaxRampLength.TotalSeconds, (sectionLengthSeconds - topLength) / 2);
                 if (channelSettings.Sections.MinRampLength.TotalSeconds > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
 
                 // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
                 double rampLength =
                     channelSettings.Sections.RampLengthVariance.ProportionAlong(progression,
-                        channelSettings.Sections.MaxRampLength.TotalSeconds,
+                        maxRampLength,
                         channelSettings.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
                 var result = new TabletopParams
                 {

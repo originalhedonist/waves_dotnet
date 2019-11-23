@@ -6,7 +6,7 @@ namespace wavegenerator
 {
     public class PulseFrequencyModel
     {
-        public static PulseFrequencyModel Default = new PulseFrequencyModel
+        public static PulseFrequencyModel Default() => new PulseFrequencyModel
         {
             ChanceOfHigh = 0.8,
             Quiescent = 0.5,

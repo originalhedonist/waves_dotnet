@@ -53,7 +53,8 @@ namespace wavegenerator
 
         private static Settings LoadAndValidateSettings(string filePath)
         {
-            var newSettings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(filePath));
+            string json = File.ReadAllText(filePath);
+            var newSettings = JsonConvert.DeserializeObject<Settings>(json);
             Validator.ValidateObject(newSettings, new ValidationContext(newSettings), true);
             return newSettings;
         }

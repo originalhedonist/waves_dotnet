@@ -7,7 +7,7 @@ namespace wavegenerator
 {
     public class WetnessModel
     {
-        public static WetnessModel Default = new WetnessModel
+        public static WetnessModel Default() => new WetnessModel
         {
             LinkToFeature = true,
             Minimum = 0.4,

@@ -42,7 +42,10 @@ namespace wavegenerator
 
         [ValidateObject]
         [ValidateChannelSettings]
-        public ChannelSettingsModel[] ChannelSettings { get; set; } = new[] { new ChannelSettingsModel() };// default one - but there can be two, to be unlinked
+        public ChannelSettingsModel[] ChannelSettings { get; set; } = new[] {
+            new ChannelSettingsModel(),
+            new ChannelSettingsModel()
+        };
 
         public int NumSections(int channel) => (int)(TrackLength / ChannelSettings.ForChannel(channel).Sections.TotalLength);
     }
@@ -70,22 +73,25 @@ namespace wavegenerator
 
     public class ChannelSettingsModel
     {
+        [JsonIgnore]
+        public Guid Guid = Guid.NewGuid();
+
         public int NumSections() => (int)(Settings.Instance.TrackLength / Sections.TotalLength) ;
         [Required]
         [SectionModelValidation(nameof(Sections))]
         [ValidateObject]
-        public SectionModel Sections { get; set; } = SectionModel.Default;
+        public SectionModel Sections { get; set; } = SectionModel.Default();
 
         [ValidateObject]
-        public CarrierFrequencyModel CarrierFrequency { get; set; } = CarrierFrequencyModel.Default;
+        public CarrierFrequencyModel CarrierFrequency { get; set; } = CarrierFrequencyModel.Default();
 
         [ValidateObject]
-        public PulseFrequencyModel PulseFrequency { get; set; } = PulseFrequencyModel.Default;
+        public PulseFrequencyModel PulseFrequency { get; set; } = PulseFrequencyModel.Default();
 
         [ValidateObject]
-        public WetnessModel Wetness { get; set; } = WetnessModel.Default;
+        public WetnessModel Wetness { get; set; } = WetnessModel.Default();
 
         [ValidateObject]
-        public BreakModel Breaks { get; set; } = BreakModel.Default;
+        public BreakModel Breaks { get; set; } = BreakModel.Default();
     }
 }
