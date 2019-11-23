@@ -63,7 +63,7 @@ namespace wavegenerator
             var patterns = Settings.Instance.ChannelSettings.Select(c => new RiseApplier(c.Rises, new PulseGenerator(c))).ToArray();
             var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
 
-            await File.WriteAllTextAsync($"{compositionName}.parameters.txt", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
+            await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
             await Console.Out.WriteLineAsync($"Writing {compositionName}...");
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
             if (Settings.Instance.ConvertToMp3 && hasLame)
