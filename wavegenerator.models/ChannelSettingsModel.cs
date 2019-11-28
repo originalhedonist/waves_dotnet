@@ -30,6 +30,9 @@ namespace wavegenerator
 
         [ValidateObject]
         public RiserModel Rises { get; set; }
+
+        [ValidateObject]
+        public PulseTopLengthModel PulseTopLength { get; set; }
     }
 
     public class ValidateChannelCount : ValidationAttribute

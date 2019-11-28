@@ -16,6 +16,7 @@ namespace wavegenerator
 
         public static async Task Main(string[] args)
         {
+            var stopwatch = Stopwatch.StartNew();
             try
             {
                 if (args.Length == 0)
@@ -38,7 +39,8 @@ namespace wavegenerator
                         .ToArray();
                     await Task.WhenAll(tasks);
 
-                    ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created.", ConsoleColor.Green);
+                    stopwatch.Stop();
+                    ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created in {stopwatch.Elapsed}", ConsoleColor.Green);
                 }
             }
             catch (Exception ex)

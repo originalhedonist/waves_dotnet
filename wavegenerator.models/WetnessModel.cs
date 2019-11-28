@@ -7,7 +7,7 @@ namespace wavegenerator
 {
     public class WetnessModel
     {
-        public bool LinkToFeature { get; set; } = true;
+        public bool LinkToFeature { get; set; }
 
         [Range(0.0, 1.0)]
         public double Minimum { get; set; }
