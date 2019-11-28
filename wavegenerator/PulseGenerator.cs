@@ -16,9 +16,14 @@ namespace wavegenerator
             this.channelSettings = channelSettings;
         }
 
-        protected override double PeakTopLength(double t, int n, int channel)
+        protected override double PeakLength(double t, int n, int channel)
         {
             return 0.5;
+        }
+
+        protected override double TroughLength(double t, int n, int channel)
+        {
+            return 3;
         }
 
         private static IEnumerable<int> MakeBreaks(ChannelSettingsModel channelSettings)

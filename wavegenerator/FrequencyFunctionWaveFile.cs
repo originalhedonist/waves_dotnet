@@ -24,13 +24,20 @@ namespace wavegenerator
 
         protected abstract double Frequency(double t, int n, int channel);
 
-        protected virtual double PeakTopLength(double t, int n, int channel) => 0.0; //TODO: default should be zero when not testing
+        protected virtual double PeakLength(double t, int n, int channel) => 0.0;
+        protected virtual double TroughLength(double t, int n, int channel) => 0.0;
 
         public override double Amplitude(double t, int n, int channel)
         {
             double amplitude;
-            var peakTopLength = PeakTopLength(t, n, channel);
-            if (lastPeak[channel] != null && t - lastPeak[channel] <= peakTopLength)
+            //Due to the way wetness inverts, 'peaks' come out as 'troughs' and vice versa. Like looking at yourself in a mirror.
+            var invertedTroughLength = PeakLength(t, n, channel);
+            var invertedPeakLength = TroughLength(t, n, channel);
+            if (lastPeakAmplitude[channel] > 0 && lastPeak[channel] != null && t - lastPeak[channel] <= invertedPeakLength)
+            {
+                amplitude = lastPeakAmplitude[channel].Value; //we don't increment x, because time freezes at the top!
+            }
+            else if (lastPeakAmplitude[channel] < 0 && lastPeak[channel] != null && t - lastPeak[channel] <= invertedTroughLength)
             {
                 amplitude = lastPeakAmplitude[channel].Value; //we don't increment x, because time freezes at the top!
             }
@@ -43,14 +50,14 @@ namespace wavegenerator
                 double? amplitudeGradient = null;
                 if (lastAmplitude[channel].HasValue) amplitudeGradient = amplitude - lastAmplitude[channel].Value ;
 
-                bool justReachedTop = lastAmplitudeGradient[channel].HasValue && amplitudeGradient <= 0 && lastAmplitudeGradient[channel].Value > 0;
-                bool justReachedBottom = lastAmplitudeGradient[channel].HasValue && amplitudeGradient >= 0 && lastAmplitudeGradient[channel] < 0;
-                if (justReachedTop)
+                bool justReachedPeak = lastAmplitudeGradient[channel].HasValue && amplitudeGradient <= 0 && lastAmplitudeGradient[channel].Value > 0;
+                bool justReachedTrough = lastAmplitudeGradient[channel].HasValue && amplitudeGradient >= 0 && lastAmplitudeGradient[channel] < 0;
+                if (justReachedPeak)
                 {
-                    //lastPeak[channel] = t;
-                    //lastPeakAmplitude[channel] = 1;
+                    lastPeak[channel] = t;
+                    lastPeakAmplitude[channel] = 1;
                 }
-                else if (justReachedBottom)
+                else if (justReachedTrough)
                 {
                     lastPeak[channel] = t;
                     lastPeakAmplitude[channel] = -1;
