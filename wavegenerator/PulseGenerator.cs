@@ -16,16 +16,6 @@ namespace wavegenerator
             this.channelSettings = channelSettings;
         }
 
-        protected override double PeakLength(double t, int n, int channel)
-        {
-            return 0.5;
-        }
-
-        protected override double TroughLength(double t, int n, int channel)
-        {
-            return 3;
-        }
-
         private static IEnumerable<int> MakeBreaks(ChannelSettingsModel channelSettings)
         {
             int? lastBreakSection = null;
@@ -103,7 +93,7 @@ namespace wavegenerator
             {
                 //if it's a tabletop:
                 double topLength =
-                    channelSettings.Sections.FeatureLengthVariance.ProportionAlong(progression,
+                    channelSettings.Sections.FeatureLengthVariation.ProportionAlong(progression,
                         channelSettings.Sections.MinFeatureLength.TotalSeconds,
                         channelSettings.Sections.MaxFeatureLength.TotalSeconds);
                 double maxRampLength = Math.Min(channelSettings.Sections.MaxRampLength.TotalSeconds, (sectionLengthSeconds - topLength) / 2);
@@ -111,7 +101,7 @@ namespace wavegenerator
 
                 // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
                 double rampLength =
-                    channelSettings.Sections.RampLengthVariance.ProportionAlong(progression,
+                    channelSettings.Sections.RampLengthVariation.ProportionAlong(progression,
                         maxRampLength,
                         channelSettings.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
                 var result = new TabletopParams
@@ -146,7 +136,9 @@ namespace wavegenerator
             return topFrequency;
         }
 
-        private readonly ConcurrentDictionary<int, double> wetnessCache = new ConcurrentDictionary<int, double>();
+        private readonly ConcurrentDictionary<int, double> maxWetnessForSectionCache = new ConcurrentDictionary<int, double>();
+        private readonly ConcurrentDictionary<int, double> maxPeakForSectionCache = new ConcurrentDictionary<int, double>();
+        private readonly ConcurrentDictionary<int, double> maxTroughForSectionCache = new ConcurrentDictionary<int, double>();
         private readonly ChannelSettingsModel channelSettings;
 
         private double Wetness(double t, int n, int channel)
@@ -155,12 +147,10 @@ namespace wavegenerator
             int section = Section(n);
             double ts = t - (section * sectionLengthSeconds); //time through the current section
 
-            double maxWetnessForSection = wetnessCache.GetOrAdd(section, s =>
+            double maxWetnessForSection = maxWetnessForSectionCache.GetOrAdd(section, s =>
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
-                double maxWetness = channelSettings.Wetness.Variation.ProportionAlong(progression,
-                    channelSettings.Wetness.Minimum,
-                    channelSettings.Wetness.Maximum);
+                double maxWetness = channelSettings.Wetness.Variation.ProportionAlong(progression, channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
                 return maxWetness;
             });
 
@@ -172,12 +162,43 @@ namespace wavegenerator
             }
             else
             {
-                double ps = ts / sectionLengthSeconds; // progression through section
-                double x = ps * Math.PI;// max wetness in the middle (x = pi/2)
-                wetness = channelSettings.Wetness.Minimum +
-                    Math.Pow(Math.Sin(x), 2) * (maxWetnessForSection - channelSettings.Wetness.Minimum);
+                wetness = maxWetnessForSection;
             }
             return wetness;
         }
+
+        private double PeakOrTroughLength(double t, int n, int channel, ConcurrentDictionary<int, double> maxValueCache, PulseTopLengthModel setting)
+        {
+            int section = Section(n);
+            double ts = t - (section * sectionLengthSeconds); //time through the current section
+            double length;
+            double maxForSection = maxValueCache.GetOrAdd(section, s =>
+            {
+                double progression = ((float)s + 1) / numSections; // <= 1
+                double max = setting.Variation.ProportionAlong(progression, setting.Min.TotalSeconds, setting.Max.TotalSeconds);
+                return max;
+            });
+            if (setting.LinkToFeature)
+            {
+                var p = GetTabletopParamsBySection(section);
+                length = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, setting.Min.TotalSeconds, setting.Max.TotalSeconds, p);
+            }
+            else
+            {
+                length = maxForSection;
+            }
+            return length;
+        }
+
+        protected override double PeakLength(double t, int n, int channel)
+        {
+            return PeakOrTroughLength(t, n, channel, maxPeakForSectionCache, channelSettings.PeakLength);
+        }
+
+        protected override double TroughLength(double t, int n, int channel)
+        {
+            return PeakOrTroughLength(t, n, channel, maxTroughForSectionCache, channelSettings.TroughLength);
+        }
+
     }
 }

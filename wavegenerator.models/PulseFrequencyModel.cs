@@ -19,6 +19,6 @@ namespace wavegenerator
         public double ChanceOfHigh { get; set; }
 
         [ValidateObject]
-        public VarianceModel Variation { get; set; }
+        public VariationModel Variation { get; set; }
     }
 }

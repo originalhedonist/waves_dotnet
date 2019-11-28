@@ -8,7 +8,7 @@ namespace wavegenerator
         public static double GetRandom(double defaultValue = 1.0) => 
             Settings.Instance.Randomization ? random.NextDouble() : defaultValue;
 
-        public static double MakeValue(this VarianceModel variance, double progress)
+        public static double MakeValue(this VariationModel variance, double progress)
         {
             int isTopHalf = GetRandom() >= 0.5 ? -1 : 1;
             double randomnessComponent = Math.Pow(GetRandom(), isTopHalf * variance.Randomness);
@@ -18,7 +18,7 @@ namespace wavegenerator
             return normalizedValue;
         }
 
-        public static double ProportionAlong(this VarianceModel variance, double progress, double minValue, double maxValue)
+        public static double ProportionAlong(this VariationModel variance, double progress, double minValue, double maxValue)
         {
             return minValue + MakeValue(variance, progress) * (maxValue - minValue);
         }

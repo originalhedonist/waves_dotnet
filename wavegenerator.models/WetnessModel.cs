@@ -17,6 +17,6 @@ namespace wavegenerator
 
         [Required]
         [ValidateObject]
-        public VarianceModel Variation { get; set; }
+        public VariationModel Variation { get; set; }
     }
 }

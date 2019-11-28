@@ -17,7 +17,7 @@ namespace wavegenerator
 
         [Required]
         [ValidateObject]
-        public VarianceModel FeatureLengthVariance { get; set; }
+        public VariationModel FeatureLengthVariation { get; set; }
 
         [Range(typeof(TimeSpan), "00:00:00", "13:31:35")]
         public TimeSpan MinRampLength { get; set; }
@@ -27,7 +27,7 @@ namespace wavegenerator
 
         [Required]
         [ValidateObject]
-        public VarianceModel RampLengthVariance { get; set; }
+        public VariationModel RampLengthVariation { get; set; }
 
         [Range(0.0, 1.0)]
         public double ChanceOfFeature { get; set; }
