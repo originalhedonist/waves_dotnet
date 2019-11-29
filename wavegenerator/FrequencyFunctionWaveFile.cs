@@ -32,8 +32,11 @@ namespace wavegenerator
 
         protected virtual double PeakLength(double t, int n, int channel) => 0.0;
         protected virtual double TroughLength(double t, int n, int channel) => 0.0;
-        public override double Amplitude(double t, int n, int channel)
+        private double AmplitudeInternal(double t, int n, int channel)
         {
+            if (n == lastn[channel] && lastAmplitude[channel].HasValue)
+                return lastAmplitude[channel].Value;
+
             double amplitude;
             var f = Frequency(t, n, channel);
             var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
@@ -46,20 +49,40 @@ namespace wavegenerator
             bool justReachedTrough = lastAmplitudeGradient[channel].HasValue && amplitudeGradient >= 0 && lastAmplitudeGradient[channel] < 0;
             if (justReachedPeak)
             {
-                lastPeak[channel] = t;
+                lastPeak[channel] = t + dt[channel];
                 lastPeakAmplitude[channel] = 1;
             }
             else if (justReachedTrough)
             {
-                lastPeak[channel] = t;
+                lastPeak[channel] = t + dt[channel];
                 lastPeakAmplitude[channel] = -1;
             }
 
+            lastn[channel] = n;
             lastAmplitude[channel] = amplitude;
             lastAmplitudeGradient[channel] = amplitudeGradient;
             return amplitude;
         }
 
+        public override double Amplitude(double t, int n, int channel)
+        {
+            //Due to the way wetness inverts, 'peaks' come out as 'troughs' and vice versa. Like looking at yourself in a mirror.
+            var invertedTroughLength = PeakLength(t, n, channel);
+            var invertedPeakLength = TroughLength(t, n, channel);
+            if (lastPeakAmplitude[channel] > 0 && lastPeak[channel] != null && t - lastPeak[channel] <= invertedPeakLength)
+            {
+                dt[channel] += t - lastt[channel]; // the delay gets longer while we're at the top
+                dn[channel]++;
+            }
 
+            if (lastPeakAmplitude[channel] < 0 && lastPeak[channel] != null && t - lastPeak[channel] <= invertedTroughLength)
+            {
+                dt[channel] += t - lastt[channel];
+                dn[channel]++;
+            }
+            double amplitude = AmplitudeInternal(t - dt[channel], n - dn[channel], channel);
+            lastt[channel] = t;
+            return amplitude;
+        }
     }
 }

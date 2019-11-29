@@ -8,7 +8,7 @@ namespace wavegenerator
 {
     public class Settings
     {
-        public const int SamplingFrequency = 2000;
+        public const int SamplingFrequency = 44100;
         public static Settings Default = new Settings();
         public static Settings Instance { get; set; }
 
