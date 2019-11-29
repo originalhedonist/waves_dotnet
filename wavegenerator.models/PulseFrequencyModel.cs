@@ -6,13 +6,13 @@ namespace wavegenerator
 {
     public class PulseFrequencyModel
     {
-        [Range(0.001, 44100)]
+        [Range(0.001, Settings.SamplingFrequency)]
         public double Quiescent { get; set; }
 
-        [Range(0.001, 44100)]
+        [Range(0.001, Settings.SamplingFrequency)]
         public double Low { get; set; }
 
-        [Range(0.001, 44100)]
+        [Range(0.001, Settings.SamplingFrequency)]
         public double High { get; set; }
 
         [Range(0.0, 1.0)]

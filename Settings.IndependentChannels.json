@@ -13,13 +13,13 @@
         "TotalLength": "00:00:30",
         "MinFeatureLength": "00:00:05",
         "MaxFeatureLength": "00:00:15",
-        "FeatureLengthVariance": {
+        "FeatureLengthVariation": {
           "Randomness": 1.0,
           "Progression": 0.5
         },
         "MinRampLength": "00:00:05",
         "MaxRampLength": "00:00:07.5",
-        "RampLengthVariance": {
+        "RampLengthVariation": {
           "Randomness": 0.2,
           "Progression": 0.8
         },
@@ -62,13 +62,13 @@
         "TotalLength": "00:00:30",
         "MinFeatureLength": "00:00:05",
         "MaxFeatureLength": "00:00:15",
-        "FeatureLengthVariance": {
+        "FeatureLengthVariation": {
           "Randomness": 1.0,
           "Progression": 0.5
         },
         "MinRampLength": "00:00:05",
         "MaxRampLength": "00:00:07.5",
-        "RampLengthVariance": {
+        "RampLengthVariation": {
           "Randomness": 0.2,
           "Progression": 0.8
         },

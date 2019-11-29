@@ -52,10 +52,72 @@ namespace wavegenerator
             return p;
         });
 
+
+        protected double OverrideAmplitude(double t, int n, int channel)
+        {
+            //Due to the way wetness inverts, 'peaks' come out as 'troughs' and vice versa. Like looking at yourself in a mirror.
+            var invertedTroughLength = PeakLength(t, n, channel);
+            var invertedPeakLength = TroughLength(t, n, channel);
+            if (lastPeakAmplitude[channel] > 0 && lastPeak[channel] != null && t - lastPeak[channel] <= invertedPeakLength)
+            {
+                dt[channel] += t - lastt[channel]; // the delay gets longer while we're at the top
+                dn[channel]++;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("on the way down again");
+            }
+            
+            if (lastPeakAmplitude[channel] < 0 && lastPeak[channel] != null && t - lastPeak[channel] <= invertedTroughLength)
+            {
+                dt[channel] += t - lastt[channel];
+                dn[channel]++;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("on the way up again");
+            }
+            double amplitude = FfNormalAmplitude(t - dt[channel], n - dn[channel], channel);
+            lastt[channel] = t;
+            return amplitude;
+        }
+
+        private double FfNormalAmplitude(double t, int n, int channel)
+        {
+            if (n == lastn[channel] && lastAmplitude[channel].HasValue)
+                return lastAmplitude[channel].Value;
+
+            double amplitude;
+            var f = Frequency(t, n, channel);
+            var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
+            x[channel] += dx;
+            amplitude = (phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]);
+            double? amplitudeGradient = null;
+            if (lastAmplitude[channel].HasValue) amplitudeGradient = amplitude - lastAmplitude[channel].Value;
+
+            bool justReachedPeak = lastAmplitudeGradient[channel].HasValue && amplitudeGradient <= 0 && lastAmplitudeGradient[channel].Value > 0;
+            bool justReachedTrough = lastAmplitudeGradient[channel].HasValue && amplitudeGradient >= 0 && lastAmplitudeGradient[channel] < 0;
+            if (justReachedPeak)
+            {
+                lastPeak[channel] = t + dt[channel];
+                lastPeakAmplitude[channel] = 1;
+            }
+            else if (justReachedTrough)
+            {
+                lastPeak[channel] = t + dt[channel];
+                lastPeakAmplitude[channel] = -1;
+            }
+
+            lastn[channel] = n;
+            lastAmplitude[channel] = amplitude;
+            lastAmplitudeGradient[channel] = amplitudeGradient;
+            return amplitude;
+        }
+
         public override double Amplitude(double t, int n, int channel)
         {
             var section = Section(n);
-            double baseA = base.Amplitude(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
+            double baseA = OverrideAmplitude(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
             //first apply wetness,
             double wetness = Wetness(t, n, channel);
@@ -181,7 +243,7 @@ namespace wavegenerator
             if (setting.LinkToFeature)
             {
                 var p = GetTabletopParamsBySection(section);
-                length = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, setting.Min.TotalSeconds, setting.Max.TotalSeconds, p);
+                length = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, setting.Min.TotalSeconds, maxForSection, p);
             }
             else
             {
@@ -192,11 +254,13 @@ namespace wavegenerator
 
         protected override double PeakLength(double t, int n, int channel)
         {
+            if (channelSettings.PeakLength == null) return 0;
             return PeakOrTroughLength(t, n, channel, maxPeakForSectionCache, channelSettings.PeakLength);
         }
 
         protected override double TroughLength(double t, int n, int channel)
         {
+            if (channelSettings.TroughLength == null) return 0;
             return PeakOrTroughLength(t, n, channel, maxTroughForSectionCache, channelSettings.TroughLength);
         }
 
