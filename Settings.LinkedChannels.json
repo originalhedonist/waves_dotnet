@@ -55,6 +55,30 @@
         "MinLength": "00:00:02",
         "MaxLength": "00:00:25",
         "RampLength": "00:00:05"
+      },
+      "Rises": {
+        "Count": 2,
+        "EarliestTime": "00:03:00",
+        "LengthEach": "00:00:10",
+        "Amount": 0.15
+      },
+      "PeakLength": {
+        "LinkToFeature": true,
+        "Min": "00:00:00.2",
+        "Max": "00:00:02.0",
+        "Variation": {
+          "Randomness": 0.5,
+          "Progression": 0.8
+        }
+      },
+      "TroughLength": {
+        "LinkToFeature": true,
+        "Min": "00:00:00.0",
+        "Max": "00:00:00.5",
+        "Variation": {
+          "Randomness": 0.5,
+          "Progression": 0.8
+        }
       }
     }
   ]
