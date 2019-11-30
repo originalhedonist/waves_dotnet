@@ -70,7 +70,8 @@ namespace wavegenerator
         private static async Task WriteFile(int uniqueifier, string name)
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
-            var patterns = Settings.Instance.ChannelSettings.Select(c => new RiseApplier(c.Rises, new PulseGenerator(c))).ToArray();
+            var patterns = Settings.Instance.ChannelSettings.Select(c => 
+                new BreakApplier(c.Breaks, new RiseApplier(c.Rises, new PulseGenerator(c)))).ToArray();
             var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
 
             await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));

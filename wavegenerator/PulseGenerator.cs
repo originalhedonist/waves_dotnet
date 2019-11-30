@@ -1,60 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace wavegenerator
 {
+
     public class PulseGenerator : TabletopGenerator
     {
-        private readonly int[] sectionsThatAreBreaks;
         public PulseGenerator(ChannelSettingsModel channelSettings) :
             base(channelSettings.PulseFrequency.Quiescent, channelSettings.Sections.TotalLength.TotalSeconds, channelSettings.NumSections())
         {
-            this.sectionsThatAreBreaks = MakeBreaks(channelSettings).ToArray();
             this.channelSettings = channelSettings;
         }
 
-        private static IEnumerable<int> MakeBreaks(ChannelSettingsModel channelSettings)
-        {
-            int? lastBreakSection = null;
-            var numSections = channelSettings.NumSections();
-            if (channelSettings.Breaks != null)
-            {
-                do
-                {
-                    var minTime = lastBreakSection == null ?
-                        (channelSettings.Breaks.MinTimeSinceStartOfTrack) :
-                        ((lastBreakSection.Value + 1) * channelSettings.Sections.TotalLength) + channelSettings.Breaks.MinTimeBetweenBreaks;
-                    //add 1 to lastBreakSection because we want the time since the END of that section
-                    var maxTime = minTime + channelSettings.Breaks.MaxTimeBetweenBreaks;
-                    var breakTime = minTime + (Randomizer.GetRandom(0.5) * (maxTime - minTime));
-                    lastBreakSection = (int)(breakTime / channelSettings.Sections.TotalLength);
-                    yield return lastBreakSection.Value;
-                } while (lastBreakSection.Value <= numSections);
-            }
-        }
-
-        private readonly ConcurrentDictionary<int, TabletopParams> breakParamsCache = new ConcurrentDictionary<int, TabletopParams>();
-
-        private bool IsBreak(int section) => sectionsThatAreBreaks.Contains(section);
-
-        public TabletopParams GetBreakParams(int section) => breakParamsCache.GetOrAdd(section, s =>
-        {
-            var breakLength = channelSettings.Breaks.MinLength + (channelSettings.Breaks.MaxLength - channelSettings.Breaks.MinLength) * Randomizer.GetRandom();
-            var p = new TabletopParams
-            {
-                RampLength = channelSettings.Breaks.RampLength.TotalSeconds,
-                TopLength = breakLength.TotalSeconds,
-                RampsUseSin2 = true
-            };
-            return p;
-        });
-
-
         public override double Amplitude(double t, int n, int channel)
         {
-            var section = Section(n);
             double baseA = base.Amplitude(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
             //first apply wetness,
@@ -63,25 +22,11 @@ namespace wavegenerator
             double dryness = 1 - wetness;
             double a = 1 - dryness * apos;
 
-            //then apply break
-            double a_res;
-            if (IsBreak(section))
-            {
-                double ts = t - (section * sectionLengthSeconds); //time through the current section
-                var p = GetBreakParams(section);
-                a_res = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, a, 0, p);
-            }
-            else
-            {
-                a_res = a;
-            }
-            return a_res;
+            return a;
         }
 
         protected override TabletopParams CreateFeatureParamsForSection(int section)
         {
-            if (IsBreak(section)) return new TabletopParams { RampLength = 0, TopLength = 0, RampsUseSin2 = false };//don't apply a table top if we're on a break
-
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
             double progression = ((float)section + 1) / numSections; // <= 1

@@ -9,7 +9,6 @@ namespace wavegenerator
     public class Settings
     {
         public const int SamplingFrequency = 44100;
-        public static Settings Default = new Settings();
         public static Settings Instance { get; set; }
 
         [Description("Whether to use randomization")]
