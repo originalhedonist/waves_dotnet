@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +28,7 @@ namespace wavegenerator
                         ((lastBreakSection.Value + 1) * channelSettings.Sections.TotalLength) + channelSettings.Breaks.MinTimeBetweenBreaks;
                     //add 1 to lastBreakSection because we want the time since the END of that section
                     var maxTime = minTime + channelSettings.Breaks.MaxTimeBetweenBreaks;
-                    var breakTime = minTime + (Randomizer.GetRandom() * (maxTime - minTime));
+                    var breakTime = minTime + (Randomizer.GetRandom(0.5) * (maxTime - minTime));
                     lastBreakSection = (int)(breakTime / channelSettings.Sections.TotalLength);
                     yield return lastBreakSection.Value;
                 } while (lastBreakSection.Value <= numSections);
