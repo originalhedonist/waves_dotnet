@@ -45,7 +45,7 @@ namespace wavegenerator
             }
             catch (Exception ex)
             {
-                ConsoleWriter.WriteLine(ex.Message, ConsoleColor.Red);
+                ConsoleWriter.WriteLine(ex.ToString(), ConsoleColor.Red);
             }
         }
 
