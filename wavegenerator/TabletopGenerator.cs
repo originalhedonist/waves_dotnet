@@ -37,7 +37,7 @@ namespace wavegenerator
 
         private readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
-        protected int Section(int n) => (int)(((float)n / N) * numSections);
+        protected int Section(int n) => (int)(n / (sectionLengthSeconds * Settings.SamplingFrequency));
         protected override double Frequency(double t, int n, int channel)
         {
             int section = Section(n);
@@ -49,6 +49,7 @@ namespace wavegenerator
             double ts = t - (section * sectionLengthSeconds); //time through the current section
 
             double frequency = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, baseFrequency, topFrequency, p);
+
             return frequency;
         }
 

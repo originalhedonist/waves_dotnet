@@ -6,7 +6,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wavegenerator", "wavegenera
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wavereader", "wavereader\wavereader.csproj", "{9B8C1458-80F6-4A71-B2AD-61CDDE6F2F0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wavegenerator.models", "wavegenerator.models\wavegenerator.models.csproj", "{F5725EEE-3F2B-4AA3-9270-81FA647ABC87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wavegenerator.models", "wavegenerator.models\wavegenerator.models.csproj", "{F5725EEE-3F2B-4AA3-9270-81FA647ABC87}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
