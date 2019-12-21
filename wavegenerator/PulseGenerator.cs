@@ -82,8 +82,8 @@ namespace wavegenerator
         }
 
         private readonly ConcurrentDictionary<int, double> maxWetnessForSectionCache = new ConcurrentDictionary<int, double>();
-        private readonly ConcurrentDictionary<int, double> maxPeakForSectionCache = new ConcurrentDictionary<int, double>();
-        private readonly ConcurrentDictionary<int, double> maxTroughForSectionCache = new ConcurrentDictionary<int, double>();
+        //private readonly ConcurrentDictionary<int, double> maxPeakForSectionCache = new ConcurrentDictionary<int, double>();
+        //private readonly ConcurrentDictionary<int, double> maxTroughForSectionCache = new ConcurrentDictionary<int, double>();
         private readonly ChannelSettingsModel channelSettings;
 
         private double Wetness(double t, int n, int channel)
@@ -112,40 +112,40 @@ namespace wavegenerator
             return wetness;
         }
 
-        private double PeakOrTroughLength(double t, int n, int channel, ConcurrentDictionary<int, double> maxValueCache, PulseTopLengthModel setting)
-        {
-            int section = Section(n);
-            double ts = t - (section * sectionLengthSeconds); //time through the current section
-            double length;
-            double maxForSection = maxValueCache.GetOrAdd(section, s =>
-            {
-                double progression = ((float)s + 1) / numSections; // <= 1
-                double max = setting.Variation.ProportionAlong(progression, setting.Min.TotalSeconds, setting.Max.TotalSeconds);
-                return max;
-            });
-            if (setting.LinkToFeature)
-            {
-                var p = GetTabletopParamsBySection(section);
-                length = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, setting.Min.TotalSeconds, maxForSection, p);
-            }
-            else
-            {
-                length = maxForSection;
-            }
-            return length;
-        }
+        //private double PeakOrTroughLength(double t, int n, int channel, ConcurrentDictionary<int, double> maxValueCache, PulseTopLengthModel setting)
+        //{
+        //    int section = Section(n);
+        //    double ts = t - (section * sectionLengthSeconds); //time through the current section
+        //    double length;
+        //    double maxForSection = maxValueCache.GetOrAdd(section, s =>
+        //    {
+        //        double progression = ((float)s + 1) / numSections; // <= 1
+        //        double max = setting.Variation.ProportionAlong(progression, setting.Min.TotalSeconds, setting.Max.TotalSeconds);
+        //        return max;
+        //    });
+        //    if (setting.LinkToFeature)
+        //    {
+        //        var p = GetTabletopParamsBySection(section);
+        //        length = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, setting.Min.TotalSeconds, maxForSection, p);
+        //    }
+        //    else
+        //    {
+        //        length = maxForSection;
+        //    }
+        //    return length;
+        //}
 
-        protected override double PeakLength(double t, int n, int channel)
-        {
-            if (channelSettings.PeakLength == null) return 0;
-            return PeakOrTroughLength(t, n, channel, maxPeakForSectionCache, channelSettings.PeakLength);
-        }
+        //protected override double PeakLength(double t, int n, int channel)
+        //{
+        //    if (channelSettings.PeakLength == null) return 0;
+        //    return PeakOrTroughLength(t, n, channel, maxPeakForSectionCache, channelSettings.PeakLength);
+        //}
 
-        protected override double TroughLength(double t, int n, int channel)
-        {
-            if (channelSettings.TroughLength == null) return 0;
-            return PeakOrTroughLength(t, n, channel, maxTroughForSectionCache, channelSettings.TroughLength);
-        }
+        //protected override double TroughLength(double t, int n, int channel)
+        //{
+        //    if (channelSettings.TroughLength == null) return 0;
+        //    return PeakOrTroughLength(t, n, channel, maxTroughForSectionCache, channelSettings.TroughLength);
+        //}
 
     }
 }

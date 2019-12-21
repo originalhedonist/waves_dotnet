@@ -15,15 +15,26 @@ namespace wavegenerator
     {
         private readonly BufferedStream debugStream;
         private readonly StreamWriter debugWriter;
+        protected readonly double?[] lastAmplitude;
+        protected readonly double?[] lastPeak; // the t of the last peak (either last top, or last bottom)
+        protected readonly double?[] lastPeakAmplitude; //whether the last 'peak' was top or bottom
+        protected readonly bool[] inPeak;
+        protected readonly bool[] inTrough;
 
         public TabletopGenerator(double baseFrequency, double sectionLengthSeconds, int numSections) : base(phaseShiftChannels: Settings.Instance.PhaseShiftPulses)
         {
             this.baseFrequency = baseFrequency;
             this.sectionLengthSeconds = sectionLengthSeconds;
             this.numSections = numSections;
+            lastAmplitude = new double?[Channels];
+            lastPeak = new double?[Channels];
+            lastPeakAmplitude = new double?[Channels];
+            inPeak = new bool[Channels];
+            inTrough = new bool[Channels];
 
             debugStream = new BufferedStream(new FileStream("frequencydebug.csv", FileMode.Create, FileAccess.Write));
             debugWriter = new StreamWriter(debugStream);
+
 
         }
 
@@ -69,7 +80,6 @@ namespace wavegenerator
         }
 
 
-        // put this back into frequency function wave file when finished debugging
         public override double Amplitude(double t, int n, int channel)
         {
             //if (n == lastn[channel] && lastAmplitude[channel].HasValue)
@@ -87,14 +97,10 @@ namespace wavegenerator
             var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
             x[channel] += dx;
             amplitude = (phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]);
-            double? amplitudeGradient = null;
-            if (lastAmplitude[channel].HasValue) amplitudeGradient = (amplitude - lastAmplitude[channel].Value) * Settings.SamplingFrequency;
 
             bool justReachedPeak = lastAmplitude[channel].HasValue && amplitude >= 0.8 && lastAmplitude[channel].Value < 0.8;
             bool justReachedTrough = lastAmplitude[channel].HasValue && amplitude <= -0.8 && lastAmplitude[channel] > -0.8;
             if (justReachedPeak && justReachedTrough) throw new InvalidOperationException($"Sanity check failed.");
-
-            int peakTroughNess = 0;
 
             if (justReachedPeak)
             {
@@ -110,27 +116,22 @@ namespace wavegenerator
 
             if (inPeak[channel])
             {
-                peakTroughNess = 1;
                 var justLeftPeak = lastAmplitude[channel].HasValue && amplitude <= 0.8 && lastAmplitude[channel] > 0.8;
                 if (justLeftPeak) inPeak[channel] = false;
             }
 
             if (inTrough[channel])
             {
-                peakTroughNess = -1;
-                var justLeftTrough = lastAmplitude[channel].HasValue && amplitude >= -0.8 && lastAmplitude[channel] < -0.8;
+                var justLeftTrough = lastAmplitude[channel].HasValue && amplitude >= -0.8 && lastAmplitude[channel] <  -0.8;
                 if (justLeftTrough) inTrough[channel] = false;
             }
 
-
-
             lastAmplitude[channel] = amplitude;
-            lastAmplitudeGradient[channel] = amplitudeGradient;
 
-            if (n % 100 == 0) debugWriter.WriteLine($"{t},{f},{amplitude},{peakTroughNess}");
 
             return amplitude;
         }
+
 
     }
 }
