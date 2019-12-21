@@ -67,6 +67,7 @@ namespace wavegenerator
 
                     stopwatch.Stop();
                     Console.CursorTop = endCursorTop + 1;
+                    Console.CursorLeft = 0;
                     Console.CursorVisible = true;
 
                     ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created in {stopwatch.Elapsed}", ConsoleColor.Green);
