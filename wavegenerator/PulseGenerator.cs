@@ -42,7 +42,7 @@ namespace wavegenerator
             double baseA = AmplitudeInternal(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
             //first apply wetness,
-            double wetness = Wetness(t, n, channel);
+            double wetness = Wetness(t, n);
             double apos = (baseA + 1) / 2; //base amplitude, always positive - but with proper curves unlike abs
             double dryness = 1 - wetness;
             double a = 1 - dryness * apos;
@@ -57,16 +57,16 @@ namespace wavegenerator
 
             if (inPeak[channel] && inTrough[channel]) throw new InvalidOperationException($"Sanity check failed.");
 
-            //if (inPeak[channel]) f /= 5;
-            if (inTrough[channel]) f /= 5;
+            if (inPeak[channel]) f /= PeakWavelengthFactor(t, n);
+            if (inTrough[channel]) f /= TroughWavelengthFactor(t, n);
 
 
             var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
             x[channel] += dx;
             amplitude = (phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]);
 
-            bool justReachedPeak = lastAmplitude[channel].HasValue && amplitude >= 0.8 && lastAmplitude[channel].Value < 0.8;
-            bool justReachedTrough = lastAmplitude[channel].HasValue && amplitude <= -0.8 && lastAmplitude[channel] > -0.8;
+            bool justReachedPeak = channelSettings.Peaks != null && lastAmplitude[channel].HasValue && amplitude >= channelSettings.Peaks.Amplitude && lastAmplitude[channel].Value < channelSettings.Peaks.Amplitude;
+            bool justReachedTrough = channelSettings.Troughs != null && lastAmplitude[channel].HasValue && amplitude <= -channelSettings.Troughs.Amplitude && lastAmplitude[channel] > -channelSettings.Troughs.Amplitude;
             if (justReachedPeak && justReachedTrough) throw new InvalidOperationException($"Sanity check failed.");
 
             if (justReachedPeak)
@@ -83,13 +83,13 @@ namespace wavegenerator
 
             if (inPeak[channel])
             {
-                var justLeftPeak = lastAmplitude[channel].HasValue && amplitude <= 0.8 && lastAmplitude[channel] > 0.8;
+                var justLeftPeak = lastAmplitude[channel].HasValue && amplitude <= channelSettings.Peaks.Amplitude && lastAmplitude[channel] > channelSettings.Peaks.Amplitude;
                 if (justLeftPeak) inPeak[channel] = false;
             }
 
             if (inTrough[channel])
             {
-                var justLeftTrough = lastAmplitude[channel].HasValue && amplitude >= -0.8 && lastAmplitude[channel] < -0.8;
+                var justLeftTrough = lastAmplitude[channel].HasValue && amplitude >= -channelSettings.Troughs.Amplitude && lastAmplitude[channel] < -channelSettings.Troughs.Amplitude;
                 if (justLeftTrough) inTrough[channel] = false;
             }
 
@@ -158,34 +158,63 @@ namespace wavegenerator
         }
 
         private readonly ConcurrentDictionary<int, double> maxWetnessForSectionCache = new ConcurrentDictionary<int, double>();
-        //private readonly ConcurrentDictionary<int, double> maxPeakForSectionCache = new ConcurrentDictionary<int, double>();
-        //private readonly ConcurrentDictionary<int, double> maxTroughForSectionCache = new ConcurrentDictionary<int, double>();
+        private readonly ConcurrentDictionary<int, double> maxPeakWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
+        private readonly ConcurrentDictionary<int, double> maxTroughWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
         private readonly ChannelSettingsModel channelSettings;
 
-        private double Wetness(double t, int n, int channel)
+        private double Wetness(double t, int n)
         {
             // rise in a sin^2 fashion from MinWetness to MaxWetness
             int section = Section(n);
             double ts = t - (section * sectionLengthSeconds); //time through the current section
 
-            double maxWetnessForSection = maxWetnessForSectionCache.GetOrAdd(section, s =>
+            double maxForSection = maxWetnessForSectionCache.GetOrAdd(section, s =>
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
-                double maxWetness = channelSettings.Wetness.Variation.ProportionAlong(progression, channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
-                return maxWetness;
+                double max = channelSettings.Wetness.Variation.ProportionAlong(progression, channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
+                return max;
             });
 
-            double wetness;
+            double value;
             if (channelSettings.Wetness.LinkToFeature)
             {
                 var p = GetTabletopParamsBySection(section);
-                wetness = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, channelSettings.Wetness.Minimum, maxWetnessForSection, p);
+                value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, channelSettings.Wetness.Minimum, maxForSection, p);
             }
             else
             {
-                wetness = maxWetnessForSection;
+                value = maxForSection;
             }
-            return wetness;
+            return value;
+        }
+
+        private double PeakWavelengthFactor(double t, int n) => PeakOrTroughWavelengthFactor(channelSettings.Peaks, maxPeakWavelengthFactorForSectionCache, t, n);
+        private double TroughWavelengthFactor(double t, int n) => PeakOrTroughWavelengthFactor(channelSettings.Troughs, maxTroughWavelengthFactorForSectionCache, t, n);
+
+        private double PeakOrTroughWavelengthFactor(PulseTopLengthModel model, ConcurrentDictionary<int, double> cache, double t, int n)
+        {
+            if (model == null) return 1;
+            int section = Section(n);
+            double ts = t - (section * sectionLengthSeconds); //time through the current section
+
+            double maxForSection = cache.GetOrAdd(section, s =>
+            {
+                double progression = ((float)s + 1) / numSections; // <= 1
+                double max = model.Variation.ProportionAlong(progression, 1, model.WavelengthFactor);
+                return max;
+            });
+
+            double value;
+            if (model.LinkToFeature)
+            {
+                var p = GetTabletopParamsBySection(section);
+                value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, 1, maxForSection, p);
+            }
+            else
+            {
+                value = maxForSection;
+            }
+            return value;
         }
 
         protected TabletopParams GetTabletopParamsBySection(int section) => paramsCache.GetOrAdd(section, s =>

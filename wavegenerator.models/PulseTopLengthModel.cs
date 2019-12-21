@@ -10,7 +10,7 @@ namespace wavegenerator
         [Range(double.Epsilon, 1)]
         public double Amplitude { get; set; }
 
-        [Range(double.Epsilon, double.MaxValue)]
+        [Range(1, double.MaxValue)]
         public double WavelengthFactor { get; set; }
 
         public VariationModel Variation { get; set; }
