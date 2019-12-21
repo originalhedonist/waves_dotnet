@@ -7,8 +7,6 @@ namespace wavegenerator
 
     public class PulseGenerator : FrequencyFunctionWaveFile
     {
-        private readonly BufferedStream debugStream;
-        private readonly StreamWriter debugWriter;
         protected readonly double?[] lastAmplitude;
         protected readonly double?[] lastPeak; // the t of the last peak (either last top, or last bottom)
         protected readonly double?[] lastPeakAmplitude; //whether the last 'peak' was top or bottom
@@ -31,17 +29,13 @@ namespace wavegenerator
             lastPeakAmplitude = new double?[Channels];
             inPeak = new bool[Channels];
             inTrough = new bool[Channels];
-
-            debugStream = new BufferedStream(new FileStream("frequencydebug.csv", FileMode.Create, FileAccess.Write));
-            debugWriter = new StreamWriter(debugStream);
-
         }
 
         public override double Amplitude(double t, int n, int channel)
         {
             double baseA = AmplitudeInternal(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
-            //first apply wetness,
+            //apply wetness
             double wetness = Wetness(t, n);
             double apos = (baseA + 1) / 2; //base amplitude, always positive - but with proper curves unlike abs
             double dryness = 1 - wetness;
@@ -57,9 +51,8 @@ namespace wavegenerator
 
             if (inPeak[channel] && inTrough[channel]) throw new InvalidOperationException($"Sanity check failed.");
 
-            if (inPeak[channel]) f /= PeakWavelengthFactor(t, n);
-            if (inTrough[channel]) f /= TroughWavelengthFactor(t, n);
-
+            if (inPeak[channel]) f /= TroughWavelengthFactor(t, n);
+            if (inTrough[channel]) f /= PeakWavelengthFactor(t, n); //switch peaks and troughs, as they are inverted (by wetness)
 
             var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
             x[channel] += dx;

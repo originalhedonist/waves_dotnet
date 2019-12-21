@@ -23,8 +23,6 @@ namespace wavegenerator
                 string[] args = allArgs.Where(a => !a.StartsWith("--")).ToArray();
                 acceptName = options.Contains("acceptName", StringComparer.CurrentCultureIgnoreCase);
 
-                if (File.Exists("frequencydebug.csv")) File.Delete("frequencydebug.csv");
-
                 if (args.Length == 0)
                 {
                     await Console.Out.WriteLineAsync($"No settings file passed.\nPlease copy and modify one of the example settings files to <name>.settings.json, then pass the modified file to the program on the command line.");
