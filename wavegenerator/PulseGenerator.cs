@@ -202,7 +202,7 @@ namespace wavegenerator
             if (model.LinkToFeature)
             {
                 var p = GetTabletopParamsBySection(section);
-                value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, 1, maxForSection, p);
+                value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, model.MinWavelengthFactor, maxForSection, p);
             }
             else
             {

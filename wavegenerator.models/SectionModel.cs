@@ -6,7 +6,7 @@ namespace wavegenerator
 {
     public class SectionModel
     {
-        [Range(typeof(TimeSpan), "00:00:05", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]
         public TimeSpan TotalLength { get; set;}
 
         [Range(typeof(TimeSpan), "00:00:01", "13:31:35")]

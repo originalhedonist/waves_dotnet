@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -43,13 +44,31 @@ namespace wavegenerator
                         names[i] = await GetName(i);
                     }
 
+                    Console.CursorVisible = false;
+                    var maxNameLength = names.Max(n => n.Length);
+                    const int reportColumns = 50;
+                    IProgressReporter[] progressReporters = new IProgressReporter[Settings.Instance.NumFiles];
+                    for(int i = 0; i < Settings.Instance.NumFiles; i++)
+                    {
+                        var cursorTop = Console.CursorTop;
+                        Console.Write($"Writing {names[i].PadRight(maxNameLength)}...[");
+                        var cursorLeft = Console.CursorLeft;
+                        Console.WriteLine($"{new string(Enumerable.Repeat(' ', reportColumns).ToArray())}]");
+                        progressReporters[i] = new ConsoleProgressReporter(cursorTop, cursorLeft, reportColumns);
+                    }
+
+                    var endCursorTop = Console.CursorTop;
+
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
-                        .Select(i => WriteFile(i, names[i]))
+                        .Select(i => WriteFile(i, names[i], progressReporters[i]))
                         .ToArray();
                     await Task.WhenAll(tasks);
 
                     stopwatch.Stop();
+                    Console.CursorTop = endCursorTop + 1;
+                    Console.CursorVisible = true;
+
                     ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created in {stopwatch.Elapsed}", ConsoleColor.Green);
                 }
             }
@@ -67,27 +86,29 @@ namespace wavegenerator
             return newSettings;
         }
 
-        private static async Task WriteFile(int uniqueifier, string name)
+        public static readonly object ConsoleLockObj = new object();
+
+        private static async Task WriteFile(int uniqueifier, string name, IProgressReporter progressReporter)
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
             var patterns = Settings.Instance.ChannelSettings.Select(c => 
                 new BreakApplier(c.Breaks, new RiseApplier(c.Rises, new PulseGenerator(c)))).ToArray();
             var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
-
+            carrierFrequencyApplier.ProgressReporter = progressReporter;
             await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
-            await Console.Out.WriteLineAsync($"Writing {compositionName}...");
+
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
             if (Settings.Instance.ConvertToMp3 && hasLame)
             {
                 if (ConvertToMp3($"{compositionName}.wav"))
                 {
-                    await Console.Out.WriteLineAsync($"Converting {compositionName} to .mp3...");
-                    await Console.Out.WriteLineAsync($"Converted {compositionName} to .mp3 using lame. Removing wav.");
+                    progressReporter.AddMessage($"Converting {compositionName} to .mp3...");
+                    progressReporter.AddMessage($"Converted {compositionName} to .mp3 using lame. Removing wav.");
                     File.Delete($"{compositionName}.wav");
                 }
                 else
                 {
-                    await Console.Out.WriteLineAsync($"    (could not convert {compositionName} to .mp3)");
+                    progressReporter.AddMessage($"(could not convert {compositionName} to .mp3)");
                 }
             }
         }
@@ -196,5 +217,7 @@ namespace wavegenerator
             var randomNameCased = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(randomName.ToLower());
             return randomNameCased;
         }
+
+
     }
 }
