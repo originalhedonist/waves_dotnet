@@ -18,6 +18,7 @@ namespace wavegenerator
 
         public int NumFiles { get; set; }
 
+        [ValidateNamingConvention]
         public NamingConvention Naming { get; set; }
 
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]

@@ -40,7 +40,7 @@ namespace wavegenerator
                     string[] names = new string[Settings.Instance.NumFiles];
                     for(int i = 0; i < Settings.Instance.NumFiles; i++)
                     {
-                        names[i] = await GetRandomName();
+                        names[i] = await GetName(i);
                     }
 
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
@@ -141,24 +141,31 @@ namespace wavegenerator
         private static readonly Random random = new Random();
         private static readonly ConcurrentDictionary<string, string[]> nameListCache = new ConcurrentDictionary<string, string[]>();
 
-        public static async Task<string> GetRandomName()
+        public static async Task<string> GetName(int fileIndex)
         {
-            if (acceptName)
+            if (Settings.Instance.Naming.Specific != null)
             {
-                await Console.Out.WriteLineAsync("Any key to re-generate, leave 10 seconds (or Y) to accept");
-                do
-                {
-                    var candidate = GetRandomNameInternal();
-                    Console.Write(candidate);
-                    if (await Accept())
-                    {
-                        return candidate;
-                    }
-                } while (true);
+                return Settings.Instance.Naming.Specific[fileIndex];
             }
             else
             {
-                return GetRandomNameInternal();
+                if (acceptName)
+                {
+                    await Console.Out.WriteLineAsync("Any key to re-generate, leave 10 seconds (or Y) to accept");
+                    do
+                    {
+                        var candidate = GetRandomNameInternal();
+                        Console.Write(candidate);
+                        if (await Accept())
+                        {
+                            return candidate;
+                        }
+                    } while (true);
+                }
+                else
+                {
+                    return GetRandomNameInternal();
+                }
             }
         }
 
@@ -182,7 +189,7 @@ namespace wavegenerator
         public static string GetRandomNameInternal()
         {
             var possibleNameListFiles = new[] { "female-first-names.txt", "male-first-names.txt" };
-            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & (int)Settings.Instance.Naming) != 0).ToArray();
+            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & (int)Settings.Instance.Naming.Strategy.Value) != 0).ToArray();
             var nameListFile = nameListFilesToUse[random.Next(0, nameListFilesToUse.Length)];
             var nameList = nameListCache.GetOrAdd(nameListFile, s => File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, s)).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray());
             string randomName = nameList[(int)(Math.Pow(random.NextDouble(), 1.5) * nameList.Length)];
