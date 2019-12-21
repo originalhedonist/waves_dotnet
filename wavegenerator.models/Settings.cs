@@ -35,6 +35,7 @@ namespace wavegenerator
 
         [ValidateObject]
         [ValidateChannelCount]
+        [ValidatePeakTroughAmplitude]
         [ValidateRiserLength]
         public ChannelSettingsModel[] ChannelSettings { get; set; }
 
