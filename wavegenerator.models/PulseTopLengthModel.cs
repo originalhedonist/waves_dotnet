@@ -10,8 +10,13 @@ namespace wavegenerator
         [Range(double.Epsilon, 1)]
         public double Amplitude { get; set; }
 
-        [Range(1, double.MaxValue)]
-        public double WavelengthFactor { get; set; }
+        public double GetLimit() => 1 - (Amplitude * 2) ;
+
+        [Range(double.Epsilon, double.MaxValue)]
+        public double MinWavelengthFactor { get; set; }
+
+        [Range(double.Epsilon, double.MaxValue)]
+        public double MaxWavelengthFactor { get; set; }
 
         public VariationModel Variation { get; set; }
     }

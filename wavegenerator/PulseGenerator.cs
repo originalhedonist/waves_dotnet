@@ -51,15 +51,16 @@ namespace wavegenerator
 
             if (inPeak[channel] && inTrough[channel]) throw new InvalidOperationException($"Sanity check failed.");
 
-            if (inPeak[channel]) f /= TroughWavelengthFactor(t, n);
-            if (inTrough[channel]) f /= PeakWavelengthFactor(t, n); //switch peaks and troughs, as they are inverted (by wetness)
+            if (inPeak[channel]) f /= PeakWavelengthFactor(t, n);
+            if (inTrough[channel]) f /= TroughWavelengthFactor(t, n); //switch peaks and troughs, as they are inverted (by wetness)
 
             var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
             x[channel] += dx;
             amplitude = (phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]);
 
-            bool justReachedPeak = channelSettings.Peaks != null && lastAmplitude[channel].HasValue && amplitude >= channelSettings.Peaks.Amplitude && lastAmplitude[channel].Value < channelSettings.Peaks.Amplitude;
-            bool justReachedTrough = channelSettings.Troughs != null && lastAmplitude[channel].HasValue && amplitude <= -channelSettings.Troughs.Amplitude && lastAmplitude[channel] > -channelSettings.Troughs.Amplitude;
+            //peak detection looks like trough detection... but use 'peaks' settings
+            bool justReachedPeak = channelSettings.Peaks != null && lastAmplitude[channel].HasValue && amplitude <= channelSettings.Peaks.GetLimit() && lastAmplitude[channel].Value > channelSettings.Peaks.GetLimit();
+            bool justReachedTrough = channelSettings.Troughs != null && lastAmplitude[channel].HasValue && amplitude >= channelSettings.Troughs.GetLimit() && lastAmplitude[channel] < channelSettings.Troughs.GetLimit();
             if (justReachedPeak && justReachedTrough) throw new InvalidOperationException($"Sanity check failed.");
 
             if (justReachedPeak)
@@ -74,20 +75,20 @@ namespace wavegenerator
                 inTrough[channel] = true;
             }
 
+            //peak detection looks like trough detection... but use 'peaks' settings
             if (inPeak[channel])
             {
-                var justLeftPeak = lastAmplitude[channel].HasValue && amplitude <= channelSettings.Peaks.Amplitude && lastAmplitude[channel] > channelSettings.Peaks.Amplitude;
+                var justLeftPeak = lastAmplitude[channel].HasValue && amplitude >= channelSettings.Peaks.GetLimit() && lastAmplitude[channel]  < channelSettings.Peaks.GetLimit();
                 if (justLeftPeak) inPeak[channel] = false;
             }
 
             if (inTrough[channel])
             {
-                var justLeftTrough = lastAmplitude[channel].HasValue && amplitude >= -channelSettings.Troughs.Amplitude && lastAmplitude[channel] < -channelSettings.Troughs.Amplitude;
+                var justLeftTrough = lastAmplitude[channel].HasValue && amplitude <= channelSettings.Troughs.GetLimit() && lastAmplitude[channel] > channelSettings.Troughs.GetLimit();
                 if (justLeftTrough) inTrough[channel] = false;
             }
 
             lastAmplitude[channel] = amplitude;
-
 
             return amplitude;
         }
@@ -193,7 +194,7 @@ namespace wavegenerator
             double maxForSection = cache.GetOrAdd(section, s =>
             {
                 double progression = ((float)s + 1) / numSections; // <= 1
-                double max = model.Variation.ProportionAlong(progression, 1, model.WavelengthFactor);
+                double max = model.Variation.ProportionAlong(progression, model.MinWavelengthFactor, model.MaxWavelengthFactor);
                 return max;
             });
 
