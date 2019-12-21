@@ -1,20 +1,45 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.IO;
 
 namespace wavegenerator
 {
 
-    public class PulseGenerator : TabletopGenerator
+    public class PulseGenerator : FrequencyFunctionWaveFile
     {
-        public PulseGenerator(ChannelSettingsModel channelSettings) :
-            base(channelSettings.PulseFrequency.Quiescent, channelSettings.Sections.TotalLength.TotalSeconds, channelSettings.NumSections())
+        private readonly BufferedStream debugStream;
+        private readonly StreamWriter debugWriter;
+        protected readonly double?[] lastAmplitude;
+        protected readonly double?[] lastPeak; // the t of the last peak (either last top, or last bottom)
+        protected readonly double?[] lastPeakAmplitude; //whether the last 'peak' was top or bottom
+        protected readonly bool[] inPeak;
+        protected readonly bool[] inTrough;
+        protected readonly double baseFrequency;
+        protected readonly double sectionLengthSeconds;
+        protected readonly int numSections;
+
+
+        public PulseGenerator(ChannelSettingsModel channelSettings) : base(phaseShiftChannels: Settings.Instance.PhaseShiftPulses)
         {
             this.channelSettings = channelSettings;
+
+            this.baseFrequency = channelSettings.PulseFrequency.Quiescent;
+            this.sectionLengthSeconds = channelSettings.Sections.TotalLength.TotalSeconds;
+            this.numSections = channelSettings.NumSections();
+            lastAmplitude = new double?[Channels];
+            lastPeak = new double?[Channels];
+            lastPeakAmplitude = new double?[Channels];
+            inPeak = new bool[Channels];
+            inTrough = new bool[Channels];
+
+            debugStream = new BufferedStream(new FileStream("frequencydebug.csv", FileMode.Create, FileAccess.Write));
+            debugWriter = new StreamWriter(debugStream);
+
         }
 
         public override double Amplitude(double t, int n, int channel)
         {
-            double baseA = base.Amplitude(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
+            double baseA = AmplitudeInternal(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
             //first apply wetness,
             double wetness = Wetness(t, n, channel);
@@ -25,7 +50,58 @@ namespace wavegenerator
             return a;
         }
 
-        protected override TabletopParams CreateFeatureParamsForSection(int section)
+        private double AmplitudeInternal(double t, int n, int channel)
+        {
+            double amplitude;
+            var f = Frequency(t, n, channel);
+
+            if (inPeak[channel] && inTrough[channel]) throw new InvalidOperationException($"Sanity check failed.");
+
+            //if (inPeak[channel]) f /= 5;
+            if (inTrough[channel]) f /= 5;
+
+
+            var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
+            x[channel] += dx;
+            amplitude = (phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]);
+
+            bool justReachedPeak = lastAmplitude[channel].HasValue && amplitude >= 0.8 && lastAmplitude[channel].Value < 0.8;
+            bool justReachedTrough = lastAmplitude[channel].HasValue && amplitude <= -0.8 && lastAmplitude[channel] > -0.8;
+            if (justReachedPeak && justReachedTrough) throw new InvalidOperationException($"Sanity check failed.");
+
+            if (justReachedPeak)
+            {
+                if (inPeak[channel]) throw new InvalidOperationException($"Just reached a peak when already in one");
+                inPeak[channel] = true;
+            }
+
+            if (justReachedTrough)
+            {
+                if (inTrough[channel]) throw new InvalidOperationException($"Just reached a trough when already in one");
+                inTrough[channel] = true;
+            }
+
+            if (inPeak[channel])
+            {
+                var justLeftPeak = lastAmplitude[channel].HasValue && amplitude <= 0.8 && lastAmplitude[channel] > 0.8;
+                if (justLeftPeak) inPeak[channel] = false;
+            }
+
+            if (inTrough[channel])
+            {
+                var justLeftTrough = lastAmplitude[channel].HasValue && amplitude >= -0.8 && lastAmplitude[channel] < -0.8;
+                if (justLeftTrough) inTrough[channel] = false;
+            }
+
+            lastAmplitude[channel] = amplitude;
+
+
+            return amplitude;
+        }
+
+
+
+        private TabletopParams CreateFeatureParamsForSection(int section)
         {
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
@@ -64,7 +140,7 @@ namespace wavegenerator
             }
         }
 
-        protected override double CreateTopFrequency(int section)
+        private double CreateTopFrequency(int section)
         {
             double progression = ((float)section) / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
@@ -112,40 +188,39 @@ namespace wavegenerator
             return wetness;
         }
 
-        //private double PeakOrTroughLength(double t, int n, int channel, ConcurrentDictionary<int, double> maxValueCache, PulseTopLengthModel setting)
-        //{
-        //    int section = Section(n);
-        //    double ts = t - (section * sectionLengthSeconds); //time through the current section
-        //    double length;
-        //    double maxForSection = maxValueCache.GetOrAdd(section, s =>
-        //    {
-        //        double progression = ((float)s + 1) / numSections; // <= 1
-        //        double max = setting.Variation.ProportionAlong(progression, setting.Min.TotalSeconds, setting.Max.TotalSeconds);
-        //        return max;
-        //    });
-        //    if (setting.LinkToFeature)
-        //    {
-        //        var p = GetTabletopParamsBySection(section);
-        //        length = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, setting.Min.TotalSeconds, maxForSection, p);
-        //    }
-        //    else
-        //    {
-        //        length = maxForSection;
-        //    }
-        //    return length;
-        //}
+        protected TabletopParams GetTabletopParamsBySection(int section) => paramsCache.GetOrAdd(section, s =>
+        {
+            var p = CreateFeatureParamsForSection(section);
+            ValidateParams(p);
+            return p;
+        });
 
-        //protected override double PeakLength(double t, int n, int channel)
-        //{
-        //    if (channelSettings.PeakLength == null) return 0;
-        //    return PeakOrTroughLength(t, n, channel, maxPeakForSectionCache, channelSettings.PeakLength);
-        //}
+        //should only be called once, and cached.
+        // It might (and very probably will) do 'Random' operations, so want the same one for the whole segment!
 
-        //protected override double TroughLength(double t, int n, int channel)
-        //{
-        //    if (channelSettings.TroughLength == null) return 0;
-        //    return PeakOrTroughLength(t, n, channel, maxTroughForSectionCache, channelSettings.TroughLength);
-        //}
+        private readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
+        private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
+        protected int Section(int n) => (int)(n / (sectionLengthSeconds * Settings.SamplingFrequency));
+        protected override double Frequency(double t, int n, int channel)
+        {
+            int section = Section(n);
+            var p = GetTabletopParamsBySection(section);
 
+            var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
+            if (topFrequency <= 0) throw new InvalidOperationException("TopFrequency must be >= 0");
+
+            double ts = t - (section * sectionLengthSeconds); //time through the current section
+
+            double frequency = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, baseFrequency, topFrequency, p);
+
+            return frequency;
+        }
+
+        private void ValidateParams(TabletopParams p)
+        {
+            if (p.TopLength < 0) throw new InvalidOperationException("TopLength must be >= 0");
+            if (p.RampLength < 0) throw new InvalidOperationException("RampLength must be >= 0");
+            if (p.TopLength + 2 * p.RampLength > sectionLengthSeconds) throw new InvalidOperationException("TopLength + 2*RampLength must be <= sectionLengthSeconds");
+        }
     }
 }
