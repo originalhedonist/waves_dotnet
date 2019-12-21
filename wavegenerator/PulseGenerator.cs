@@ -164,7 +164,7 @@ namespace wavegenerator
 
             double maxForSection = maxWetnessForSectionCache.GetOrAdd(section, s =>
             {
-                double progression = ((float)s + 1) / numSections; // <= 1
+                double progression = ((double)s) / (numSections-1); // <= 1
                 double max = channelSettings.Wetness.Variation.ProportionAlong(progression, channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
                 return max;
             });
@@ -193,7 +193,7 @@ namespace wavegenerator
 
             double maxForSection = cache.GetOrAdd(section, s =>
             {
-                double progression = ((float)s + 1) / numSections; // <= 1
+                double progression = ((double)s) / (numSections-1); // <= 1
                 double max = model.Variation.ProportionAlong(progression, model.MinWavelengthFactor, model.MaxWavelengthFactor);
                 return max;
             });
