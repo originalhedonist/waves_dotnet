@@ -34,19 +34,22 @@ namespace wavegenerator
         protected virtual double TroughLength(double t, int n, int channel) => 0.0;
         private double AmplitudeInternal(double t, int n, int channel)
         {
-            if (n == lastn[channel] && lastAmplitude[channel].HasValue)
-                return lastAmplitude[channel].Value;
+            //if (n == lastn[channel] && lastAmplitude[channel].HasValue)
+            //    return lastAmplitude[channel].Value;
 
             double amplitude;
             var f = Frequency(t, n, channel);
+            if (n == lastn[channel] && lastAmplitude[channel].HasValue)
+                f /= 5;
+
             var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
             x[channel] += dx;
             amplitude = (phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]);
             double? amplitudeGradient = null;
             if (lastAmplitude[channel].HasValue) amplitudeGradient = amplitude - lastAmplitude[channel].Value;
 
-            bool justReachedPeak = lastAmplitudeGradient[channel].HasValue && amplitudeGradient <= 0 && lastAmplitudeGradient[channel].Value > 0;
-            bool justReachedTrough = lastAmplitudeGradient[channel].HasValue && amplitudeGradient >= 0 && lastAmplitudeGradient[channel] < 0;
+            bool justReachedPeak = lastAmplitudeGradient[channel].HasValue && amplitudeGradient <= 0.5 && lastAmplitudeGradient[channel].Value > 0.5;
+            bool justReachedTrough = lastAmplitudeGradient[channel].HasValue && amplitudeGradient >= -0.5 && lastAmplitudeGradient[channel] < -0.5;
             if (justReachedPeak)
             {
                 lastPeak[channel] = t + dt[channel];
