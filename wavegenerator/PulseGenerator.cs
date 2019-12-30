@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 
 namespace wavegenerator
@@ -78,7 +79,7 @@ namespace wavegenerator
             //peak detection looks like trough detection... but use 'peaks' settings
             if (inPeak[channel])
             {
-                var justLeftPeak = lastAmplitude[channel].HasValue && amplitude >= channelSettings.Peaks.GetLimit() && lastAmplitude[channel]  < channelSettings.Peaks.GetLimit();
+                var justLeftPeak = lastAmplitude[channel].HasValue && amplitude >= channelSettings.Peaks.GetLimit() && lastAmplitude[channel] < channelSettings.Peaks.GetLimit();
                 if (justLeftPeak) inPeak[channel] = false;
             }
 
@@ -100,38 +101,27 @@ namespace wavegenerator
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
             double progression = ((float)section + 1) / numSections; // <= 1
-            var isTabletop = Probability.Resolve(
-                Randomizer.GetRandom(),
-                channelSettings.Sections.ChanceOfFeature,
-                true);
-            if (isTabletop)
-            {
-                //if it's a tabletop:
-                double topLength =
-                    channelSettings.Sections.FeatureLengthVariation.ProportionAlong(progression,
-                        channelSettings.Sections.MinFeatureLength.TotalSeconds,
-                        channelSettings.Sections.MaxFeatureLength.TotalSeconds);
-                double maxRampLength = Math.Min(channelSettings.Sections.MaxRampLength.TotalSeconds, (sectionLengthSeconds - topLength) / 2);
-                if (channelSettings.Sections.MinRampLength.TotalSeconds > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
 
-                // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
-                double rampLength =
-                    channelSettings.Sections.RampLengthVariation.ProportionAlong(progression,
-                        maxRampLength,
-                        channelSettings.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
-                var result = new TabletopParams
-                {
-                    RampLength = rampLength,
-                    TopLength = topLength,
-                    RampsUseSin2 = true
-                };
-                return result;
-            }
-            else
+            //if it's a tabletop:
+            double topLength =
+                channelSettings.Sections.FeatureLengthVariation.ProportionAlong(progression,
+                    channelSettings.Sections.MinFeatureLength.TotalSeconds,
+                    channelSettings.Sections.MaxFeatureLength.TotalSeconds);
+            double maxRampLength = Math.Min(channelSettings.Sections.MaxRampLength.TotalSeconds, (sectionLengthSeconds - topLength) / 2);
+            if (channelSettings.Sections.MinRampLength.TotalSeconds > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
+
+            // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
+            double rampLength =
+                channelSettings.Sections.RampLengthVariation.ProportionAlong(progression,
+                    maxRampLength,
+                    channelSettings.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
+            var result = new TabletopParams
             {
-                var result = new TabletopParams();
-                return result;
-            }
+                RampLength = rampLength,
+                TopLength = topLength,
+                RampsUseSin2 = true
+            };
+            return result;
         }
 
         private double CreateTopFrequency(int section)
@@ -164,7 +154,7 @@ namespace wavegenerator
 
             double maxForSection = maxWetnessForSectionCache.GetOrAdd(section, s =>
             {
-                double progression = ((double)s) / Math.Max(1, numSections-1); // <= 1
+                double progression = ((double)s) / Math.Max(1, numSections - 1); // <= 1
                 double max = channelSettings.Wetness.Variation.ProportionAlong(progression, channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
                 return max;
             });
@@ -172,7 +162,7 @@ namespace wavegenerator
             double value;
             if (channelSettings.Wetness.LinkToFeature)
             {
-                var p = GetTabletopParamsBySection(section);
+                var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.Wetness));
                 value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, channelSettings.Wetness.Minimum, maxForSection, p);
             }
             else
@@ -193,7 +183,7 @@ namespace wavegenerator
 
             double maxForSection = cache.GetOrAdd(section, s =>
             {
-                double progression = ((double)s) / Math.Max(1, numSections-1); // <= 1
+                double progression = ((double)s) / Math.Max(1, numSections - 1); // <= 1
                 double max = model.Variation.ProportionAlong(progression, model.MinWavelengthFactor, model.MaxWavelengthFactor);
                 return max;
             });
@@ -201,7 +191,7 @@ namespace wavegenerator
             double value;
             if (model.LinkToFeature)
             {
-                var p = GetTabletopParamsBySection(section);
+                var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.PeaksAndTroughs));
                 value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, model.MinWavelengthFactor, maxForSection, p);
             }
             else
@@ -211,23 +201,34 @@ namespace wavegenerator
             return value;
         }
 
-        protected TabletopParams GetTabletopParamsBySection(int section) => paramsCache.GetOrAdd(section, s =>
+        protected TabletopParams GetTabletopParamsBySection(int section, string feature)
         {
-            var p = CreateFeatureParamsForSection(section);
-            ValidateParams(p);
-            return p;
-        });
+            var isThisFeature = feature == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
+            {
+
+                string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
+                Debug.WriteLine($"Section {section} has feature {v}");
+                return v;
+            });
+            return isThisFeature ? paramsCache.GetOrAdd(section, s =>
+            {
+                var p = CreateFeatureParamsForSection(section);
+                ValidateParams(p);
+                return p;
+            }) : new TabletopParams();
+        }
 
         //should only be called once, and cached.
         // It might (and very probably will) do 'Random' operations, so want the same one for the whole segment!
 
         private readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
+        private readonly ConcurrentDictionary<(int, FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbability), string>();
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         protected int Section(int n) => (int)(n / (sectionLengthSeconds * Settings.SamplingFrequency));
         protected override double Frequency(double t, int n, int channel)
         {
             int section = Section(n);
-            var p = GetTabletopParamsBySection(section);
+            var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.Frequency));
 
             var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
             if (topFrequency <= 0) throw new InvalidOperationException("TopFrequency must be >= 0");

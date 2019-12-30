@@ -96,7 +96,7 @@ namespace wavegenerator
                 new BreakApplier(c.Breaks, new RiseApplier(c.Rises, new PulseGenerator(c)))).ToArray();
             var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
             carrierFrequencyApplier.ProgressReporter = progressReporter;
-            await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented));
+            await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
 
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
             if (Settings.Instance.ConvertToMp3 && hasLame)

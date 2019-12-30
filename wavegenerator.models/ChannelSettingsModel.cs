@@ -12,6 +12,10 @@ namespace wavegenerator
         [ValidateObject]
         public SectionModel Sections { get; set; }
 
+        [FeatureProbabilityValidation]
+        [ValidateObject]
+        public FeatureProbability FeatureProbability { get; set; }
+
         [Required]
         [ValidateObject]
         public CarrierFrequencyModel CarrierFrequency { get; set; }

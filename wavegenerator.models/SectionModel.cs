@@ -28,9 +28,6 @@ namespace wavegenerator
         [Required]
         [ValidateObject]
         public VariationModel RampLengthVariation { get; set; }
-
-        [Range(0.0, 1.0)]
-        public double ChanceOfFeature { get; set; }
     }
 
     public class SectionModelValidation : ValidationAttribute
