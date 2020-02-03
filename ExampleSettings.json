@@ -3,9 +3,9 @@
   "ConvertToMp3": true,
   "NumFiles": 1,
   "Naming": {
-    "Strategy": "RandomAnyName"
+    "Specific": [ "Test" ]
   },
-  "TrackLength": "00:15:00",
+  "TrackLength": "00:05:00",
   "NumberOfChannels": 2,
   "PhaseShiftCarrier": false,
   "PhaseShiftPulses": true,
@@ -63,8 +63,8 @@
         "RampLength": "00:00:05"
       },
       "Rises": {
-        "Count": 3,
-        "EarliestTime": "00:10:00",
+        "Count": 1,
+        "EarliestTime": "00:01:00",
         "LengthEach": "00:00:30",
         "Amount": 0.08
       },
@@ -78,75 +78,6 @@
           "Progression": 0.8
         }
       }
-    },
-    {
-      "Sections": {
-        "TotalLength": "00:01:00",
-        "MinFeatureLength": "00:00:10",
-        "MaxFeatureLength": "00:00:30",
-        "FeatureLengthVariation": {
-          "Randomness": 0.0,
-          "Progression": 1.0
-        },
-        "MinRampLength": "00:00:15",
-        "MaxRampLength": "00:00:40",
-        "RampLengthVariation": {
-          "Randomness": 0.8,
-          "Progression": 1.5
-        }
-      },
-      "FeatureProbability": {
-        "Wetness": 0.2,
-        "Frequency": 0.5,
-        "PeaksAndTroughs": 0.2
-      },
-      "CarrierFrequency": {
-        "Left": 500.0,
-        "Right": 500.0
-      },
-      "PulseFrequency": {
-        "Quiescent": 0.8,
-        "Low": 0.4,
-        "High": 2.0,
-        "ChanceOfHigh": 0.8,
-        "Variation": {
-          "Randomness": 1.0,
-          "Progression": 0.8
-        }
-      },
-      "Wetness": {
-        "LinkToFeature": true,
-        "Minimum": 0.2,
-        "Maximum": 0.7,
-        "Variation": {
-          "Randomness": 0.5,
-          "Progression": 1.5
-        }
-      },
-      "Breaks": {
-        "MinTimeSinceStartOfTrack": "00:10:00",
-        "MinTimeBetweenBreaks": "00:05:00",
-        "MaxTimeBetweenBreaks": "00:30:00",
-        "MinLength": "00:00:02",
-        "MaxLength": "00:00:25",
-        "RampLength": "00:00:05"
-      },
-      "Rises": {
-        "Count": 3,
-        "EarliestTime": "00:10:00",
-        "LengthEach": "00:00:30",
-        "Amount": 0.08
-      },
-      "Peaks": {
-        "LinkToFeature": true,
-        "Amplitude": 0.8,
-        "MinWavelengthFactor": 1.0,
-        "MaxWavelengthFactor": 5.0,
-        "Variation": {
-          "Randomness": 0.8,
-          "Progression": 0.8
-        }
-      }
-    }    
+    }
   ]
 }
