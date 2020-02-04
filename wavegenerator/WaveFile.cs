@@ -14,8 +14,6 @@ namespace wavegenerator
         protected readonly int overallFileSize;
         protected readonly int N;
 
-        public IProgressReporter ProgressReporter { get; set; }
-
         public WaveFile()
         {
             this.LengthSeconds = Settings.Instance.TrackLength.TotalSeconds;
@@ -50,11 +48,6 @@ namespace wavegenerator
 
                 for (int n = 0; n < N; n++)
                 {
-                    if(ProgressReporter != null && (n % (Settings.SamplingFrequency*10)) == 0) //report every 10 seconds of the file
-                    {
-                        ProgressReporter.ReportProgress((double)n / N);
-                    }
-
                     double t = LengthSeconds * ((double)n) / N;
 
                     for (int c = 0; c < Channels; c++)

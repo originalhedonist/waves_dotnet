@@ -47,32 +47,20 @@ namespace wavegenerator
                         names[i] = await GetName(i);
                     }
 
-                    Console.CursorVisible = false;
                     var maxNameLength = names.Max(n => n.Length);
-                    const int reportColumns = 50;
-                    IProgressReporter[] progressReporters = new IProgressReporter[Settings.Instance.NumFiles];
                     for(int i = 0; i < Settings.Instance.NumFiles; i++)
                     {
-                        var cursorTop = Console.CursorTop;
-                        Console.Write($"Writing {names[i].PadRight(maxNameLength)}...[");
-                        var cursorLeft = Console.CursorLeft;
-                        Console.WriteLine($"{new string(Enumerable.Repeat(' ', reportColumns).ToArray())}]");
-                        progressReporters[i] = new ConsoleProgressReporter(cursorTop, cursorLeft, reportColumns);
+                        Console.WriteLine($"Writing {names[i].PadRight(maxNameLength)}...");
                     }
 
-                    var endCursorTop = Console.CursorTop;
 
                     hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
-                        .Select(i => WriteFile(i, names[i], progressReporters[i]))
+                        .Select(i => WriteFile(i, names[i]))
                         .ToArray();
                     await Task.WhenAll(tasks);
 
                     stopwatch.Stop();
-                    Console.CursorTop = endCursorTop + 1;
-                    Console.CursorLeft = 0;
-                    Console.CursorVisible = true;
-
                     ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created in {stopwatch.Elapsed}", ConsoleColor.Green);
                 }
             }
@@ -92,13 +80,12 @@ namespace wavegenerator
 
         public static readonly object ConsoleLockObj = new object();
 
-        private static async Task WriteFile(int uniqueifier, string name, IProgressReporter progressReporter)
+        private static async Task WriteFile(int uniqueifier, string name)
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
             var patterns = Settings.Instance.ChannelSettings.Select(c => 
                 new BreakApplier(c.Breaks, new RiseApplier(c.Rises, new PulseGenerator(c)))).ToArray();
             var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
-            carrierFrequencyApplier.ProgressReporter = progressReporter;
             await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
 
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
@@ -106,13 +93,11 @@ namespace wavegenerator
             {
                 if (ConvertToMp3($"{compositionName}.wav"))
                 {
-                    progressReporter.AddMessage($"Converting {compositionName} to .mp3...");
-                    progressReporter.AddMessage($"Converted {compositionName} to .mp3 using lame. Removing wav.");
                     File.Delete($"{compositionName}.wav");
                 }
                 else
                 {
-                    progressReporter.AddMessage($"(could not convert {compositionName} to .mp3)");
+                    ConsoleWriter.WriteLine($"(could not convert {compositionName} to .mp3)", ConsoleColor.Red);
                 }
             }
         }

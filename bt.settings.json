@@ -48,8 +48,8 @@
       },
       "Wetness": {
         "LinkToFeature": true,
-        "Minimum": 0.5,
-        "Maximum": 0.6,
+        "Minimum": 0.4,
+        "Maximum": 0.5,
         "Variation": {
           "Randomness": 0.5,
           "Progression": 1.5
