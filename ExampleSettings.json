@@ -69,7 +69,7 @@
         "LengthEach": "00:00:30",
         "Amount": 0.08
       },
-      "Peaks": {
+      "Peaksx": {
         "LinkToFeature": true,
         "Amplitude": 0.8,
         "MinWavelengthFactor": 1.0,

@@ -1,7 +1,7 @@
 {
   "Randomization": true,
   "ConvertToMp3": true,
-  "NumFiles": 1,
+  "NumFiles": 2,
   "Naming": {
     "Specific": [ "Mike", "Terry" ]
   },
