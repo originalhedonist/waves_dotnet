@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace wavegenerator
 {
@@ -16,11 +17,11 @@ namespace wavegenerator
             breaks = breakTimes.Select(t => new Break(t, breakModel)).ToArray();
         }
 
-        public override double Amplitude(double t, int n, int channel)
+        public override async Task<double> Amplitude(double t, int n, int channel)
         {
             var brk = breaks.FirstOrDefault(b => b.IsWithin(t));
             var att = brk?.Attenuation(t) ?? 1;
-            var a = att * pattern.Amplitude(t, n, channel);
+            var a = att * await pattern.Amplitude(t, n, channel);
             return a;
         }
 

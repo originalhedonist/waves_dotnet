@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace wavegenerator
 {
@@ -34,7 +35,7 @@ namespace wavegenerator
             return times;
         }
 
-        public override double Amplitude(double t, int n, int channel)
+        public override async Task<double> Amplitude(double t, int n, int channel)
         {
             //Inclusive at start, exclusive at end, always have 't' at LHS for consistency.
             double proportionOfPattern;
@@ -63,7 +64,7 @@ namespace wavegenerator
                 }
             }
 
-            return proportionOfPattern * pattern.Amplitude(t, n, channel);
+            return proportionOfPattern * await pattern.Amplitude(t, n, channel);
         }
     }
 }

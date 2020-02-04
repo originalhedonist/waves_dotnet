@@ -1,0 +1,154 @@
+{
+  "Randomization": true,
+  "ConvertToMp3": true,
+  "NumFiles": 7,
+  "Naming": {
+    "Specific": [
+      "Charlie",
+      "Jack",
+      "Ryan",
+      "Ollie",
+      "Jamie",
+      "Elliot",
+      "Luke"
+    ]
+  },
+  "TrackLength": "00:45:00",
+  "NumberOfChannels": 2,
+  "PhaseShiftCarrier": true,
+  "PhaseShiftPulses": true,
+  "ChannelSettings": [
+    {
+      "Sections": {
+        "TotalLength": "00:01:30",
+        "MinFeatureLength": "00:01:00",
+        "MaxFeatureLength": "00:01:00",
+        "FeatureLengthVariation": {
+          "Randomness": 0.0,
+          "Progression": 0.0
+        },
+        "MinRampLength": "00:00:15",
+        "MaxRampLength": "00:00:15",
+        "RampLengthVariation": {
+          "Randomness": 0.8,
+          "Progression": 1.5
+        },
+        "ChanceOfFeature": 0.5
+      },
+      "CarrierFrequency": {
+        "Left": 300.0,
+        "Right": 300.0
+      },
+      "PulseFrequency": {
+        "Quiescent": 1.2,
+        "Low": 0.6,
+        "High": 2.4,
+        "ChanceOfHigh": 0.8,
+        "Variation": {
+          "Randomness": 1.0,
+          "Progression": 0.8
+        }
+      },
+      "Wetness": {
+        "LinkToFeature": true,
+        "Minimum": 0.3,
+        "Maximum": 0.3,
+        "Variation": {
+          "Randomness": 0.5,
+          "Progression": 1.5
+        }
+      },
+      "Breaks": {
+        "MinTimeSinceStartOfTrack": "00:10:00",
+        "MinTimeBetweenBreaks": "00:05:00",
+        "MaxTimeBetweenBreaks": "00:30:00",
+        "MinLength": "00:00:02",
+        "MaxLength": "00:00:25",
+        "RampLength": "00:00:05"
+      },
+      "Rises": {
+        "Count": 2,
+        "EarliestTime": "00:10:00",
+        "LengthEach": "00:01:00",
+        "Amount": 0.08
+      },
+      "Peaks": {
+        "LinkToFeature": true,
+        "Amplitude": 0.85,
+        "MinWavelengthFactor": 6.0,
+        "MaxWavelengthFactor": 2.0,
+        "Variation": {
+          "Randomness": 0.85,
+          "Progression": 1.0
+        }
+      },
+      "Troughs": {
+        "LinkToFeature": true,
+        "Amplitude": 0.15,
+        "MinWavelengthFactor": 3.0,
+        "MaxWavelengthFactor": 1.0,
+        "Variation": {
+          "Randomness": 0.85,
+          "Progression": 1.0
+        }
+      }
+    },
+    {
+      "Sections": {
+        "TotalLength": "00:00:01",
+        "MinFeatureLength": "00:00:01",
+        "MaxFeatureLength": "00:00:01",
+        "FeatureLengthVariation": {
+          "Randomness": 0.0,
+          "Progression": 0.0
+        },
+        "MinRampLength": "00:00:00",
+        "MaxRampLength": "00:00:00",
+        "RampLengthVariation": {
+          "Randomness": 0.0,
+          "Progression": 0.0
+        },
+        "ChanceOfFeature": 1.0
+      },
+      "CarrierFrequency": {
+        "Left": 300.0,
+        "Right": 300.0
+      },
+      "PulseFrequency": {
+        "Quiescent": 0.5,
+        "Low": 0.5,
+        "High": 1.0,
+        "ChanceOfHigh": 1.0,
+        "Variation": {
+          "Randomness": 0.0,
+          "Progression": 0.8
+        }
+      },
+      "Wetness": {
+        "LinkToFeature": true,
+        "Minimum": 0.0,
+        "Maximum": 0.0,
+        "Variation": {
+          "Randomness": 0.5,
+          "Progression": 1.5
+        }
+      },
+      "Rises": {
+        "Count": 1,
+        "EarliestTime": "00:00:00",
+        "LengthEach": "00:45:00",
+        "Amount": 0.3
+      },
+      "Troughs": {
+        "LinkToFeature": false,
+        "Amplitude": 0.001,
+        "MinWavelengthFactor": 70.0,
+        "MaxWavelengthFactor": 1.0,
+        "Variation": {
+          "Randomness": 0.0,
+          "Progression": 0.8
+        }
+      }
+    }
+  ]
+}

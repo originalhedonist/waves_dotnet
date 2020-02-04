@@ -59,7 +59,7 @@ namespace wavegenerator
 
                     for (int c = 0; c < Channels; c++)
                     {
-                        double A = Amplitude(t, n, c);
+                        double A = await Amplitude(t, n, c);
                         if (A < -1 || A > 1)
                         {
                             throw new InvalidOperationException($"Amplitude must be -1 to 1. Amplitude for n = {n}, c = {c} was {A}.");
@@ -74,6 +74,6 @@ namespace wavegenerator
         }
 
 
-        public abstract double Amplitude(double t, int n, int channel);
+        public abstract Task<double> Amplitude(double t, int n, int channel);
     }
 }

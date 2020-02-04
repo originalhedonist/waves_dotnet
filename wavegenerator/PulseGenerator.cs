@@ -2,6 +2,8 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace wavegenerator
 {
@@ -16,7 +18,10 @@ namespace wavegenerator
         protected readonly double baseFrequency;
         protected readonly double sectionLengthSeconds;
         protected readonly int numSections;
-
+        private readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
+        private readonly ConcurrentDictionary<(int, FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbability), string>();
+        private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
+        private readonly Script<double> waveformScript;
 
         public PulseGenerator(ChannelSettingsModel channelSettings) : base(phaseShiftChannels: Settings.Instance.PhaseShiftPulses)
         {
@@ -30,11 +35,15 @@ namespace wavegenerator
             lastPeakAmplitude = new double?[Channels];
             inPeak = new bool[Channels];
             inTrough = new bool[Channels];
+            if (channelSettings.WaveformExpression != null)
+            {
+                waveformScript = WaveformExpression.Parse(channelSettings.WaveformExpression);
+            }
         }
 
-        public override double Amplitude(double t, int n, int channel)
+        public override async Task<double> Amplitude(double t, int n, int channel)
         {
-            double baseA = AmplitudeInternal(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
+            double baseA = await AmplitudeInternal(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
 
             //apply wetness
             double wetness = Wetness(t, n);
@@ -45,7 +54,19 @@ namespace wavegenerator
             return a;
         }
 
-        private double AmplitudeInternal(double t, int n, int channel)
+        protected override async Task<double> GetWaveformSample(double[] x, bool phaseShiftChannels, int channel)
+        {
+            if(waveformScript != null)
+            {
+                double phaseShift = phaseShiftChannels && channel == 1 ? 0.25 : 0; //hardcode 0.25 seconds
+                var result = await waveformScript.RunAsync(new WaveformExpressionParams { x = x[channel] + phaseShift });
+                if (result.Exception != null) throw result.Exception;
+                return -result.ReturnValue; // (negative, cos wetness inverts it)
+            }
+            else return await base.GetWaveformSample(x, phaseShiftChannels, channel);
+        }
+
+        private async Task<double> AmplitudeInternal(double t, int n, int channel)
         {
             double amplitude;
             var f = Frequency(t, n, channel);
@@ -57,7 +78,7 @@ namespace wavegenerator
 
             var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
             x[channel] += dx;
-            amplitude = (phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]);
+            amplitude = await GetWaveformSample(x, phaseShiftChannels, channel);
 
             //peak detection looks like trough detection... but use 'peaks' settings
             bool justReachedPeak = channelSettings.Peaks != null && lastAmplitude[channel].HasValue && amplitude <= channelSettings.Peaks.GetLimit() && lastAmplitude[channel].Value > channelSettings.Peaks.GetLimit();
@@ -218,12 +239,6 @@ namespace wavegenerator
             }) : new TabletopParams();
         }
 
-        //should only be called once, and cached.
-        // It might (and very probably will) do 'Random' operations, so want the same one for the whole segment!
-
-        private readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
-        private readonly ConcurrentDictionary<(int, FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbability), string>();
-        private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         protected int Section(int n) => (int)(n / (sectionLengthSeconds * Settings.SamplingFrequency));
         protected override double Frequency(double t, int n, int channel)
         {

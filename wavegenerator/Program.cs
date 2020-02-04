@@ -20,14 +20,6 @@ namespace wavegenerator
         private static bool acceptName;
         public static async Task Main(string[] allArgs)
         {
-            //var expression = CSharpScript.Create<double>("2*Math.PI*x",
-            //    ScriptOptions.Default.WithImports("System.IO", "System"),
-            //    typeof(WaveformExpressionParams));
-
-            //var res1 = await expression.RunAsync(new WaveformExpressionParams { x = 42 });
-            //var res2 = await expression.RunAsync(new WaveformExpressionParams { x = 0.5 });
-
-            //return;
             var stopwatch = Stopwatch.StartNew();
             try
             {

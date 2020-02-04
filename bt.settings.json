@@ -3,11 +3,11 @@
   "ConvertToMp3": true,
   "NumFiles": 1,
   "Naming": {
-    "Specific": [ "Test" ]
+    "Specific": [ "Mike", "Terry" ]
   },
-  "TrackLength": "00:05:00",
+  "TrackLength": "00:45:00",
   "NumberOfChannels": 2,
-  "PhaseShiftCarrier": false,
+  "PhaseShiftCarrier": true,
   "PhaseShiftPulses": true,
   "ChannelSettings": [
     {
@@ -28,19 +28,19 @@
         }
       },
       "FeatureProbability": {
-        "Wetness": 0.2,
-        "Frequency": 0.5,
-        "PeaksAndTroughs": 0.2
+        "Wetness": 0.15,
+        "Frequency": 0.85,
+        "PeaksAndTroughs": 0.0
       },
       "CarrierFrequency": {
-        "Left": 500.0,
-        "Right": 500.0
+        "Left": 800.0,
+        "Right": 800.0
       },
       "PulseFrequency": {
         "Quiescent": 0.8,
-        "Low": 0.4,
+        "Low": 0.2,
         "High": 2.0,
-        "ChanceOfHigh": 0.8,
+        "ChanceOfHigh": 0.5,
         "Variation": {
           "Randomness": 1.0,
           "Progression": 0.8
@@ -48,8 +48,8 @@
       },
       "Wetness": {
         "LinkToFeature": true,
-        "Minimum": 0.2,
-        "Maximum": 0.7,
+        "Minimum": 0.5,
+        "Maximum": 0.6,
         "Variation": {
           "Randomness": 0.5,
           "Progression": 1.5
@@ -64,20 +64,10 @@
         "RampLength": "00:00:05"
       },
       "Rises": {
-        "Count": 1,
+        "Count": 3,
         "EarliestTime": "00:01:00",
         "LengthEach": "00:00:30",
         "Amount": 0.08
-      },
-      "Peaks": {
-        "LinkToFeature": true,
-        "Amplitude": 0.8,
-        "MinWavelengthFactor": 1.0,
-        "MaxWavelengthFactor": 5.0,
-        "Variation": {
-          "Randomness": 0.8,
-          "Progression": 0.8
-        }
       }
     }
   ]

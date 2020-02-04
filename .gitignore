@@ -1,4 +1,6 @@
 *.settings.json
+!bt.settings.json
+!2b.settings.json
 *.mp3
 *.wav
 *.report.txt
