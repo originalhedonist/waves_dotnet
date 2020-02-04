@@ -59,7 +59,7 @@ namespace wavegenerator
             if(waveformScript != null)
             {
                 double phaseShift = phaseShiftChannels && channel == 1 ? 0.25 : 0; //hardcode 0.25 seconds
-                var result = await waveformScript.RunAsync(new WaveformExpressionParams { x = x[channel] + phaseShift });
+                var result = await waveformScript.RunAsync(new WaveformExpressionParams { x = (x[channel]/(2*Math.PI)) + phaseShift }); //divide by 2pi here so the frequency matches (and we can model in excel against a 2pift sin graph)
                 if (result.Exception != null) throw result.Exception;
                 return -result.ReturnValue; // (negative, cos wetness inverts it)
             }
