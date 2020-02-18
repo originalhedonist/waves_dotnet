@@ -38,6 +38,10 @@ To link the channels, have only one `ChannelSettings` section, even if NumberOfC
 To have independent channels, have two `ChannelSettings` sections - even if they are both the same (the will almost certainly be different if `Randomization` is true)
 Examples can be found in `Settings.IndependentChannels.json` and `Settings.LinkedChannels.json`.
 
+### WaveformExpressionParams
+This is a function that will be evaluated at runtime. It can use the following parameters:
+* *x* - this is 'pseudo-time', or pulse-frequency-stretched time. If PulseFrequency is 1, then sin(x) = sin(2*pi*f*t). The frequency of a sin(x) wave will match the pulse frequency.
+
 ## To develop using Visual Studio:
 
 * Download any version of Visual Studio from Microsoft
