@@ -15,9 +15,6 @@ namespace wavegenerator
         protected readonly double?[] lastPeakAmplitude; //whether the last 'peak' was top or bottom
         protected readonly bool[] inPeak;
         protected readonly bool[] inTrough;
-        protected readonly double baseFrequency;
-        protected readonly double sectionLengthSeconds;
-        protected readonly int numSections;
         
         private readonly ConcurrentDictionary<(int, FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbability), string>();
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
@@ -26,10 +23,6 @@ namespace wavegenerator
         public PulseGenerator(ChannelSettingsModel channelSettings) : base(phaseShiftChannels: Settings.Instance.PhaseShiftPulses)
         {
             this.channelSettings = channelSettings;
-
-            this.baseFrequency = channelSettings.PulseFrequency.Quiescent;
-            this.sectionLengthSeconds = channelSettings.Sections.TotalLength.TotalSeconds;
-            this.numSections = channelSettings.NumSections();
             lastAmplitude = new double?[Channels];
             lastPeak = new double?[Channels];
             lastPeakAmplitude = new double?[Channels];
@@ -43,7 +36,8 @@ namespace wavegenerator
 
         public override async Task<double> Amplitude(double t, int n, int channel)
         {
-            double baseA = await AmplitudeInternal(t, n, channel);// must always calculate it, even if we don't use it - it might (does) increment something important
+            double baseA = channelSettings.PulseFrequency == null ? -1 : // if we have no PulseFrequencySection at all - we don't care about frequency (or about incrementing anything)
+                await AmplitudeInternal(t, n, channel);// but if we have a pulse frequency, must always calculate it, even if we don't use it - it might (does) increment something important
 
             //apply wetness
             double wetness = Wetness(t, n);
@@ -121,6 +115,7 @@ namespace wavegenerator
         {
             //first decide if it has a tabletop at all.
             //the chance of it being something at all rises from 0% to 100%.
+            var numSections = channelSettings.NumSections();
             double progression = ((float)section + 1) / numSections; // <= 1
 
             //if it's a tabletop:
@@ -128,7 +123,7 @@ namespace wavegenerator
                 channelSettings.Sections.FeatureLengthVariation.ProportionAlong(progression,
                     channelSettings.Sections.MinFeatureLength.TotalSeconds,
                     channelSettings.Sections.MaxFeatureLength.TotalSeconds);
-            double maxRampLength = Math.Min(channelSettings.Sections.MaxRampLength.TotalSeconds, (sectionLengthSeconds - topLength) / 2);
+            double maxRampLength = Math.Min(channelSettings.Sections.MaxRampLength.TotalSeconds, (channelSettings.Sections.TotalLength.TotalSeconds - topLength) / 2);
             if (channelSettings.Sections.MinRampLength.TotalSeconds > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
 
             // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
@@ -147,6 +142,7 @@ namespace wavegenerator
 
         private double CreateTopFrequency(int section)
         {
+            var numSections = channelSettings.NumSections();
             double progression = ((float)section) / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
             var isRise = Probability.Resolve(
@@ -154,7 +150,7 @@ namespace wavegenerator
                 channelSettings.PulseFrequency.ChanceOfHigh, true);
             double frequencyLimit = isRise ? channelSettings.PulseFrequency.High : channelSettings.PulseFrequency.Low;
             double topFrequency = channelSettings.PulseFrequency.Variation.ProportionAlong(progression,
-                baseFrequency,
+                channelSettings.PulseFrequency.Quiescent,
                 frequencyLimit);
             if (topFrequency <= 0)
                 throw new InvalidOperationException("TopFrequency must be > 0");
@@ -167,14 +163,21 @@ namespace wavegenerator
         private readonly ConcurrentDictionary<int, double> maxTroughWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
         private readonly ChannelSettingsModel channelSettings;
 
+        private int Section(int n) => (int)(n / (channelSettings.Sections.TotalLength.TotalSeconds * Settings.SamplingFrequency));
+
         private double Wetness(double t, int n)
         {
+            if (channelSettings.Wetness == null) return 0;
+
+            if (channelSettings.Sections == null) return channelSettings.Wetness.Maximum;
+
             // rise in a sin^2 fashion from MinWetness to MaxWetness
             int section = Section(n);
-            double ts = t - (section * sectionLengthSeconds); //time through the current section
+            double ts = t - (section * channelSettings.Sections.TotalLength.TotalSeconds); //time through the current section
 
             double maxForSection = maxWetnessForSectionCache.GetOrAdd(section, s =>
             {
+                var numSections = channelSettings.NumSections();
                 double progression = ((double)s) / Math.Max(1, numSections - 1); // <= 1
                 double max = channelSettings.Wetness.Variation.ProportionAlong(progression, channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
                 return max;
@@ -183,14 +186,13 @@ namespace wavegenerator
             double value;
             if (channelSettings.Wetness.LinkToFeature)
             {
-                var isThisFeature = feature == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
+                var isThisFeature = nameof(FeatureProbability.Wetness) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
                 {
                     string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
                     return v;
                 });
 
-                var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.Wetness));
-                value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, channelSettings.Wetness.Minimum, maxForSection, p);
+                value = FeatureProvider.FeatureValue(channelSettings, t, n, channelSettings.Wetness.Minimum, maxForSection);
             }
             else
             {
@@ -204,12 +206,14 @@ namespace wavegenerator
 
         private double PeakOrTroughWavelengthFactor(PulseTopLengthModel model, ConcurrentDictionary<int, double> cache, double t, int n)
         {
-            if (model == null) return 1;
+            if (model == null || channelSettings.Sections == null) return 1;
+
             int section = Section(n);
-            double ts = t - (section * sectionLengthSeconds); //time through the current section
+            double ts = t - (section * channelSettings.Sections.TotalLength.TotalSeconds); //time through the current section
 
             double maxForSection = cache.GetOrAdd(section, s =>
             {
+                var numSections = channelSettings.NumSections();
                 double progression = ((double)s) / Math.Max(1, numSections - 1); // <= 1
                 double max = model.Variation.ProportionAlong(progression, model.MinWavelengthFactor, model.MaxWavelengthFactor);
                 return max;
@@ -218,8 +222,7 @@ namespace wavegenerator
             double value;
             if (model.LinkToFeature)
             {
-                var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.PeaksAndTroughs));
-                value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, model.MinWavelengthFactor, maxForSection, p);
+                value = FeatureProvider.FeatureValue(channelSettings, t, n, model.MinWavelengthFactor, maxForSection);
             }
             else
             {
@@ -230,24 +233,11 @@ namespace wavegenerator
 
         protected override double Frequency(double t, int n, int channel)
         {
+            if (channelSettings.Sections == null) return channelSettings.PulseFrequency.High;
             int section = Section(n);
-            var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.Frequency));
-
             var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
-            if (topFrequency <= 0) throw new InvalidOperationException("TopFrequency must be >= 0");
-
-            double ts = t - (section * sectionLengthSeconds); //time through the current section
-
-            double frequency = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, baseFrequency, topFrequency, p);
-
+            double frequency = FeatureProvider.FeatureValue(channelSettings, t, n, channelSettings.PulseFrequency.Quiescent, topFrequency);
             return frequency;
-        }
-
-        private void ValidateParams(TabletopParams p)
-        {
-            if (p.TopLength < 0) throw new InvalidOperationException("TopLength must be >= 0");
-            if (p.RampLength < 0) throw new InvalidOperationException("RampLength must be >= 0");
-            if (p.TopLength + 2 * p.RampLength > sectionLengthSeconds) throw new InvalidOperationException("TopLength + 2*RampLength must be <= sectionLengthSeconds");
         }
     }
 }

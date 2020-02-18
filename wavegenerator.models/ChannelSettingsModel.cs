@@ -11,7 +11,6 @@ namespace wavegenerator
         [WaveformExpressionValidation]
         public string WaveformExpression { get; set; }
 
-        [Required]
         [SectionModelValidation(nameof(Sections))]
         [ValidateObject]
         public SectionModel Sections { get; set; }
@@ -24,11 +23,9 @@ namespace wavegenerator
         [ValidateObject]
         public CarrierFrequencyModel CarrierFrequency { get; set; }
 
-        [Required]
         [ValidateObject]
         public PulseFrequencyModel PulseFrequency { get; set; }
 
-        [Required]
         [ValidateObject]
         public WetnessModel Wetness { get; set; }
 
