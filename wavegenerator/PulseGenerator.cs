@@ -18,7 +18,7 @@ namespace wavegenerator
         protected readonly double baseFrequency;
         protected readonly double sectionLengthSeconds;
         protected readonly int numSections;
-        private readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
+        
         private readonly ConcurrentDictionary<(int, FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbability), string>();
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         private readonly Script<double> waveformScript;
@@ -183,6 +183,12 @@ namespace wavegenerator
             double value;
             if (channelSettings.Wetness.LinkToFeature)
             {
+                var isThisFeature = feature == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
+                {
+                    string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
+                    return v;
+                });
+
                 var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.Wetness));
                 value = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, channelSettings.Wetness.Minimum, maxForSection, p);
             }
@@ -222,24 +228,6 @@ namespace wavegenerator
             return value;
         }
 
-        protected TabletopParams GetTabletopParamsBySection(int section, string feature)
-        {
-            var isThisFeature = feature == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
-            {
-
-                string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
-                Debug.WriteLine($"Section {section} has feature {v}");
-                return v;
-            });
-            return isThisFeature ? paramsCache.GetOrAdd(section, s =>
-            {
-                var p = CreateFeatureParamsForSection(section);
-                ValidateParams(p);
-                return p;
-            }) : new TabletopParams();
-        }
-
-        protected int Section(int n) => (int)(n / (sectionLengthSeconds * Settings.SamplingFrequency));
         protected override double Frequency(double t, int n, int channel)
         {
             int section = Section(n);
