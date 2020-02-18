@@ -38,9 +38,15 @@ To link the channels, have only one `ChannelSettings` section, even if NumberOfC
 To have independent channels, have two `ChannelSettings` sections - even if they are both the same (the will almost certainly be different if `Randomization` is true)
 Examples can be found in `Settings.IndependentChannels.json` and `Settings.LinkedChannels.json`.
 
-### WaveformExpressionParams
+### CarrierFrequency:
+This is always a string. But the string can either just be a hardcoded number, or a function using any of the following parameters:
+* **v** - the feature value. When in the middle of a feature, this will be 1. When not in a feature, it will be zero. When on the ramp up/ramp down, it will be between 0 and 1.
+* **t, T** - the progression through the track. t = current time, T = total track length.
+
+### WaveformExpressionParams:
 This is a function that will be evaluated at runtime. It can use the following parameters:
-* *x* - this is 'pseudo-time', or pulse-frequency-stretched time. If PulseFrequency is 1, then sin(x) = sin(2*pi*f*t). The frequency of a sin(x) wave will match the pulse frequency.
+* **x** - this is 'pseudo-time', or pulse-frequency-stretched time. If PulseFrequency is 1, then sin(x) = sin(2*pi*f*t). The frequency of a sin(x) wave will match the pulse frequency.
+
 
 ## To develop using Visual Studio:
 

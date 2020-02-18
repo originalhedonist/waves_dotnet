@@ -63,7 +63,7 @@ namespace wavegenerator
         private async Task<double> AmplitudeInternal(double t, int n, int channel)
         {
             double amplitude;
-            var f = Frequency(t, n, channel);
+            var f = await Frequency(t, n, channel);
 
             if (inPeak[channel] && inTrough[channel]) throw new InvalidOperationException($"Sanity check failed.");
 
@@ -231,7 +231,7 @@ namespace wavegenerator
             return value;
         }
 
-        protected override double Frequency(double t, int n, int channel)
+        protected override async Task<double> Frequency(double t, int n, int channel)
         {
             if (channelSettings.Sections == null) return channelSettings.PulseFrequency.High;
             int section = Section(n);

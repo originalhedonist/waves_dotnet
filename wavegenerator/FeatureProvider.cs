@@ -13,6 +13,8 @@ namespace wavegenerator
         // get a feature-dependent amplitude based on the time through the track
         public static double FeatureValue(ChannelSettingsModel channelSettings, double t, int n, double min, double max)
         {
+            if (channelSettings == null) return 0;
+
             double sectionLengthSeconds = channelSettings.Sections.TotalLength.TotalSeconds;
             int section = Section(channelSettings, n);
             double ts = t - (section * channelSettings.Sections.TotalLength.TotalSeconds); //time through the current section

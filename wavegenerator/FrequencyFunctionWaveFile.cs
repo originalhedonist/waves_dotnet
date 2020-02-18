@@ -16,7 +16,7 @@ namespace wavegenerator
 
         }
 
-        protected abstract double Frequency(double t, int n, int channel);
+        protected abstract Task<double> Frequency(double t, int n, int channel);
 
         protected virtual double PeakLength(double t, int n, int channel) => 0.0;
         protected virtual double TroughLength(double t, int n, int channel) => 0.0;
@@ -27,7 +27,7 @@ namespace wavegenerator
         public override async Task<double> Amplitude(double t, int n, int channel)
         {
             double amplitude;
-            var f = Frequency(t, n, channel);
+            var f = await Frequency(t, n, channel);
 
             var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
             x[channel] += dx;
