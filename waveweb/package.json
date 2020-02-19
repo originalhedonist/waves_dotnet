@@ -1,0 +1,88 @@
+{
+  "name": "waveweb",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "postinstall": "npm run build",
+    "dev": "vue-cli-service build --watch",
+    "serve": "vue-cli-service serve",
+    "dtos": "cd src && typescript-ref",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "publish": "vue-cli-service build && dotnet publish -c Release",
+    "test": "vue-cli-service test:unit",
+    "test-watch": "vue-cli-service test:unit --watchAll",
+    "e2e": "vue-cli-service test:e2e"
+  },
+  "dependencies": {
+    "@servicestack/client": "^1.0.31",
+    "es6-shim": "^0.35.5",
+    "font-awesome": "^4.7.0",
+    "vue": "^2.6.10",
+    "vue-class-component": "^7.1.0",
+    "vue-property-decorator": "^8.2.1",
+    "vue-router": "^3.0.7",
+    "vuetify": "^1.5.16"
+  },
+  "devDependencies": {
+    "@babel/polyfill": "^7.4.4",
+    "@types/jest": "^24.0.15",
+    "@vue/cli-plugin-babel": "^3.9.2",
+    "@vue/cli-plugin-e2e-cypress": "^3.9.0",
+    "@vue/cli-plugin-typescript": "^3.9.0",
+    "@vue/cli-plugin-unit-jest": "^3.9.0",
+    "@vue/cli-service": "^3.9.3",
+    "@vue/test-utils": "^1.0.0-beta.29",
+    "babel-core": "^6.26.3",
+    "gulp": "^4.0.2",
+    "node-sass": "^4.12.0",
+    "sass-loader": "^7.1.0",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3",
+    "vue-cli-plugin-vuetify": "^0.5.0",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      "^.+\\.vue$": "vue-jest",
+      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub",
+      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
+    },
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    },
+    "snapshotSerializers": [
+      "jest-serializer-vue"
+    ],
+    "testMatch": [
+      "**/tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)"
+    ],
+    "modulePathIgnorePatterns": [
+      "<rootDir>[/\\\\](node_modules|wwwroot|bin)[/\\\\]"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!vue-router)"
+    ],
+    "testURL": "http://localhost:5000/",
+    "setupTestFrameworkScriptFile": "<rootDir>/tests/jest-setup.js"
+  }
+}
