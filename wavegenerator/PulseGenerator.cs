@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
 
@@ -110,36 +108,6 @@ namespace wavegenerator
         }
 
 
-
-        private TabletopParams CreateFeatureParamsForSection(int section)
-        {
-            //first decide if it has a tabletop at all.
-            //the chance of it being something at all rises from 0% to 100%.
-            var numSections = channelSettings.NumSections();
-            double progression = ((float)section + 1) / numSections; // <= 1
-
-            //if it's a tabletop:
-            double topLength =
-                channelSettings.Sections.FeatureLengthVariation.ProportionAlong(progression,
-                    channelSettings.Sections.MinFeatureLength.TotalSeconds,
-                    channelSettings.Sections.MaxFeatureLength.TotalSeconds);
-            double maxRampLength = Math.Min(channelSettings.Sections.MaxRampLength.TotalSeconds, (channelSettings.Sections.TotalLength.TotalSeconds - topLength) / 2);
-            if (channelSettings.Sections.MinRampLength.TotalSeconds > maxRampLength) throw new InvalidOperationException($"MinRampLength must be <= maxRampLength. MinTabletopLength could be too high.");
-
-            // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
-            double rampLength =
-                channelSettings.Sections.RampLengthVariation.ProportionAlong(progression,
-                    maxRampLength,
-                    channelSettings.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
-            var result = new TabletopParams
-            {
-                RampLength = rampLength,
-                TopLength = topLength,
-                RampsUseSin2 = true
-            };
-            return result;
-        }
-
         private double CreateTopFrequency(int section)
         {
             var numSections = channelSettings.NumSections();
@@ -207,8 +175,14 @@ namespace wavegenerator
         private double PeakOrTroughWavelengthFactor(PulseTopLengthModel model, ConcurrentDictionary<int, double> cache, double t, int n)
         {
             if (model == null || channelSettings.Sections == null) return 1;
-
             int section = Section(n);
+            var isThisFeature = nameof(FeatureProbability.PeaksAndTroughs) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
+            {
+                string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
+                return v;
+            });
+            if (!isThisFeature) return 1;
+
             double ts = t - (section * channelSettings.Sections.TotalLength.TotalSeconds); //time through the current section
 
             double maxForSection = cache.GetOrAdd(section, s =>
@@ -233,8 +207,15 @@ namespace wavegenerator
 
         protected override async Task<double> Frequency(double t, int n, int channel)
         {
-            if (channelSettings.Sections == null) return channelSettings.PulseFrequency.High;
+            if (channelSettings.Sections == null) return channelSettings.PulseFrequency.Quiescent;
             int section = Section(n);
+            var isThisFeature = nameof(FeatureProbability.Frequency) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
+            {
+                string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
+                return v;
+            });
+            if (!isThisFeature) return channelSettings.PulseFrequency.Quiescent;
+
             var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
             double frequency = FeatureProvider.FeatureValue(channelSettings, t, n, channelSettings.PulseFrequency.Quiescent, topFrequency);
             return frequency;
