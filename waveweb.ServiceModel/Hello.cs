@@ -6,6 +6,7 @@ namespace waveweb.ServiceModel
     [Route("/hello/{Name}")]
     public class Hello : IReturn<HelloResponse>
     {
+        public int TheNumber { get; set; }
         public string Name { get; set; }
     }
 
