@@ -15,6 +15,7 @@
     "e2e": "vue-cli-service test:e2e"
   },
   "dependencies": {
+    "@mdi/font": "^4.9.95",
     "@servicestack/client": "^1.0.31",
     "es6-shim": "^0.35.5",
     "font-awesome": "^4.7.0",

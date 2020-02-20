@@ -1,7 +1,24 @@
 <template>
     
     <v-container>
-        Hello2
+        <v-expansion-panels >
+            <v-expansion-panel>
+                <v-expansion-panel-header>
+                    Track details
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    These are the track details
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+            <v-expansion-panel>
+                <v-expansion-panel-header>
+                    Section details
+                </v-expansion-panel-header>
+                <v-expansion-panel-content>
+                    Details about the section length, etc
+                </v-expansion-panel-content>
+            </v-expansion-panel>
+        </v-expansion-panels>
     </v-container>
 </template>
 
