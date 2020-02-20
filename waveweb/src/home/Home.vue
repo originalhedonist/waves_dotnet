@@ -36,22 +36,20 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    
     import { Hello, CreateFileRequest } from '../dtos';
     import '@/dtos';
-import HelloWorldVue from '../components/HelloWorld.vue';
-    import VarianceEditor from '../components/VarianceEditor.vue'
+    import VarianceEditor from '../components/VarianceEditor.vue';
     @Component({
         components: {
-            VarianceEditor
-        }
+            VarianceEditor,
+        },
     })
     export default class HomeComponent extends Vue {
         @Prop() public name: string;
         public txtName: string = this.name;
         public result: string = '';
         public Request: CreateFileRequest = new CreateFileRequest({
-            trackLengthMinutes: 20
+            trackLengthMinutes: 20,
         });
 
         public activated() {

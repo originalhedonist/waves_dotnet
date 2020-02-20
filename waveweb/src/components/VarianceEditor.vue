@@ -13,12 +13,6 @@
     @Component({})
     export default class VarianceEditor extends Vue {
     }
-  //  export default {
-  //name: 'VarianceEditor',
-  //props: {
-  //  msg: String,
-  //},
-//};
 
 </script>
 
