@@ -7,7 +7,17 @@
                     Track details
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    These are the track details
+                    <v-container fluid>
+                        <v-row>
+                            <v-slider v-model="Request.trackLengthMinutes"
+                                      label="Track length (minutes)"
+                                      thumb-label="always"
+                                      min="1"
+                                      max="60" />
+
+                        </v-row>
+                    </v-container>
+
                 </v-expansion-panel-content>
             </v-expansion-panel>
             <v-expansion-panel>
@@ -15,7 +25,7 @@
                     Section details
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    Details about the section length, etc
+                    <VarianceEditor/>
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </v-expansion-panels>
@@ -26,15 +36,23 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-   
-    import { Hello } from '../dtos';
-
-
-    @Component({})
+    
+    import { Hello, CreateFileRequest } from '../dtos';
+    import '@/dtos';
+import HelloWorldVue from '../components/HelloWorld.vue';
+    import VarianceEditor from '../components/VarianceEditor.vue'
+    @Component({
+        components: {
+            VarianceEditor
+        }
+    })
     export default class HomeComponent extends Vue {
         @Prop() public name: string;
         public txtName: string = this.name;
         public result: string = '';
+        public Request: CreateFileRequest = new CreateFileRequest({
+            trackLengthMinutes: 20
+        });
 
         public activated() {
             this.nameChanged(this.name);
@@ -43,7 +61,6 @@
         @Watch('txtName')
         public onNameChanged(value: string, oldValue: string) {
             this.nameChanged(value);
-
         }
 
         public async nameChanged(name: string) {

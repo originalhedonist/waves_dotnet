@@ -24,5 +24,10 @@ namespace waveweb.ServiceInterface
         {
             return new HelloResponse { Result = $"Hello, {request.Name}!" };
         }
+
+        public object Any(CreateFileRequest request)
+        {
+            return new CreateFileResponse();
+        }
     }
 }

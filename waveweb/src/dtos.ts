@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-02-20 09:55:23
+Date: 2020-02-20 16:20:35
 Version: 5.80
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -37,6 +37,25 @@ export interface IHasBearerToken
 
 export interface IPost
 {
+}
+
+export class CreateFileRequestVariance
+{
+    public randomness: number;
+    public progression: number;
+
+    public constructor(init?: Partial<CreateFileRequestVariance>) { (Object as any).assign(this, init); }
+}
+
+export class CreateFileRequestChannelSettings
+{
+    public waveformExpression: string;
+    public sectionLengthSeconds: number;
+    public minFeatureLengthSeconds: number;
+    public maxFeatureLengthSeconds: number;
+    public featureLengthVariation: CreateFileRequestVariance;
+
+    public constructor(init?: Partial<CreateFileRequestChannelSettings>) { (Object as any).assign(this, init); }
 }
 
 // @DataContract
@@ -83,6 +102,22 @@ export class HelloResponse
     public result: string;
 
     public constructor(init?: Partial<HelloResponse>) { (Object as any).assign(this, init); }
+}
+
+// @Route("/createfile")
+export class CreateFileRequest implements IReturn<CreateFileRequest>
+{
+    public randomization: boolean;
+    public trackLengthMinutes: number;
+    public dualChannel: boolean;
+    public phaseShiftCarrier: boolean;
+    public phaseShiftPulses: boolean;
+    public left: CreateFileRequestChannelSettings;
+    public right: CreateFileRequestChannelSettings;
+
+    public constructor(init?: Partial<CreateFileRequest>) { (Object as any).assign(this, init); }
+    public createResponse() { return new CreateFileRequest(); }
+    public getTypeName() { return 'CreateFileRequest'; }
 }
 
 // @DataContract
