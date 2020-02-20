@@ -25,7 +25,7 @@
                     Section details
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    <VarianceEditor/>
+                    <VarianceEditor :variance="Request.left.featureLengthVariation"/>
                 </v-expansion-panel-content>
             </v-expansion-panel>
         </v-expansion-panels>
@@ -36,7 +36,7 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { Hello, CreateFileRequest } from '../dtos';
+    import { Hello, CreateFileRequest, CreateFileRequestChannelSettings, CreateFileRequestVariance } from '../dtos';
     import '@/dtos';
     import VarianceEditor from '../components/VarianceEditor.vue';
     @Component({
@@ -50,6 +50,18 @@
         public result: string = '';
         public Request: CreateFileRequest = new CreateFileRequest({
             trackLengthMinutes: 20,
+            left: new CreateFileRequestChannelSettings({
+                featureLengthVariation: new CreateFileRequestVariance({
+                    progression: 0.7,
+                    randomness: 0.3,
+                }),
+            }),
+            right: new CreateFileRequestChannelSettings({
+                featureLengthVariation: new CreateFileRequestVariance({
+                    progression: 0.6,
+                    randomness: 0.4,
+                }),
+            }),
         });
 
         public activated() {
