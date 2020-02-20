@@ -68,7 +68,8 @@ export default class HomeComponent extends Vue {
         if (name) {
             const request = new Hello();
             request.name = name;
-            const r = await client.get(request);
+            request.theNumber = 45;
+            const r = await client.post(request);
             this.result = r.result;
         } else {
             this.result = '';

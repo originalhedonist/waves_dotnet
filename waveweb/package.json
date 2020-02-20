@@ -6,7 +6,7 @@
     "postinstall": "npm run build",
     "dev": "vue-cli-service build --watch",
     "serve": "vue-cli-service serve",
-    "dtos": "cd src && typescript-ref",
+    "dtos": "cd src && typescript-ref https://localhost:5001 dtos.ts",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "publish": "vue-cli-service build && dotnet publish -c Release",

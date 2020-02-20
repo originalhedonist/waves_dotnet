@@ -1,19 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using Funq;
 using ServiceStack;
-using ServiceStack.Configuration;
 using waveweb.ServiceInterface;
-using ServiceStack.Script;
-using ServiceStack.Web;
-using System;
-using ServiceStack.Text;
-using ServiceStack.Logging;
 
 namespace waveweb
 {
