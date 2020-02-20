@@ -4,7 +4,7 @@ import './app.scss';
 import 'es6-shim';
 
 import Vue from 'vue';
-import './plugins/vuetify';
+import vuetify from './plugins/vuetify';
 import App from './App.vue';
 
 import router from './router';
@@ -13,4 +13,5 @@ const app = new Vue({
     el: '#app',
     render: (h) => h(App),
     router,
+    vuetify
 });

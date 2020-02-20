@@ -1,8 +1,8 @@
 <template>
     
-    <v-flex>
-        <div>Hello2</div>
-    </v-flex>
+    <v-container>
+        Hello2
+    </v-container>
 </template>
 
 <script lang="ts">

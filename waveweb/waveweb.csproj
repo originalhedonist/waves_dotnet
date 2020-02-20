@@ -7,6 +7,10 @@
   </PropertyGroup>
   
   <ItemGroup>
+    <None Remove="src\plugins\vuetify.ts" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
   
@@ -17,6 +21,10 @@
   <ItemGroup>
     <ProjectReference Include="..\waveweb.ServiceInterface\waveweb.ServiceInterface.csproj" />
     <ProjectReference Include="..\waveweb.ServiceModel\waveweb.ServiceModel.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <TypeScriptCompile Include="src\plugins\vuetify.ts" />
   </ItemGroup>
 
   <Target Name="OnFirstUse" BeforeTargets="Build" Condition=" !Exists('wwwroot\dist') ">
