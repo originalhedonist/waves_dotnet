@@ -1,9 +1,18 @@
 ﻿<template>
-    <v-container>
-        <div>Editing variance</div>
-        <div>Randomness: {{variance.randomness}}</div>
-        <div>Progression: {{variance.progression}}</div>
-    </v-container>
+    <div>
+        <v-slider v-model="variance.randomness"
+                  label="Randomness"
+                  thumb-label="always"
+                  min="0"
+                  max="1"
+                  step="0.01" />
+        <v-slider v-model="variance.progression"
+                  label="Progression"
+                  thumb-label="always"
+                  min="0"
+                  max="1"
+                  step="0.01" />
+    </div>
 </template>
 
 <script lang="ts">

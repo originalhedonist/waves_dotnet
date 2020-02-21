@@ -1,22 +1,20 @@
 <template>
     
-    <v-container>
+    <v-container fluid>
         <v-expansion-panels >
             <v-expansion-panel>
                 <v-expansion-panel-header>
                     Track details
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    <v-container fluid>
-                        <v-row>
-                            <v-slider v-model="Request.trackLengthMinutes"
-                                      label="Track length (minutes)"
-                                      thumb-label="always"
-                                      min="1"
-                                      max="60" />
+                    <v-row>
+                        <v-slider v-model="Request.trackLengthMinutes"
+                                    label="Track length (minutes)"
+                                    thumb-label="always"
+                                    min="1"
+                                    max="60" />
 
-                        </v-row>
-                    </v-container>
+                    </v-row>
 
                 </v-expansion-panel-content>
             </v-expansion-panel>
