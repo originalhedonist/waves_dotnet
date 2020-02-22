@@ -12,7 +12,7 @@
                   min="0"
                   max="1"
                   step="0.01" />
-        <GChart type="ColumnChart"
+        <GChart type="ScatterChart"
                 :data="chartData"
                 :options="chartOptions"/>
         <!--<div>Randomness: {{variance.randomness}}</div>-->
@@ -27,6 +27,8 @@
    
     import { Hello, CreateFileRequest, CreateFileRequestVariance } from '../dtos';
     import { GChart } from 'vue-google-charts';
+    import * as _ from 'underscore';
+    import { Debounce } from 'typescript-debounce';
 
     import '@/dtos';
     @Component({
@@ -36,20 +38,31 @@
     })
     export default class VarianceEditor extends Vue {
         @Prop() public variance: CreateFileRequestVariance;
-
-        mounted() {
-            console.log('mounted, progression = ', this.variance.progression, ' randomness = ', this.variance.randomness);
-        }
-
-        get chartData() {
-            console.info('returning new chart data');
-            return [
-                ['Year', 'Sales', 'Expenses', 'Profit'],
-                ['2014', 1000, this.variance.randomness * 1000, 200],
-                ['2015', 1170, this.variance.randomness * 1170, 250],
-                ['2016', 660, this.variance.randomness * 660, 300],
-                ['2017', 1030, this.variance.randomness * 1030, 350]
+        public chartData = [
+                ['Time through track', 'Percentage from min to max value'],
+                [1, 1],
+                [2, 4],
+                [3, 9],
+                [4,16],
             ];
+
+        @Debounce({millisecondsDelay: 500})
+        @Watch('variance.progression')
+        @Watch('variance.randomness')
+        redrawChart() {
+            var newChartData: [any] = [['Time through track', 'Percentage from min to max value']];
+            const maxNumPoints = 1000;
+            const p = this.variance.progression;
+            const r = this.variance.randomness;
+            for (var i = 1; i <= maxNumPoints; i++) {
+                const progress = i / maxNumPoints;
+                const randomnessComponent = Math.pow(Math.random(), r);
+                const progressionComponent = Math.pow(progress, p);
+                const desiredValue = randomnessComponent * progressionComponent;
+                const newData = [progress, desiredValue];
+                newChartData.push(newData);
+            }
+            this.chartData = newChartData;
         }
 
         get chartOptions() {

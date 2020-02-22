@@ -1272,6 +1272,11 @@
       "integrity": "sha512-7NQmHra/JILCd1QqpSzl8+mJRc8ZHz3uDm8YV1Ks9IhK0epEiTw8aIErbvH9PI+6XbqhyIQy3462nEsn7UVzjQ==",
       "dev": true
     },
+    "@types/underscore": {
+      "version": "1.9.4",
+      "resolved": "https://registry.npmjs.org/@types/underscore/-/underscore-1.9.4.tgz",
+      "integrity": "sha512-CjHWEMECc2/UxOZh0kpiz3lEyX2Px3rQS9HzD20lxMvx571ivOBQKeLnqEjxUY0BMgp6WJWo/pQLRBwMW5v4WQ=="
+    },
     "@types/vue": {
       "version": "2.0.0",
       "resolved": "https://registry.npmjs.org/@types/vue/-/vue-2.0.0.tgz",
@@ -15241,6 +15246,11 @@
       "integrity": "sha512-ACzBtm/PhXBDId6a6sDJfroT2pOWt/oOnk4/dElG5G33ZL776N3Y6/6bKZJBFpd+b05F3Ct9qDjMeJmRWtE2/g==",
       "dev": true
     },
+    "typescript-debounce": {
+      "version": "0.2.3",
+      "resolved": "https://registry.npmjs.org/typescript-debounce/-/typescript-debounce-0.2.3.tgz",
+      "integrity": "sha512-v1Bc21BILdbPEonr7kstmuMn7AhQqngsZ6JR0VpSt1BFGTy/E1CmAmW49cXvoq7goBMG1nKaDvED2n55LD6yHg=="
+    },
     "uglify-js": {
       "version": "3.6.0",
       "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-3.6.0.tgz",
@@ -15266,6 +15276,11 @@
       "resolved": "https://registry.npmjs.org/unc-path-regex/-/unc-path-regex-0.1.2.tgz",
       "integrity": "sha1-5z3T17DXxe2G+6xrCufYxqadUPo=",
       "dev": true
+    },
+    "underscore": {
+      "version": "1.9.2",
+      "resolved": "https://registry.npmjs.org/underscore/-/underscore-1.9.2.tgz",
+      "integrity": "sha512-D39qtimx0c1fI3ya1Lnhk3E9nONswSKhnffBI0gME9C99fYOkNi04xs8K6pePLhvl1frbDemkaBQ5ikWllR2HQ=="
     },
     "undertaker": {
       "version": "1.2.1",
