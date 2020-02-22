@@ -37,6 +37,7 @@
     import { Hello, CreateFileRequest, CreateFileRequestChannelSettings, CreateFileRequestVariance } from '../dtos';
     import '@/dtos';
     import VarianceEditor from '../components/VarianceEditor.vue';
+    
     @Component({
         components: {
             VarianceEditor,

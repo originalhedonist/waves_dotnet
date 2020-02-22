@@ -22,8 +22,14 @@
     import { client } from '../shared';
    
     import { Hello, CreateFileRequest, CreateFileRequestVariance } from '../dtos';
+    import { GChart } from 'vue-google-charts';
+
     import '@/dtos';
-    @Component({})
+    @Component({
+        components: {
+            GChart
+        }
+    })
     export default class VarianceEditor extends Vue {
         @Prop() public variance: CreateFileRequestVariance;
 
