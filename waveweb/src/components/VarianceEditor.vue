@@ -12,6 +12,10 @@
                   min="0"
                   max="1"
                   step="0.01" />
+        <GChart type="ColumnChart"
+                :data="chartData"
+                :options="chartOptions"/>
+        <!--<div>Randomness: {{variance.randomness}}</div>-->
     </div>
 </template>
 
@@ -27,12 +31,35 @@
     import '@/dtos';
     @Component({
         components: {
-            GChart
-        }
+            GChart,
+        },
     })
     export default class VarianceEditor extends Vue {
         @Prop() public variance: CreateFileRequestVariance;
 
+        mounted() {
+            console.log('mounted, progression = ', this.variance.progression, ' randomness = ', this.variance.randomness);
+        }
+
+        get chartData() {
+            console.info('returning new chart data');
+            return [
+                ['Year', 'Sales', 'Expenses', 'Profit'],
+                ['2014', 1000, this.variance.randomness * 1000, 200],
+                ['2015', 1170, this.variance.randomness * 1170, 250],
+                ['2016', 660, this.variance.randomness * 660, 300],
+                ['2017', 1030, this.variance.randomness * 1030, 350]
+            ];
+        }
+
+        get chartOptions() {
+            return {
+                chart: {
+                    title: 'Company Performance',
+                    subtitle: 'Sales, Expenses, and Profit: 2014-2017',
+                }
+            }
+        }
     }
 
 </script>

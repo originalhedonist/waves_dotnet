@@ -8,6 +8,7 @@
   
   <ItemGroup>
     <None Remove="src\plugins\vuetify.ts" />
+    <None Remove="src\vue-google-charts.d.ts" />
   </ItemGroup>
   
   <ItemGroup>
@@ -24,6 +25,7 @@
   </ItemGroup>
   
   <ItemGroup>
+    <TypeScriptCompile Include="src\vue-google-charts.d.ts" />
     <TypeScriptCompile Include="src\plugins\vuetify.ts" />
   </ItemGroup>
 
