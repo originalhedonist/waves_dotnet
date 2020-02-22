@@ -8,6 +8,9 @@
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <v-row>
+                        <v-switch v-model="Request.randomization" label="Use randomization"/>
+                    </v-row>
+                    <v-row>
                         <v-slider v-model="Request.trackLengthMinutes"
                                   label="Track length (minutes)"
                                   thumb-label="always"
@@ -17,20 +20,31 @@
                     </v-row>
 
                     <v-row>
-                        <v-switch v-model="Request.dualChannel" label="Dual channel"></v-switch>
+                        <v-col cols="4">
+                            <v-switch v-model="Request.dualChannel" label="Dual channel"></v-switch>
+                       </v-col>
+                        <v-col cols="4">
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on }">
+                                    <v-switch v-on="on" :disabled="!Request.dualChannel" v-model="Request.phaseShiftCarrier" label="Phase shift carrier"></v-switch>
+                                </template>
+                                <div>Setting this flag means left uses sin(x) and right cos(x).</div>
+                            </v-tooltip>
+
+                        </v-col>
+
+                        <v-col cols="4">
+                            <v-tooltip top>
+                                <template v-slot:activator="{ on }">
+                                    <v-switch v-on="on" :disabled="!Request.dualChannel" v-model="Request.phaseShiftPulses" label="Phase shift pulses"></v-switch>
+                                </template>
+                                <div>Setting this flag means left uses sin(x) and right cos(x).</div>
+                                <div>(Ignored if custom waveform expression is provided however.)</div>
+
+                            </v-tooltip>
+
+                        </v-col>
                     </v-row>
-
-                    <transition name="fade">
-                        <div v-if="Request.dualChannel">
-                            <v-row>
-                                <v-switch v-model="Request.phaseShiftCarrier" label="Phase shift carrier frequency"></v-switch>
-                            </v-row>
-                            <v-row>
-                                <v-switch v-model="Request.phaseShiftPulses" label="Phase shift pulses"></v-switch>
-                            </v-row>
-                        </div>
-                    </transition>
-
 
                 </v-expansion-panel-content>
             </v-expansion-panel>
@@ -65,7 +79,7 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, CreateFileRequestChannelSettings, CreateFileRequestVariance } from '../dtos';
+    import { CreateFileRequest, ChannelSettings, Variance, Sections } from '../dtos';
     import '@/dtos';
     import VarianceEditor from '../components/VarianceEditor.vue';
     import ChannelEditor from '../components/ChannelEditor.vue';
@@ -84,16 +98,20 @@
 
         public Request: CreateFileRequest = new CreateFileRequest({
             trackLengthMinutes: 20,
-            channel0: new CreateFileRequestChannelSettings({
-                featureLengthVariation: new CreateFileRequestVariance({
-                    progression: 0.7,
-                    randomness: 0.3,
+            channel0: new ChannelSettings({
+                sections: new Sections({
+                    featureLengthVariation: new Variance({
+                        progression: 0.7,
+                        randomness: 0.3,
+                    }),
                 }),
             }),
-            channel1: new CreateFileRequestChannelSettings({
-                featureLengthVariation: new CreateFileRequestVariance({
-                    progression: 0.6,
-                    randomness: 0.4,
+            channel1: new ChannelSettings({
+                sections: new Sections({
+                    featureLengthVariation: new Variance({
+                        progression: 0.7,
+                        randomness: 0.3,
+                    }),
                 }),
             }),
         });

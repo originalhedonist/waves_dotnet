@@ -9,8 +9,6 @@ Vue.use(Router);
 
 const routes = [
   { path: '/', component: Home, props: { name: 'Vue' } },
-  { path: '/view1', component: View1 },
-  { path: '/view2', component: View2 },
   { path: '*', redirect: '/' },
 ];
 

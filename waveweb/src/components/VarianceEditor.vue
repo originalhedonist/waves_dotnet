@@ -25,7 +25,7 @@
     import { Component, Prop, Watch, Model } from 'vue-property-decorator';
     import { client } from '../shared';
 
-    import { CreateFileRequest, CreateFileRequestVariance } from '../dtos';
+    import { CreateFileRequest, Variance } from '../dtos';
     import { GChart } from 'vue-google-charts';
     import * as _ from 'underscore';
     import { Debounce } from 'typescript-debounce';
@@ -37,7 +37,7 @@
         },
     })
     export default class VarianceEditor extends Vue {
-        @Prop() public variance: CreateFileRequestVariance;
+        @Prop() public variance: Variance;
         public chartData = [
             ['x', 'y'],
             [0, 0],

@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\waveweb.ServiceInterface\waveweb.ServiceInterface.csproj" />
     <ProjectReference Include="..\waveweb.ServiceModel\waveweb.ServiceModel.csproj" />
+    <PackageReference Include="MathParser.org-mXparser" Version="4.4.2" />
 
     <PackageReference Include="NUnit" Version="3.12.*" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.15.*" />
