@@ -3,19 +3,6 @@ using System.ComponentModel;
 
 namespace waveweb.ServiceModel
 {
-    [Route("/hello")]
-    [Route("/hello/{Name}")]
-    public class Hello : IReturn<HelloResponse>
-    {
-        public int TheNumber { get; set; }
-        public string Name { get; set; }
-    }
-
-    public class HelloResponse
-    {
-        public string Result { get; set; }
-    }
-
     [Route("/createfile")]
     public class CreateFileRequest : IReturn<CreateFileRequest>
     {
@@ -24,8 +11,8 @@ namespace waveweb.ServiceModel
         public bool DualChannel { get; set; }
         public bool PhaseShiftCarrier { get; set; }
         public bool PhaseShiftPulses { get; set; }
-        public CreateFileRequestChannelSettings Left { get; set; }
-        public CreateFileRequestChannelSettings Right { get; set; }
+        public CreateFileRequestChannelSettings Channel0 { get; set; }
+        public CreateFileRequestChannelSettings Channel1 { get; set; }
     }
 
     public class CreateFileRequestChannelSettings

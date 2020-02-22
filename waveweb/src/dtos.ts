@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-02-20 17:23:31
+Date: 2020-02-22 14:56:26
 Version: 5.80
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -44,13 +44,6 @@ export class CreateFileRequestChannelSettings
     public constructor(init?: Partial<CreateFileRequestChannelSettings>) { (Object as any).assign(this, init); }
 }
 
-export class HelloResponse
-{
-    public result: string;
-
-    public constructor(init?: Partial<HelloResponse>) { (Object as any).assign(this, init); }
-}
-
 // @Route("/createfile")
 export class CreateFileRequest implements IReturn<CreateFileRequest>
 {
@@ -59,23 +52,11 @@ export class CreateFileRequest implements IReturn<CreateFileRequest>
     public dualChannel: boolean;
     public phaseShiftCarrier: boolean;
     public phaseShiftPulses: boolean;
-    public left: CreateFileRequestChannelSettings;
-    public right: CreateFileRequestChannelSettings;
+    public channel0: CreateFileRequestChannelSettings;
+    public channel1: CreateFileRequestChannelSettings;
 
     public constructor(init?: Partial<CreateFileRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new CreateFileRequest(); }
     public getTypeName() { return 'CreateFileRequest'; }
-}
-
-// @Route("/hello")
-// @Route("/hello/{Name}")
-export class Hello implements IReturn<HelloResponse>
-{
-    public theNumber: number;
-    public name: string;
-
-    public constructor(init?: Partial<Hello>) { (Object as any).assign(this, init); }
-    public createResponse() { return new HelloResponse(); }
-    public getTypeName() { return 'Hello'; }
 }
 

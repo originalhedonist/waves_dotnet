@@ -25,7 +25,7 @@
     import { Component, Prop, Watch, Model } from 'vue-property-decorator';
     import { client } from '../shared';
 
-    import { Hello, CreateFileRequest, CreateFileRequestVariance } from '../dtos';
+    import { CreateFileRequest, CreateFileRequestVariance } from '../dtos';
     import { GChart } from 'vue-google-charts';
     import * as _ from 'underscore';
     import { Debounce } from 'typescript-debounce';
@@ -73,7 +73,7 @@
         get chartOptions() {
             return {
                 legend: 'none',
-                pointSize: 5
+                pointSize: 5,
             };
         }
     }
