@@ -26,7 +26,6 @@
 
     import { CreateFileRequest, Variance } from '../dtos';
     import { GChart } from 'vue-google-charts';
-    import * as _ from 'underscore';
     import { Debounce } from 'typescript-debounce';
 
     import '@/dtos';

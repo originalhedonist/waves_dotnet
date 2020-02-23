@@ -17,6 +17,7 @@
                     </v-row>
                     <v-row>
                         <v-btn>Test</v-btn>
+                        <v-progress-circular v-if="testingWaveformexpression" :indeterminate="true"/>
                     </v-row>
                 </div>
             </v-expansion-panel-content>
@@ -39,9 +40,8 @@
     import { Component, Prop, Watch, Model } from 'vue-property-decorator';
     import { client } from '../shared';
 
-    import { CreateFileRequest, Variance, ChannelSettings } from '../dtos';
+    import { CreateFileRequest, Variance, ChannelSettings, TestPulseWaveformRequest } from '../dtos';
     import { GChart } from 'vue-google-charts';
-    import * as _ from 'underscore';
     import { Debounce } from 'typescript-debounce';
     import SectionEditor from '@/components/SectionEditor.vue';
     import FeatureProbabilityEditor from '@/components/FeatureProbabilityEditor.vue';
@@ -56,7 +56,15 @@
     export default class ChannelEditor extends Vue {
         @Prop() public channel: ChannelSettings;
 
-        public async testWaveformExpression
+        public testingWaveformExpression: boolean = false;
+        public async testWaveformExpression() {
+            this.testingWaveformExpression = true;
+            const testWaveformRequest = new TestPulseWaveformRequest({
+                sectionLengthSeconds: this.channel.sections.sectionLengthSeconds,
+                waveformExpression: this.channel.waveformExpression,
+            });
+            const result = await client.post(testWaveformRequest);
+        }
     }
 </script>
 

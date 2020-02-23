@@ -1,19 +1,20 @@
 /* Options:
-Date: 2020-02-23 11:57:02
+Date: 2020-02-23 20:05:18
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
 
 //GlobalNamespace: 
 //AddServiceStackTypes: True
-//AddResponseStatus: False
+AddResponseStatus: True
 //AddImplicitVersion: 
 //AddDescriptionAsComments: True
 //IncludeTypes: 
 //ExcludeTypes: 
-//DefaultImports: 
+DefaultImports: ResponseStatus:@servicestack/client
 */
 
+import { ResponseStatus } from '@servicestack/client';
 
 export interface IReturn<T>
 {
@@ -133,5 +134,26 @@ export class CreateFileRequest implements IReturn<CreateFileRequest>
     public constructor(init?: Partial<CreateFileRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new CreateFileRequest(); }
     public getTypeName() { return 'CreateFileRequest'; }
+}
+
+export class TestPulseWaveformResponse
+{
+    public success: boolean;
+    public errorMessage: string;
+    public data: number[];
+    public responseStatus: ResponseStatus;
+
+    public constructor(init?: Partial<TestPulseWaveformResponse>) { (Object as any).assign(this, init); }
+}
+
+// @Route("/testpulsewaveform")
+export class TestPulseWaveformRequest implements IReturn<TestPulseWaveformResponse>
+{
+    public waveformExpression: string;
+    public sectionLengthSeconds: number;
+
+    public constructor(init?: Partial<TestPulseWaveformRequest>) { (Object as any).assign(this, init); }
+    public createResponse() { return new TestPulseWaveformResponse(); }
+    public getTypeName() { return 'TestPulseWaveformRequest'; }
 }
 

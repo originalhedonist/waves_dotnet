@@ -39,7 +39,6 @@
 
     import { Sections } from '../dtos';
     import { GChart } from 'vue-google-charts';
-    import * as _ from 'underscore';
     import { Debounce } from 'typescript-debounce';
     import VarianceExpansionPanel from '@/components/VarianceExpansionPanel.vue';
 
@@ -95,7 +94,6 @@
             const maxRampLength = Math.min(
                 Math.min(this.sections.rampLengthRange[1], (this.sections.sectionLengthSeconds - minFeatureLength) / 2),
                 this.sections.rampLengthRange[0]); // therefore max ramp length can't be less than minRampLength either
-            console.log('minFeatureLength = ', minFeatureLength, ', maxFeatureLength = ', maxFeatureLength);
             for (let seconds = 0; seconds <= this.sections.sectionLengthSeconds; seconds += 0.5) {
                 const short = this.getYVal(seconds, minRampLength, minFeatureLength);
                 const long = this.getYVal(seconds, maxRampLength, maxFeatureLength);

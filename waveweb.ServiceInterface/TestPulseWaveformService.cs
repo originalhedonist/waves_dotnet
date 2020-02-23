@@ -7,7 +7,11 @@ namespace waveweb.ServiceInterface
     {
         public TestPulseWaveformResponse Post(TestPulseWaveformRequest testPulseWaveformRequest)
         {
-            return new TestPulseWaveformResponse();
+            return new TestPulseWaveformResponse
+            {
+                Success = false,
+                ErrorMessage = "The formula is not deemed acceptable to mine eye"
+            };
         }
     }
 }

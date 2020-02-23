@@ -114,7 +114,7 @@
                 featureProbability: new FeatureProbability({
                     frequencyWeighting: 1.0,
                     wetnessWeighting: 0.2,
-                    nothingWeighting: 0.8
+                    nothingWeighting: 0.8,
                 }),
             }),
             channel1: new ChannelSettings({
@@ -134,7 +134,7 @@
                 featureProbability: new FeatureProbability({
                     frequencyWeighting: 1.0,
                     wetnessWeighting: 0.2,
-                    nothingWeighting: 0.8
+                    nothingWeighting: 0.8,
                 }),
             }),
         });
