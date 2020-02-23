@@ -71,7 +71,7 @@
         }
 
         public get maxFeatureLength(): number {
-            return this.sections.sectionLengthSeconds;
+            return this.sections.sectionLengthSeconds - 2 * this.minRampLength;
         }
 
         @Debounce({ millisecondsDelay: 500 })
@@ -84,17 +84,21 @@
 
         public redrawVisualizationNow() {
             const newChartData: [any] = [['Time', 'Short', 'Long']];
-            for (let seconds = 0; seconds <= this.sections.sectionLengthSeconds; seconds += 0.5) {
-                const short = this.getYVal(seconds,
-                    this.sections.rampLengthRange[0],
-                    this.sections.featureLengthRange[0]);
+            const minFeatureLength = Math.min(
+                this.sections.featureLengthRange[0],
+                this.sections.sectionLengthSeconds - this.sections.rampLengthRange[0] * 2); // min usable feature length
+            const maxFeatureLength = Math.min(
+                this.sections.featureLengthRange[1],
+                this.sections.sectionLengthSeconds - this.sections.rampLengthRange[0] * 2); // max usable feature length
 
-                const maxRampLength = Math.min(
-                    this.sections.rampLengthRange[1],
-                    (this.sections.sectionLengthSeconds - this.sections.featureLengthRange[1]) / 2);
-                const long = this.getYVal(seconds,
-                    maxRampLength,
-                    this.sections.featureLengthRange[1]);
+            const minRampLength = this.sections.rampLengthRange[0]; // this is the one thing that can't be reduced
+            const maxRampLength = Math.min(
+                Math.min(this.sections.rampLengthRange[1], (this.sections.sectionLengthSeconds - minFeatureLength) / 2),
+                this.sections.rampLengthRange[0]); // therefore max ramp length can't be less than minRampLength either
+            console.log('minFeatureLength = ', minFeatureLength, ', maxFeatureLength = ', maxFeatureLength);
+            for (let seconds = 0; seconds <= this.sections.sectionLengthSeconds; seconds += 0.5) {
+                const short = this.getYVal(seconds, minRampLength, minFeatureLength);
+                const long = this.getYVal(seconds, maxRampLength, maxFeatureLength);
                 newChartData.push([seconds, short, long - short]);
             }
             this.chartData = newChartData;
