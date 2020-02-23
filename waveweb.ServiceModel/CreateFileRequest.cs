@@ -15,6 +15,20 @@ namespace waveweb.ServiceModel
         public ChannelSettings Channel1 { get; set; }
     }
 
+    [Route("/testpulsewaveform")]
+    public class TestPulseWaveformRequest : IReturn<TestPulseWaveformResponse>
+    {
+        public string WaveformExpression { get; set; }
+        public int SectionLengthSeconds { get; set; }
+    }
+
+    public class TestPulseWaveformResponse
+    {
+        public bool Success { get; set; }
+        public string ErrorMessage { get; set; }
+        public double[][] Data { get; set; }
+    }
+
     public class ChannelSettings
     {
         public bool UseCustomWaveformExpression { get; set; }

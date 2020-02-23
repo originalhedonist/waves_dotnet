@@ -33,7 +33,7 @@ namespace waveweb
 
     public class AppHost : AppHostBase
     {
-        public AppHost() : base("waveweb", typeof(MyServices).Assembly) { }
+        public AppHost() : base("waveweb", typeof(ServiceInterfaceAssemblyMarker).Assembly) { }
 
         // Configure your AppHost with the necessary configuration and dependencies your App needs
         public override void Configure(Container container)

@@ -15,7 +15,7 @@ namespace waveweb.Tests
         public UnitTest()
         {
             appHost = new BasicAppHost().Init();
-            appHost.Container.AddTransient<MyServices>();
+            appHost.Container.AddTransient<CreateFileService>();
         }
 
         [OneTimeTearDown]

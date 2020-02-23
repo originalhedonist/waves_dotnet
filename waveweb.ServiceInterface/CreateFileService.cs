@@ -3,21 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using ServiceStack;
 using ServiceStack.Script;
-using ServiceStack.DataAnnotations;
 using waveweb.ServiceModel;
 
 namespace waveweb.ServiceInterface
 {
-    [Exclude(Feature.Metadata)]
-    [FallbackRoute("/{PathInfo*}", Matches="AcceptsHtml")]
-    public class FallbackForClientRoutes
-    {
-        public string PathInfo { get; set; }
-    }
-
-
-
-    public class MyServices : Service
+    public class CreateFileService : Service
     {
         //Return index.html for unmatched requests so routing is handled on client
         public object Any(FallbackForClientRoutes request) => Request.GetPageResult("/");
@@ -26,5 +16,6 @@ namespace waveweb.ServiceInterface
         {
             return new CreateFileResponse();
         }
+
     }
 }

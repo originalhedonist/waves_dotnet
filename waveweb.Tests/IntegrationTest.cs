@@ -13,7 +13,7 @@ namespace waveweb.Tests
 
         class AppHost : AppSelfHostBase
         {
-            public AppHost() : base(nameof(IntegrationTest), typeof(MyServices).Assembly) { }
+            public AppHost() : base(nameof(IntegrationTest), typeof(CreateFileService).Assembly) { }
 
             public override void Configure(Container container)
             {

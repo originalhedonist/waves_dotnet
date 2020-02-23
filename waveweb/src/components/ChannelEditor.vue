@@ -55,6 +55,8 @@
     })
     export default class ChannelEditor extends Vue {
         @Prop() public channel: ChannelSettings;
+
+        public async testWaveformExpression
     }
 </script>
 
