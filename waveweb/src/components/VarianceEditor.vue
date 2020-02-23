@@ -15,7 +15,6 @@
         <GChart type="ScatterChart"
                 :data="chartData"
                 :options="chartOptions" />
-        <!--<div>Randomness: {{variance.randomness}}</div>-->
     </div>
 </template>
 

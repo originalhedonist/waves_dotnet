@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-02-22 19:56:42
+Date: 2020-02-23 11:57:02
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -36,11 +36,9 @@ export class Variance
 export class Sections
 {
     public sectionLengthSeconds: number;
-    public minFeatureLengthSeconds: number;
-    public maxFeatureLengthSeconds: number;
+    public featureLengthRange: number[];
     public featureLengthVariation: Variance;
-    public minRampLengthSeconds: number;
-    public maxRampLengthSeconds: number;
+    public rampLengthRange: number[];
     public rampLengthVariation: Variance;
 
     public constructor(init?: Partial<Sections>) { (Object as any).assign(this, init); }

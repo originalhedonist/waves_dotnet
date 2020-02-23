@@ -15,6 +15,8 @@ namespace waveweb.ServiceInterface
         public string PathInfo { get; set; }
     }
 
+
+
     public class MyServices : Service
     {
         //Return index.html for unmatched requests so routing is handled on client

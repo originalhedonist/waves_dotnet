@@ -21,3 +21,17 @@ a:hover {
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
 }
+
+.controls-card {
+    > h4 {
+        padding: 16px;
+        font-weight: normal;
+    }
+
+    > section {
+        padding-left: 24px; /* aligns with expansion panels */
+    }
+    +.controls-card {
+        margin-top: 20px;
+    }
+}

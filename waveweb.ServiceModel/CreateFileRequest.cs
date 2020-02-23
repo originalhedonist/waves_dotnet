@@ -31,11 +31,9 @@ namespace waveweb.ServiceModel
     public class Sections
     {
         public int SectionLengthSeconds { get; set; }
-        public int MinFeatureLengthSeconds { get; set; }
-        public int MaxFeatureLengthSeconds { get; set; }
+        public int[] FeatureLengthRange { get; set; }
         public Variance FeatureLengthVariation { get; set; }
-        public int MinRampLengthSeconds { get; set; }
-        public int MaxRampLengthSeconds { get; set; }
+        public int[] RampLengthRange { get; set; }
         public Variance RampLengthVariation { get; set; }
     }
 
