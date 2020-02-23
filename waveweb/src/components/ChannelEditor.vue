@@ -1,18 +1,15 @@
 ﻿<template>
     <div>
         <v-row>
-            <v-slider min="5" max="300" v-model="channel.sections.sectionLengthSeconds" label="Section length (seconds)" thumb-label="always" />
+            <v-slider min="1" max="300" v-model="channel.sections.sectionLengthSeconds" label="Section length (seconds)" thumb-label="always" />
         </v-row>
 
         <v-card class="controls-card">
             <h4>Ramp length</h4>
 
             <section>
-                <v-range-slider v-model="channel.sections.rampLengthRange" min="1" :max="maxRampLength" label="Range (seconds)" thumb-label="always" />
+                <v-range-slider v-model="channel.sections.rampLengthRange" label="Range (seconds)" thumb-label="always" min="1" max="5" />
             </section>
-            <section>{{channel.sections.rampLengthRange}}</section>
-            <section>{{channel.sections.rampLengthRange[0]}}</section>
-            <section>{{channel.sections.rampLengthRange[1]}}</section>
 
             <VarianceExpansionPanel :variance="channel.sections.rampLengthVariation" title="Variation" />
 
@@ -22,7 +19,7 @@
             <h4>Feature length</h4>
 
             <section>
-                <v-range-slider v-model="channel.sections.featureLengthRange" min="0" :max="channel.sections.sectionLengthSeconds - 2*channel.sections.rampLengthRange[0]" label="Range (seconds)" thumb-label="always"/>
+                <v-range-slider v-model="channel.sections.featureLengthRange" min="0" max="300" label="Range (seconds)" thumb-label="always"/>
             </section>
 
             <VarianceExpansionPanel :variance="channel.sections.featureLengthVariation" title="Feature length variation" />
@@ -63,24 +60,15 @@
     export default class ChannelEditor extends Vue {
         @Prop() public channel: ChannelSettings;
         public minRampLength: number = 1;
+        public minFeatureLength: number = 0;
 
-        public get maxRampLength(): number {
-            return Math.floor(this.channel.sections.sectionLengthSeconds / 2);
-        }
+        //public get maxRampLength(): number {
+        //    return Math.floor(this.channel.sections.sectionLengthSeconds / 2);
+        //}
 
-        @Watch('channel.sections.sectionLengthSeconds')
-        public sectionLengthChanged() {
-            const newRampLengthRange = this.channel.sections.rampLengthRange;
-
-            if (newRampLengthRange[1] > this.maxRampLength)
-                newRampLengthRange[1] = this.maxRampLength;
-
-            if (newRampLengthRange[0] >= newRampLengthRange[1])
-                newRampLengthRange[0] = newRampLengthRange[1] - 1;
-
-            this.channel.sections.rampLengthRange = newRampLengthRange;
-            console.log('section length changed maxRampLength = ', this.maxRampLength, 'rampLengthRange is now ', newRampLengthRange);
-        }
+        //public get maxFeatureLength(): number {
+        //    return this.channel.sections.sectionLengthSeconds;
+        //}
     }
 
 
