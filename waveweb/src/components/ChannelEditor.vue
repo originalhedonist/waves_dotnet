@@ -8,7 +8,7 @@
             <h4>Ramp length</h4>
 
             <section>
-                <v-range-slider v-model="channel.sections.rampLengthRange" label="Range (seconds)" thumb-label="always" min="1" max="5" />
+                <v-range-slider v-model="channel.sections.rampLengthRange" label="Range (seconds)" thumb-label="always" :min="minRampLength" :max="maxRampLength" />
             </section>
 
             <VarianceExpansionPanel :variance="channel.sections.rampLengthVariation" title="Variation" />
@@ -62,9 +62,9 @@
         public minRampLength: number = 1;
         public minFeatureLength: number = 0;
 
-        //public get maxRampLength(): number {
-        //    return Math.floor(this.channel.sections.sectionLengthSeconds / 2);
-        //}
+        public get maxRampLength(): number {
+            return Math.floor(this.channel.sections.sectionLengthSeconds / 2);
+        }
 
         //public get maxFeatureLength(): number {
         //    return this.channel.sections.sectionLengthSeconds;
