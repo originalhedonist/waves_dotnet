@@ -11,7 +11,7 @@
                 <v-range-slider v-model="sections.rampLengthRange" label="Range (seconds)" thumb-label="always" :min="minRampLength" :max="maxRampLength"/>
             </section>
 
-            <VarianceExpansionPanel :variance="sections.rampLengthVariation" title="Variation" />
+            <VarianceExpansionPanel :variance="sections.rampLengthVariation" title="Ramp length variation" />
 
         </v-card>
 

@@ -10,7 +10,7 @@
                   label="Progression"
                   thumb-label="always"
                   min="0"
-                  max="1"
+                  max="2"
                   step="0.01" />
         <GChart type="ScatterChart"
                 :data="chartData"

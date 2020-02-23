@@ -79,7 +79,7 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, ChannelSettings, Variance, Sections } from '../dtos';
+    import { CreateFileRequest, ChannelSettings, Variance, Sections, FeatureProbability } from '../dtos';
     import '@/dtos';
     import VarianceEditor from '../components/VarianceEditor.vue';
     import ChannelEditor from '../components/ChannelEditor.vue';
@@ -111,6 +111,11 @@
                         randomness: 0.3,
                     }),
                 }),
+                featureProbability: new FeatureProbability({
+                    frequencyWeighting: 1.0,
+                    wetnessWeighting: 0.2,
+                    nothingWeighting: 0.8
+                }),
             }),
             channel1: new ChannelSettings({
                 sections: new Sections({
@@ -125,6 +130,11 @@
                         progression: 0.7,
                         randomness: 0.3,
                     }),
+                }),
+                featureProbability: new FeatureProbability({
+                    frequencyWeighting: 1.0,
+                    wetnessWeighting: 0.2,
+                    nothingWeighting: 0.8
                 }),
             }),
         });
