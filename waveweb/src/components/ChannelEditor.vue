@@ -13,11 +13,12 @@
                 <v-switch v-model="channel.useCustomWaveformExpression" label="Use custom waveform expression"/>
                 <div v-if="channel.useCustomWaveformExpression">
                     <v-row>
-                        <v-text-field label="Waveform expression" :value="channel.waveformExpression" />
+                        <v-text-field label="Waveform expression" v-model="channel.waveformExpression"
+                                      :error-messages="waveformExpressionError"/>
                     </v-row>
                     <v-row>
-                        <v-btn>Test</v-btn>
-                        <v-progress-circular v-if="testingWaveformexpression" :indeterminate="true"/>
+                        <v-btn @click="testWaveformExpression" style="margin-right:20px">Test</v-btn>
+                        <v-progress-circular v-if="testingWaveformExpression" :indeterminate="true"/>
                     </v-row>
                 </div>
             </v-expansion-panel-content>
@@ -57,6 +58,13 @@
         @Prop() public channel: ChannelSettings;
 
         public testingWaveformExpression: boolean = false;
+        public waveformExpressionError: string|null = null;
+
+        @Watch('channel.waveformExpression')
+        public onWaveformExpressionChanged() {
+            this.waveformExpressionError = null;
+        }
+
         public async testWaveformExpression() {
             this.testingWaveformExpression = true;
             const testWaveformRequest = new TestPulseWaveformRequest({
@@ -64,6 +72,17 @@
                 waveformExpression: this.channel.waveformExpression,
             });
             const result = await client.post(testWaveformRequest);
+            try {
+                if (result.errorMessage) {
+                    this.waveformExpressionError = result.errorMessage;
+                } else if (result.success) {
+                    this.waveformExpressionError = null;
+                    // do the data...
+                }
+            }
+            finally {
+                this.testingWaveformExpression = false;
+            }
         }
     }
 </script>
