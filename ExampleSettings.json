@@ -1,6 +1,6 @@
 {
   "Randomization": true,
-  "ConvertToMp3": true,
+  "ConvertToMp3": false,
   "NumFiles": 1,
   "Naming": {
     "Specific": [ "Test" ]
