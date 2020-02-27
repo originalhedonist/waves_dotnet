@@ -20,6 +20,11 @@ namespace wavegenerator.tests
             this.output = output;
         }
 
+        [Fact]
+        public void InvalidSettings()
+        {
+            Assert.Throws<ValidationException>(() => LoadAndValidateSettings("Settings__Invalid.json"));
+        }
 
         [Theory]
         [InlineData("Settings_FrequencyLinked.json", "C6CE387BCE819FA67AC23EEE999DA4A22A2248D02C6A33B98448FEAE469A0FD3")]
