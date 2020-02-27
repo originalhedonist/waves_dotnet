@@ -45,7 +45,7 @@ namespace wavegenerator
             {
                 if (sectionModel.MinFeatureLength > sectionModel.MaxFeatureLength) return new ValidationResult($"{prefix}: {nameof(SectionModel.MinFeatureLength)} must be <= {nameof(SectionModel.MaxFeatureLength)}");
                 if (sectionModel.MinRampLength > sectionModel.MaxRampLength) return new ValidationResult($"{prefix}: {nameof(SectionModel.MinRampLength)} must be <= {nameof(SectionModel.MaxRampLength)}");
-                if (sectionModel.MinRampLength * 2 + sectionModel.MaxFeatureLength > sectionModel.TotalLength) return new ValidationResult($"{prefix}: {nameof(SectionModel.MaxRampLength)}x2 + {nameof(SectionModel.MaxFeatureLength)} must be <= {nameof(SectionModel.TotalLength)}");
+                if (sectionModel.MinRampLength.TotalSeconds * 2 + sectionModel.MaxFeatureLength.TotalSeconds > sectionModel.TotalLength.TotalSeconds) return new ValidationResult($"{prefix}: {nameof(SectionModel.MaxRampLength)}x2 + {nameof(SectionModel.MaxFeatureLength)} must be <= {nameof(SectionModel.TotalLength)}");
             }
             return ValidationResult.Success;
         }

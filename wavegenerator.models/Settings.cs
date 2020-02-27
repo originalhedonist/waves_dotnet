@@ -39,7 +39,7 @@ namespace wavegenerator
         [ValidateRiserLength]
         public ChannelSettingsModel[] ChannelSettings { get; set; }
 
-        public int NumSections(int channel) => (int)(TrackLength / ChannelSettings.ForChannel(channel).Sections.TotalLength);
+        public int NumSections(int channel) => (int)(TrackLength.TotalSeconds / ChannelSettings.ForChannel(channel).Sections.TotalLength.TotalSeconds);
     }
 
     public static class SettingsExtensions

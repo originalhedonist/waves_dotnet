@@ -6,7 +6,7 @@ namespace wavegenerator
 {
     public class ChannelSettingsModel
     {
-        public int NumSections() => (int)(Settings.Instance.TrackLength / Sections.TotalLength);
+        public int NumSections() => (int)(Settings.Instance.TrackLength.TotalSeconds / Sections.TotalLength.TotalSeconds);
 
         [WaveformExpressionValidation]
         public string WaveformExpression { get; set; }
