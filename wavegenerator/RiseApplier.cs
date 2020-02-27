@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace wavegenerator
 {
-    public class RiseApplier : WaveStream
+    public class RiseApplier : IPerChannelComponent
     {
         private readonly Settings settings;
         private readonly Randomizer randomizer;
@@ -39,7 +39,7 @@ namespace wavegenerator
             return times;
         }
 
-        public override async Task<double> Amplitude(double t, int n, int channel)
+        public async Task<double> Amplitude(double t, int n, int channel)
         {
             //Inclusive at start, exclusive at end, always have 't' at LHS for consistency.
             double proportionOfPattern;

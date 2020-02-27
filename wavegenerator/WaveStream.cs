@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace wavegenerator
 {
-    public abstract class WaveStream : IAmplitude
+    public class WaveStream : IAmplitude
     {
         protected const short bytesPerSample = 2;
         public double LengthSeconds { get; }
@@ -13,8 +13,9 @@ namespace wavegenerator
         protected readonly int overallDataSize;
         protected readonly int overallFileSize;
         protected readonly int N;
+        private readonly ChannelSplitter channelSplitter;
 
-        public WaveStream(Settings settings)
+        public WaveStream(Settings settings, ChannelSplitter channelSplitter)
         {
             this.LengthSeconds = settings.TrackLength.TotalSeconds;
             this.Channels = settings.NumberOfChannels;
@@ -25,7 +26,12 @@ namespace wavegenerator
             {
                 throw new InvalidOperationException("Channels must be either 1 or 2.");
             }
+
+            this.channelSplitter = channelSplitter;
         }
+
+        public Task<double> Amplitude(double t, int n, int channel) => channelSplitter.Amplitude(t, n, channel);
+        
 
         public async Task Write(string filePath)
         {
@@ -70,7 +76,5 @@ namespace wavegenerator
                 }
             }
         }
-
-        public abstract Task<double> Amplitude(double t, int n, int channel);
     }
 }

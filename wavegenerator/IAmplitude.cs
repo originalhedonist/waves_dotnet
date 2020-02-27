@@ -6,4 +6,9 @@ namespace wavegenerator
     {
         Task<double> Amplitude(double t, int n, int channel);
     }
+
+    public interface IPerChannelComponent : IAmplitude
+    {
+
+    }
 }

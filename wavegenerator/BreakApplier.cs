@@ -5,23 +5,23 @@ using System.Threading.Tasks;
 
 namespace wavegenerator
 {
-    public class BreakApplier : WaveStream
+    public class BreakApplier : IPerChannelComponent
     {
         private readonly Settings settings;
         private readonly WaveStream pattern;
         private readonly Randomizer randomizer;
         private readonly Break[] breaks;
 
-        public BreakApplier(Settings settings, BreakModel breakModel, WaveStream pattern, Randomizer randomizer) : base(settings)
+        public BreakApplier(Settings settings, BreakModel breakModel, WaveStream pattern, Randomizer randomizer)
         {
             this.settings = settings;
             this.pattern = pattern;
             this.randomizer = randomizer;
             var breakTimes = MakeBreaks(breakModel).ToArray();
-            breaks = breakTimes.Select(t => new Break(t, breakModel)).ToArray();
+            breaks = breakTimes.Select(t => new Break(randomizer, t, breakModel)).ToArray();
         }
 
-        public override async Task<double> Amplitude(double t, int n, int channel)
+        public async Task<double> Amplitude(double t, int n, int channel)
         {
             var brk = breaks.FirstOrDefault(b => b.IsWithin(t));
             var att = brk?.Attenuation(t) ?? 1;

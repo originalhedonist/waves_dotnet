@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis.Scripting;
 namespace wavegenerator
 {
 
-    public class PulseGenerator : FrequencyFunctionWaveFile
+    public class PulseGenerator : FrequencyFunctionWaveFile, IPerChannelComponent
     {
         private readonly ConcurrentDictionary<int, double> maxWetnessForSectionCache = new ConcurrentDictionary<int, double>();
         private readonly ConcurrentDictionary<int, double> maxPeakWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
@@ -26,18 +26,21 @@ namespace wavegenerator
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         private readonly Script<double> waveformScript;
 
-        public PulseGenerator(ChannelSettingsModel channelSettings, Settings settings, Randomizer randomizer, Probability probability, FeatureProvider featureProvider) : base(phaseShiftChannels: settings.PhaseShiftPulses)
+        public PulseGenerator(ChannelSettingsModel channelSettings, Settings settings, Randomizer randomizer, Probability probability, FeatureProvider featureProvider) :
+            base(numberOfChannels: settings.NumberOfChannels, phaseShiftChannels: settings.PhaseShiftPulses)
         {
             this.channelSettings = channelSettings;
             this.settings = settings;
             this.randomizer = randomizer;
             this.probability = probability;
             this.featureProvider = featureProvider;
-            lastAmplitude = new double?[Channels];
-            lastPeak = new double?[Channels];
-            lastPeakAmplitude = new double?[Channels];
-            inPeak = new bool[Channels];
-            inTrough = new bool[Channels];
+
+            var numberOfChannels = settings.NumberOfChannels;
+            lastAmplitude = new double?[numberOfChannels];
+            lastPeak = new double?[numberOfChannels];
+            lastPeakAmplitude = new double?[numberOfChannels];
+            inPeak = new bool[numberOfChannels];
+            inTrough = new bool[numberOfChannels];
             if (channelSettings.WaveformExpression != null)
             {
                 waveformScript = WaveformExpression.Parse(channelSettings.WaveformExpression);

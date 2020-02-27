@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using wavegenerator;
 
 namespace wavegenerator
 {
-    public class CarrierFrequencyApplier : FrequencyFunctionWaveFile
+    public class CarrierFrequencyApplier : FrequencyFunctionWaveFile, IPerChannelComponent
     {
         private readonly Settings settings;
         private readonly ChannelSettingsModel channelSettings;
@@ -14,7 +13,7 @@ namespace wavegenerator
         private readonly FeatureProvider featureProvider;
 
         public CarrierFrequencyApplier(Settings settings, ChannelSettingsModel channelSettingsModel, WaveStream pattern, FeatureProvider featureProvider) : 
-            base(phaseShiftChannels: settings.PhaseShiftCarrier)
+            base(numberOfChannels: settings.NumberOfChannels, phaseShiftChannels: settings.PhaseShiftCarrier)
         {
             this.settings = settings;
             this.channelSettings = channelSettingsModel;

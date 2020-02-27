@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Autofac;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,7 +43,9 @@ namespace wavegenerator
                 else
                 {
                     var filePath = args.Single();
-                    var settings = LoadAndValidateSettings(filePath);
+                    var settings = SettingsLoader.LoadAndValidateSettings(filePath);
+                    var settingsModule = new SettingsModule(settings);
+                    var container = DependencyConfig.ConfigureContainer(settingsModule);
 
                     string[] names = new string[settings.NumFiles];
                     for(int i = 0; i < settings.NumFiles; i++)
@@ -56,10 +59,9 @@ namespace wavegenerator
                         Console.WriteLine($"Writing {names[i].PadRight(maxNameLength)}...");
                     }
 
-
                     hasLame = settings.ConvertToMp3 && TestForLame();
                     var tasks = Enumerable.Range(0, settings.NumFiles)
-                        .Select(i => WriteFile(settings, i, names[i]))
+                        .Select(i => WriteFile(container, settings, i, names[i]))
                         .ToArray();
                     await Task.WhenAll(tasks);
 
@@ -75,25 +77,16 @@ namespace wavegenerator
             }
         }
 
-        private static Settings LoadAndValidateSettings(string filePath)
-        {
-            string json = File.ReadAllText(filePath);
-            var newSettings = JsonConvert.DeserializeObject<Settings>(json);
-            Validator.ValidateObject(newSettings, new ValidationContext(newSettings), true);
-            return newSettings;
-        }
-
         public static readonly object ConsoleLockObj = new object();
 
-        private static async Task WriteFile(Settings settings, int uniqueifier, string name)
+        private static async Task WriteFile(IComponentContext componentContext, Settings settings, int uniqueifier, string name)
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
-            var patterns = settings.ChannelSettings.Select(c => 
-                new BreakApplier(c.Breaks, new RiseApplier(c.Rises, new PulseGenerator(c, settings)))).ToArray();
-            var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
+            var waveStream = componentContext.Resolve<WaveStream>();
             await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(settings, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
 
-            await carrierFrequencyApplier.Write($"{compositionName}.wav");
+            await waveStream.Write($"{compositionName}.wav");
+
             if (settings.ConvertToMp3 && hasLame)
             {
                 if (ConvertToMp3($"{compositionName}.wav"))

@@ -11,11 +11,11 @@ namespace wavegenerator
         private readonly double endTime;
         private readonly TabletopParams tabletopParams;
 
-        public Break(TimeSpan midTime, BreakModel breakModel)
+        public Break(Randomizer randomizer, TimeSpan midTime, BreakModel breakModel)
         {
             this.midTime = midTime;
             rampLength = breakModel.RampLength;
-            length = Randomizer.GetRandom(0.5) * (breakModel.MaxLength - breakModel.MinLength) + breakModel.MinLength;
+            length = randomizer.GetRandom(0.5) * (breakModel.MaxLength - breakModel.MinLength) + breakModel.MinLength;
             startTime = (this.midTime - (0.5 * length) - rampLength).TotalSeconds;
             endTime = startTime + 2 * rampLength.TotalSeconds + length.TotalSeconds;
             tabletopParams = new TabletopParams

@@ -33,14 +33,13 @@ namespace wavegenerator.tests
         [InlineData("Settings_WetnessIndependent.json", "1E120A7FB6271590ABAD2F87822BF408B6D7D6E50CA7A63E358D30D5431713E3")]
         public async Task ValidSettings_VerifyFile(string settingsFile, string expectedSha256Hash)
         {
-            settings = LoadAndValidateSettings(settingsFile);
             var sha256 = SHA256.Create();
             using (var memoryStream = new MemoryStream())
             {
-                var patterns = settings.ChannelSettings.Select(c =>
-                    new BreakApplier(c.Breaks, new RiseApplier(c.Rises, new PulseGenerator(c)))).ToArray();
-                var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
-                await carrierFrequencyApplier.Write(memoryStream);
+                var settings = SettingsLoader.LoadAndValidateSettings(settingsFile);
+                var settingsModule = new SettingsModule(settings);
+                var container = DependencyConfig.ConfigureContainer(settingsModule);
+
                 await memoryStream.FlushAsync();
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 var hash = sha256.ComputeHash(memoryStream);

@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 
 namespace wavegenerator
 {
-    public abstract class FrequencyFunctionWaveFile : WaveStream
+    public abstract class FrequencyFunctionWaveFile : IAmplitude
     {
         protected readonly double[] x;
         protected readonly bool phaseShiftChannels = false;
-        public FrequencyFunctionWaveFile(bool phaseShiftChannels)
+        public FrequencyFunctionWaveFile(int numberOfChannels, bool phaseShiftChannels)
         {
-            x = new double[Channels];
-
+            x = new double[numberOfChannels];
             this.phaseShiftChannels = phaseShiftChannels;
 
         }
@@ -24,7 +23,7 @@ namespace wavegenerator
         protected virtual Task<double> GetWaveformSample(double[] x, bool phaseShiftChannels, int channel) =>
             Task.FromResult((phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]));
 
-        public override async Task<double> Amplitude(double t, int n, int channel)
+        public virtual async Task<double> Amplitude(double t, int n, int channel)
         {
             double amplitude;
             var f = await Frequency(t, n, channel);
