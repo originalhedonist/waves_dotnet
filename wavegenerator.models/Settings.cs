@@ -9,7 +9,6 @@ namespace wavegenerator
     public class Settings
     {
         public const int SamplingFrequency = 44100;
-        public static Settings Instance { get; set; }
 
         [Description("Whether to use randomization")]
         public bool Randomization { get; set; }
@@ -39,11 +38,11 @@ namespace wavegenerator
         [ValidateRiserLength]
         public ChannelSettingsModel[] ChannelSettings { get; set; }
 
-        public int NumSections(int channel) => (int)(TrackLength.TotalSeconds / ChannelSettings.ForChannel(channel).Sections.TotalLength.TotalSeconds);
+        public int NumSections(int channel, Settings settings) => (int)(TrackLength.TotalSeconds / ChannelSettings.ForChannel(settings, channel).Sections.TotalLength.TotalSeconds);
     }
 
     public static class SettingsExtensions
     {
-        public static T ForChannel<T>(this T[] items, int channel) => Settings.Instance.ChannelSettings.Length > 1 ? items[channel] : items.Single();
+        public static T ForChannel<T>(this T[] items, Settings settings, int channel) => settings.ChannelSettings.Length > 1 ? items[channel] : items.Single();
     }
 }

@@ -5,35 +5,44 @@ using System.Text;
 
 namespace wavegenerator
 {
-    public static class FeatureProvider
+    public class FeatureProvider
     {
-        private static int Section(ChannelSettingsModel channel, int n) => (int)(n / (channel.Sections.TotalLength.TotalSeconds * Settings.SamplingFrequency));
+        public FeatureProvider(ChannelSettingsModel channelSettings, Settings settings, Randomizer randomizer)
+        {
+            this.channelSettings = channelSettings;
+            this.settings = settings;
+            this.randomizer = randomizer;
+        }
+        private int Section(int n) => (int)(n / (channelSettings.Sections.TotalLength.TotalSeconds * Settings.SamplingFrequency));
         private static readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
+        private readonly ChannelSettingsModel channelSettings;
+        private readonly Settings settings;
+        private readonly Randomizer randomizer;
 
         // get a feature-dependent amplitude based on the time through the track
-        public static double FeatureValue(ChannelSettingsModel channelSettings, double t, int n, double min, double max)
+        public double FeatureValue(double t, int n, double min, double max)
         {
             if (channelSettings == null) return 0;
 
             double sectionLengthSeconds = channelSettings.Sections.TotalLength.TotalSeconds;
-            int section = Section(channelSettings, n);
+            int section = Section(n);
             double ts = t - (section * channelSettings.Sections.TotalLength.TotalSeconds); //time through the current section
-            var p = GetTabletopParamsBySection(channelSettings, section, nameof(FeatureProbability.Wetness));
+            var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.Wetness));
             var a = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, min, max, p);
             return a;
         }
 
-        private static TabletopParams GetTabletopParamsBySection(ChannelSettingsModel channelSettings, int section, string feature)
+        private TabletopParams GetTabletopParamsBySection(int section, string feature)
         {
             return paramsCache.GetOrAdd(section, s =>
             {
-                var p = CreateFeatureParamsForSection(channelSettings, section);
-                ValidateParams(channelSettings, p);
+                var p = CreateFeatureParamsForSection(section);
+                ValidateParams(p);
                 return p;
             });
         }
 
-        private static void ValidateParams(ChannelSettingsModel channelSettings, TabletopParams p)
+        private void ValidateParams(TabletopParams p)
         {
             double sectionLengthSeconds = channelSettings.Sections.TotalLength.TotalSeconds;
             if (p.TopLength < 0) throw new InvalidOperationException("TopLength must be >= 0");
@@ -41,9 +50,9 @@ namespace wavegenerator
             if (p.TopLength + 2 * p.RampLength > sectionLengthSeconds) throw new InvalidOperationException("TopLength + 2*RampLength must be <= sectionLengthSeconds");
         }
 
-        private static TabletopParams CreateFeatureParamsForSection(ChannelSettingsModel channelSettings, int section)
+        private TabletopParams CreateFeatureParamsForSection(int section)
         {
-            int numSections = channelSettings.NumSections();
+            int numSections = channelSettings.NumSections(settings);
             double sectionLengthSeconds = channelSettings.Sections.TotalLength.TotalSeconds;
 
             //first decide if it has a tabletop at all.
@@ -52,7 +61,7 @@ namespace wavegenerator
 
             //if it's a tabletop:
             double topLength =
-                channelSettings.Sections.FeatureLengthVariation.ProportionAlong(progression,
+                randomizer.ProportionAlong(channelSettings.Sections.FeatureLengthVariation, progression,
                     channelSettings.Sections.MinFeatureLength.TotalSeconds,
                     channelSettings.Sections.MaxFeatureLength.TotalSeconds);
             double maxRampLength = Math.Min(channelSettings.Sections.MaxRampLength.TotalSeconds, (sectionLengthSeconds - topLength) / 2);
@@ -60,7 +69,7 @@ namespace wavegenerator
 
             // could feasibly be MinRampLength at the start of the track. Desirable? Yes, because other parameters constrain the dramaticness at the start.
             double rampLength =
-                channelSettings.Sections.RampLengthVariation.ProportionAlong(progression,
+                randomizer.ProportionAlong(channelSettings.Sections.RampLengthVariation, progression,
                     maxRampLength,
                     channelSettings.Sections.MinRampLength.TotalSeconds); // Max is first as shorter ramps are more dramatic (nearer the end of the track)
             var result = new TabletopParams

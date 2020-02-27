@@ -14,10 +14,10 @@ namespace wavegenerator
         protected readonly int overallFileSize;
         protected readonly int N;
 
-        public WaveStream()
+        public WaveStream(Settings settings)
         {
-            this.LengthSeconds = Settings.Instance.TrackLength.TotalSeconds;
-            this.Channels = Settings.Instance.NumberOfChannels;
+            this.LengthSeconds = settings.TrackLength.TotalSeconds;
+            this.Channels = settings.NumberOfChannels;
             this.N = (int)(this.LengthSeconds * Settings.SamplingFrequency);
             this.overallDataSize = N * this.Channels * bytesPerSample;
             this.overallFileSize = this.overallDataSize + 44;

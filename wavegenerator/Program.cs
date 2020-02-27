@@ -42,25 +42,24 @@ namespace wavegenerator
                 else
                 {
                     var filePath = args.Single();
+                    var settings = LoadAndValidateSettings(filePath);
 
-                    Settings.Instance = LoadAndValidateSettings(filePath);
-
-                    string[] names = new string[Settings.Instance.NumFiles];
-                    for(int i = 0; i < Settings.Instance.NumFiles; i++)
+                    string[] names = new string[settings.NumFiles];
+                    for(int i = 0; i < settings.NumFiles; i++)
                     {
-                        names[i] = await GetName(i);
+                        names[i] = await GetName(settings, i);
                     }
 
                     var maxNameLength = names.Max(n => n.Length);
-                    for(int i = 0; i < Settings.Instance.NumFiles; i++)
+                    for(int i = 0; i < settings.NumFiles; i++)
                     {
                         Console.WriteLine($"Writing {names[i].PadRight(maxNameLength)}...");
                     }
 
 
-                    hasLame = Settings.Instance.ConvertToMp3 && TestForLame();
-                    var tasks = Enumerable.Range(0, Settings.Instance.NumFiles)
-                        .Select(i => WriteFile(i, names[i]))
+                    hasLame = settings.ConvertToMp3 && TestForLame();
+                    var tasks = Enumerable.Range(0, settings.NumFiles)
+                        .Select(i => WriteFile(settings, i, names[i]))
                         .ToArray();
                     await Task.WhenAll(tasks);
 
@@ -86,16 +85,16 @@ namespace wavegenerator
 
         public static readonly object ConsoleLockObj = new object();
 
-        private static async Task WriteFile(int uniqueifier, string name)
+        private static async Task WriteFile(Settings settings, int uniqueifier, string name)
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
-            var patterns = Settings.Instance.ChannelSettings.Select(c => 
-                new BreakApplier(c.Breaks, new RiseApplier(c.Rises, new PulseGenerator(c)))).ToArray();
+            var patterns = settings.ChannelSettings.Select(c => 
+                new BreakApplier(c.Breaks, new RiseApplier(c.Rises, new PulseGenerator(c, settings)))).ToArray();
             var carrierFrequencyApplier = new CarrierFrequencyApplier(patterns);
-            await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(Settings.Instance, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
+            await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(settings, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
 
             await carrierFrequencyApplier.Write($"{compositionName}.wav");
-            if (Settings.Instance.ConvertToMp3 && hasLame)
+            if (settings.ConvertToMp3 && hasLame)
             {
                 if (ConvertToMp3($"{compositionName}.wav"))
                 {
@@ -157,11 +156,11 @@ namespace wavegenerator
         private static readonly Random random = new Random();
         private static readonly ConcurrentDictionary<string, string[]> nameListCache = new ConcurrentDictionary<string, string[]>();
 
-        public static async Task<string> GetName(int fileIndex)
+        public static async Task<string> GetName(Settings settings, int fileIndex)
         {
-            if (Settings.Instance.Naming.Specific != null)
+            if (settings.Naming.Specific != null)
             {
-                return Settings.Instance.Naming.Specific[fileIndex];
+                return settings.Naming.Specific[fileIndex];
             }
             else
             {
@@ -170,7 +169,7 @@ namespace wavegenerator
                     await Console.Out.WriteLineAsync("Any key to re-generate, leave 10 seconds (or Y) to accept");
                     do
                     {
-                        var candidate = GetRandomNameInternal();
+                        var candidate = GetRandomNameInternal(settings);
                         Console.Write(candidate);
                         if (await Accept())
                         {
@@ -180,7 +179,7 @@ namespace wavegenerator
                 }
                 else
                 {
-                    return GetRandomNameInternal();
+                    return GetRandomNameInternal(settings);
                 }
             }
         }
@@ -202,10 +201,10 @@ namespace wavegenerator
             return retval;
         }
 
-        public static string GetRandomNameInternal()
+        public static string GetRandomNameInternal(Settings settings)
         {
             var possibleNameListFiles = new[] { "female-first-names.txt", "male-first-names.txt" };
-            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & (int)Settings.Instance.Naming.Strategy.Value) != 0).ToArray();
+            var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & (int)settings.Naming.Strategy.Value) != 0).ToArray();
             var nameListFile = nameListFilesToUse[random.Next(0, nameListFilesToUse.Length)];
             var nameList = nameListCache.GetOrAdd(nameListFile, s => File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, s)).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToArray());
             string randomName = nameList[(int)(Math.Pow(random.NextDouble(), 1.5) * nameList.Length)];

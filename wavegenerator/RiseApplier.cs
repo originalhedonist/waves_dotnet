@@ -6,30 +6,34 @@ namespace wavegenerator
 {
     public class RiseApplier : WaveStream
     {
+        private readonly Settings settings;
+        private readonly Randomizer randomizer;
         private readonly RiserModel riseModel;
         private readonly WaveStream pattern;
         private readonly TimeSpan[] riseStartTimes;
 
-        public RiseApplier(RiserModel riseModel, WaveStream pattern)
+        public RiseApplier(Settings settings, Randomizer randomizer, RiserModel riseModel, WaveStream pattern)
         {
+            this.settings = settings;
+            this.randomizer = randomizer;
             this.riseModel = riseModel;
             this.pattern = pattern;
             riseStartTimes = MakeTimes(riseModel).ToArray();
         }
 
-        private static TimeSpan[] MakeTimes(RiserModel riserModel)
+        private TimeSpan[] MakeTimes(RiserModel riserModel)
         {
             if (riserModel == null) return new TimeSpan[] { };
 
             var riseIndexes = Enumerable.Range(0, riserModel.Count);
-            var totalAllowedTime = Settings.Instance.TrackLength - riserModel.EarliestTime;
+            var totalAllowedTime = settings.TrackLength - riserModel.EarliestTime;
             var times = riseIndexes.Select(s =>
             {
                 var earliestStartTime = riserModel.EarliestTime + totalAllowedTime * s / riserModel.Count;
                 var latestEndTime = riserModel.EarliestTime + totalAllowedTime * (double)(s + 1) / riserModel.Count; //the total time window the rise can occur in.
                 var latestStartTime = latestEndTime - riserModel.LengthEach; // but we don't want rises to overlap (calculation too complicated if nothing else), so limit the latest start time
                 if (latestStartTime < earliestStartTime) throw new InvalidOperationException($"Error in rise calculation - latestStartTime was before earliestStartTime"); //sanity check (shouldn't occur if validation is correct)
-                var time = earliestStartTime + Randomizer.GetRandom(defaultValue: 0.5) * (latestStartTime - earliestStartTime);
+                var time = earliestStartTime + randomizer.GetRandom(defaultValue: 0.5) * (latestStartTime - earliestStartTime);
                 return time;
             }).ToArray();
             return times;

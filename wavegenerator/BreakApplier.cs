@@ -7,12 +7,16 @@ namespace wavegenerator
 {
     public class BreakApplier : WaveStream
     {
+        private readonly Settings settings;
         private readonly WaveStream pattern;
+        private readonly Randomizer randomizer;
         private readonly Break[] breaks;
 
-        public BreakApplier(BreakModel breakModel, WaveStream pattern)
+        public BreakApplier(Settings settings, BreakModel breakModel, WaveStream pattern, Randomizer randomizer) : base(settings)
         {
+            this.settings = settings;
             this.pattern = pattern;
+            this.randomizer = randomizer;
             var breakTimes = MakeBreaks(breakModel).ToArray();
             breaks = breakTimes.Select(t => new Break(t, breakModel)).ToArray();
         }
@@ -25,7 +29,7 @@ namespace wavegenerator
             return a;
         }
 
-        private static IEnumerable<TimeSpan> MakeBreaks(BreakModel breakModel)
+        private IEnumerable<TimeSpan> MakeBreaks(BreakModel breakModel)
         {
             TimeSpan? lastBreakTime = null;
             if (breakModel != null)
@@ -34,9 +38,9 @@ namespace wavegenerator
                 {
                     var minTime = (lastBreakTime + breakModel.MinTimeBetweenBreaks + 2 * breakModel.RampLength) ?? breakModel.MinTimeSinceStartOfTrack;
                     var maxTime = minTime + breakModel.MaxTimeBetweenBreaks;
-                    lastBreakTime = minTime + (Randomizer.GetRandom(0.5) * (maxTime - minTime));
+                    lastBreakTime = minTime + (randomizer.GetRandom(0.5) * (maxTime - minTime));
                     yield return lastBreakTime.Value;
-                } while (lastBreakTime.Value < Settings.Instance.TrackLength);
+                } while (lastBreakTime.Value < settings.TrackLength);
             }
         }
     }

@@ -8,6 +8,14 @@ namespace wavegenerator
 
     public class PulseGenerator : FrequencyFunctionWaveFile
     {
+        private readonly ConcurrentDictionary<int, double> maxWetnessForSectionCache = new ConcurrentDictionary<int, double>();
+        private readonly ConcurrentDictionary<int, double> maxPeakWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
+        private readonly ConcurrentDictionary<int, double> maxTroughWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
+        private readonly ChannelSettingsModel channelSettings;
+        private readonly Settings settings;
+        private readonly Randomizer randomizer;
+        private readonly Probability probability;
+        private readonly FeatureProvider featureProvider;
         protected readonly double?[] lastAmplitude;
         protected readonly double?[] lastPeak; // the t of the last peak (either last top, or last bottom)
         protected readonly double?[] lastPeakAmplitude; //whether the last 'peak' was top or bottom
@@ -18,9 +26,13 @@ namespace wavegenerator
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         private readonly Script<double> waveformScript;
 
-        public PulseGenerator(ChannelSettingsModel channelSettings) : base(phaseShiftChannels: Settings.Instance.PhaseShiftPulses)
+        public PulseGenerator(ChannelSettingsModel channelSettings, Settings settings, Randomizer randomizer, Probability probability, FeatureProvider featureProvider) : base(phaseShiftChannels: settings.PhaseShiftPulses)
         {
             this.channelSettings = channelSettings;
+            this.settings = settings;
+            this.randomizer = randomizer;
+            this.probability = probability;
+            this.featureProvider = featureProvider;
             lastAmplitude = new double?[Channels];
             lastPeak = new double?[Channels];
             lastPeakAmplitude = new double?[Channels];
@@ -110,14 +122,14 @@ namespace wavegenerator
 
         private double CreateTopFrequency(int section)
         {
-            var numSections = channelSettings.NumSections();
+            var numSections = channelSettings.NumSections(settings);
             double progression = ((float)section) / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
-            var isRise = Probability.Resolve(
-                Randomizer.GetRandom(),
+            var isRise = probability.Resolve(
+                randomizer.GetRandom(),
                 channelSettings.PulseFrequency.ChanceOfHigh, true);
             double frequencyLimit = isRise ? channelSettings.PulseFrequency.High : channelSettings.PulseFrequency.Low;
-            double topFrequency = channelSettings.PulseFrequency.Variation.ProportionAlong(progression,
+            double topFrequency = randomizer.ProportionAlong(channelSettings.PulseFrequency.Variation, progression,
                 channelSettings.PulseFrequency.Quiescent,
                 frequencyLimit);
             if (topFrequency <= 0)
@@ -125,11 +137,6 @@ namespace wavegenerator
 
             return topFrequency;
         }
-
-        private readonly ConcurrentDictionary<int, double> maxWetnessForSectionCache = new ConcurrentDictionary<int, double>();
-        private readonly ConcurrentDictionary<int, double> maxPeakWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
-        private readonly ConcurrentDictionary<int, double> maxTroughWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
-        private readonly ChannelSettingsModel channelSettings;
 
         private int Section(int n) => (int)(n / (channelSettings.Sections.TotalLength.TotalSeconds * Settings.SamplingFrequency));
 
@@ -145,9 +152,9 @@ namespace wavegenerator
 
             double maxForSection = maxWetnessForSectionCache.GetOrAdd(section, s =>
             {
-                var numSections = channelSettings.NumSections();
+                var numSections = channelSettings.NumSections(settings);
                 double progression = ((double)s) / Math.Max(1, numSections - 1); // <= 1
-                double max = channelSettings.Wetness.Variation.ProportionAlong(progression, channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
+                double max = randomizer.ProportionAlong(channelSettings.Wetness.Variation, progression, channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
                 return max;
             });
 
@@ -156,11 +163,11 @@ namespace wavegenerator
             {
                 var isThisFeature = nameof(FeatureProbability.Wetness) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
                 {
-                    string v = k.FeatureProbability.Decide(Randomizer.GetRandom(defaultValue: 0.5));
+                    string v = k.FeatureProbability.Decide(randomizer.GetRandom(defaultValue: 0.5));
                     return v;
                 });
 
-                value = FeatureProvider.FeatureValue(channelSettings, t, n, channelSettings.Wetness.Minimum, maxForSection);
+                value = featureProvider.FeatureValue(t, n, channelSettings.Wetness.Minimum, maxForSection);
             }
             else
             {
@@ -178,7 +185,7 @@ namespace wavegenerator
             int section = Section(n);
             var isThisFeature = nameof(FeatureProbability.PeaksAndTroughs) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
             {
-                string v = k.FeatureProbability.Decide(Randomizer.GetRandom(defaultValue: 0.5));
+                string v = k.FeatureProbability.Decide(randomizer.GetRandom(defaultValue: 0.5));
                 return v;
             });
             if (!isThisFeature) return 1;
@@ -187,16 +194,16 @@ namespace wavegenerator
 
             double maxForSection = cache.GetOrAdd(section, s =>
             {
-                var numSections = channelSettings.NumSections();
+                var numSections = channelSettings.NumSections(settings);
                 double progression = ((double)s) / Math.Max(1, numSections - 1); // <= 1
-                double max = model.Variation.ProportionAlong(progression, model.MinWavelengthFactor, model.MaxWavelengthFactor);
+                double max = randomizer.ProportionAlong(model.Variation, progression, model.MinWavelengthFactor, model.MaxWavelengthFactor);
                 return max;
             });
 
             double value;
             if (model.LinkToFeature)
             {
-                value = FeatureProvider.FeatureValue(channelSettings, t, n, model.MinWavelengthFactor, maxForSection);
+                value = featureProvider.FeatureValue(t, n, model.MinWavelengthFactor, maxForSection);
             }
             else
             {
@@ -211,13 +218,13 @@ namespace wavegenerator
             int section = Section(n);
             var isThisFeature = nameof(FeatureProbability.Frequency) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
             {
-                string v = k.FeatureProbability.Decide(Randomizer.GetRandom(defaultValue: 0.5));
+                string v = k.FeatureProbability.Decide(randomizer.GetRandom(defaultValue: 0.5));
                 return v;
             });
             if (!isThisFeature) return channelSettings.PulseFrequency.Quiescent;
 
             var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
-            double frequency = FeatureProvider.FeatureValue(channelSettings, t, n, channelSettings.PulseFrequency.Quiescent, topFrequency);
+            double frequency = featureProvider.FeatureValue(t, n, channelSettings.PulseFrequency.Quiescent, topFrequency);
             return frequency;
         }
     }

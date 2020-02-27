@@ -2,13 +2,19 @@
 
 namespace wavegenerator
 {
-    public static class Randomizer
+    public class Randomizer
     {
-        public static Random random = new Random();
-        public static double GetRandom(double defaultValue = 1.0) => 
-            Settings.Instance.Randomization ? random.NextDouble() : defaultValue;
+        public Randomizer(Settings settings)
+        {
+            this.settings = settings;
+        }
+        private readonly Random random = new Random();
+        private readonly Settings settings;
 
-        public static double MakeValue(this VariationModel variance, double progress)
+        public double GetRandom(double defaultValue = 1.0) => 
+            settings.Randomization ? random.NextDouble() : defaultValue;
+
+        public double MakeValue(VariationModel variance, double progress)
         {
             int isTopHalf = GetRandom() >= 0.5 ? -1 : 1;
             double randomnessComponent = Math.Pow(GetRandom(), isTopHalf * variance.Randomness);
@@ -18,15 +24,9 @@ namespace wavegenerator
             return normalizedValue;
         }
 
-        public static double ProportionAlong(this VariationModel variance, double progress, double minValue, double maxValue)
+        public double ProportionAlong(VariationModel variance, double progress, double minValue, double maxValue)
         {
             return minValue + MakeValue(variance, progress) * (maxValue - minValue);
         }
-    }
-
-    public static class Probability
-    {
-        public static bool Resolve(double currentValue, double probability, bool defaultValue) =>
-            Settings.Instance.Randomization ? currentValue >= 1 - probability : defaultValue;
     }
 }

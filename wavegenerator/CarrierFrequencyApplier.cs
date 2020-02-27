@@ -2,30 +2,35 @@
 using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using wavegenerator;
 
 namespace wavegenerator
 {
     public class CarrierFrequencyApplier : FrequencyFunctionWaveFile
     {
-        private readonly WaveStream[] patterns;
+        private readonly Settings settings;
+        private readonly ChannelSettingsModel channelSettings;
+        private readonly WaveStream pattern;
+        private readonly FeatureProvider featureProvider;
 
-        public CarrierFrequencyApplier(WaveStream[] patterns) : 
-            base(phaseShiftChannels: Settings.Instance.PhaseShiftCarrier)
+        public CarrierFrequencyApplier(Settings settings, ChannelSettingsModel channelSettingsModel, WaveStream pattern, FeatureProvider featureProvider) : 
+            base(phaseShiftChannels: settings.PhaseShiftCarrier)
         {
-            this.patterns = patterns;
+            this.settings = settings;
+            this.channelSettings = channelSettingsModel;
+            this.pattern = pattern;
+            this.featureProvider = featureProvider;
         }
 
         public override async Task<double> Amplitude(double t, int n, int channel)
         {
             double carrierAmplitude = await base.Amplitude(t, n, channel);
-            var pattern = patterns.ForChannel(channel);
             double patternAmplitude = Math.Abs(await pattern.Amplitude(t, n, channel));
             return carrierAmplitude * patternAmplitude;
         }
 
         protected override async Task<double> Frequency(double t, int n, int channel)
         {
-            ChannelSettingsModel channelSettings = Settings.Instance.ChannelSettings.ForChannel(channel);
             var carrierFrequencyString = channel == 0 ?
                 channelSettings.CarrierFrequency.Left :
                 channelSettings.CarrierFrequency.Right;
@@ -39,8 +44,8 @@ namespace wavegenerator
             var carrierFrequencyExpressionParams = new CarrierFrequencyExpressionParams
             {
                 t = t,
-                T = Settings.Instance.TrackLength.TotalSeconds,
-                v = FeatureProvider.FeatureValue(channelSettings, t, n, 0, 1)
+                T = settings.TrackLength.TotalSeconds,
+                v = featureProvider.FeatureValue(t, n, 0, 1)
             };
             var result = await script.RunAsync(carrierFrequencyExpressionParams);
             if (result.Exception != null) throw result.Exception;
