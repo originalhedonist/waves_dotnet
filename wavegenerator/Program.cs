@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
@@ -10,16 +11,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace wavegenerator
 {
+
     public class Program
     {
         private static bool hasLame;
         private static bool acceptName;
         public static async Task Main(string[] allArgs)
         {
+
             var stopwatch = Stopwatch.StartNew();
             try
             {

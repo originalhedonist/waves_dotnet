@@ -24,8 +24,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="autofac" Version="5.1.2" />
     <PackageReference Include="MathParser.org-mXparser" Version="4.4.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.4.0" />
+    <PackageReference Include="microsoft.extensions.dependencyinjection" Version="3.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <ItemGroup>
