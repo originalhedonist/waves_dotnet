@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace wavegenerator
 {
-    public abstract class WaveFile
+    public abstract class WaveStream : IAmplitude
     {
         protected const short bytesPerSample = 2;
         public double LengthSeconds { get; }
@@ -14,7 +14,7 @@ namespace wavegenerator
         protected readonly int overallFileSize;
         protected readonly int N;
 
-        public WaveFile()
+        public WaveStream()
         {
             this.LengthSeconds = Settings.Instance.TrackLength.TotalSeconds;
             this.Channels = Settings.Instance.NumberOfChannels;

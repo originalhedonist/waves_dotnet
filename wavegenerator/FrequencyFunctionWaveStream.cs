@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace wavegenerator
 {
-    public abstract class FrequencyFunctionWaveFile : WaveFile
+    public abstract class FrequencyFunctionWaveFile : WaveStream
     {
         protected readonly double[] x;
         protected readonly bool phaseShiftChannels = false;

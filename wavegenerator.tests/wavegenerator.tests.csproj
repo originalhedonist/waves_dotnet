@@ -7,15 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Settings_Frequency.json" />
-    <None Remove="Settings_Wetness.json" />
+    <None Remove="Settings_FrequencyIndependent.json" />
+    <None Remove="Settings_FrequencyLinked.json" />
+    <None Remove="Settings_WetnessIndependent.json" />
+    <None Remove="Settings_WetnessLinked.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Settings_Wetness.json">
+    <Content Include="Settings_FrequencyIndependent.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Settings_Frequency.json">
+    <Content Include="Settings_WetnessIndependent.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Settings_WetnessLinked.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Settings_FrequencyLinked.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

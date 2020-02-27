@@ -7,9 +7,9 @@ namespace wavegenerator
 {
     public class CarrierFrequencyApplier : FrequencyFunctionWaveFile
     {
-        private readonly WaveFile[] patterns;
+        private readonly WaveStream[] patterns;
 
-        public CarrierFrequencyApplier(WaveFile[] patterns) : 
+        public CarrierFrequencyApplier(WaveStream[] patterns) : 
             base(phaseShiftChannels: Settings.Instance.PhaseShiftCarrier)
         {
             this.patterns = patterns;

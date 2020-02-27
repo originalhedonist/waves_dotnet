@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace wavegenerator
 {
-    public class RiseApplier : WaveFile
+    public class RiseApplier : WaveStream
     {
         private readonly RiserModel riseModel;
-        private readonly WaveFile pattern;
+        private readonly WaveStream pattern;
         private readonly TimeSpan[] riseStartTimes;
 
-        public RiseApplier(RiserModel riseModel, WaveFile pattern)
+        public RiseApplier(RiserModel riseModel, WaveStream pattern)
         {
             this.riseModel = riseModel;
             this.pattern = pattern;

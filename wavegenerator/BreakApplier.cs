@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace wavegenerator
 {
-    public class BreakApplier : WaveFile
+    public class BreakApplier : WaveStream
     {
-        private readonly WaveFile pattern;
+        private readonly WaveStream pattern;
         private readonly Break[] breaks;
 
-        public BreakApplier(BreakModel breakModel, WaveFile pattern)
+        public BreakApplier(BreakModel breakModel, WaveStream pattern)
         {
             this.pattern = pattern;
             var breakTimes = MakeBreaks(breakModel).ToArray();
