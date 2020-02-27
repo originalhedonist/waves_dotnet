@@ -1,4 +1,6 @@
 ﻿using ServiceStack;
+using System.Threading.Tasks;
+using wavegenerator;
 using waveweb.ServiceModel;
 
 namespace waveweb.ServiceInterface
@@ -9,8 +11,25 @@ namespace waveweb.ServiceInterface
         {
             return new TestPulseWaveformResponse
             {
-                Success = false,
-                ErrorMessage = "The formula is not deemed acceptable to mine eye"
+                Success = true,
+                SampleNoFeature = new double[][]
+                {
+                    new double[]{-1,-1},
+                    new double[]{0,0},
+                    new double[]{1,1}
+                },
+                SampleLowFrequency = new double[][]
+                {
+                    new double[]{-1,1},
+                    new double[]{0,0},
+                    new double[]{1,-1}
+                },
+                SampleHighFrequency = new double[][]
+                {
+                    new double[]{-1,2},
+                    new double[]{0,1},
+                    new double[]{1,1}
+                }
             };
         }
     }

@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-02-24 09:29:39
+Date: 2020-02-24 17:30:40
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -140,7 +140,9 @@ export class TestPulseWaveformResponse
 {
     public success: boolean;
     public errorMessage: string;
-    public data: number[];
+    public sampleNoFeature: number[][];
+    public sampleHighFrequency: number[][];
+    public sampleLowFrequency: number[][];
     public responseStatus: ResponseStatus;
 
     public constructor(init?: Partial<TestPulseWaveformResponse>) { (Object as any).assign(this, init); }
@@ -150,7 +152,8 @@ export class TestPulseWaveformResponse
 export class TestPulseWaveformRequest implements IReturn<TestPulseWaveformResponse>
 {
     public waveformExpression: string;
-    public sectionLengthSeconds: number;
+    public sections: Sections;
+    public pulseFrequency: PulseFrequency;
 
     public constructor(init?: Partial<TestPulseWaveformRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new TestPulseWaveformResponse(); }

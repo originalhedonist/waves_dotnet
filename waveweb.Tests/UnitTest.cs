@@ -35,6 +35,7 @@ namespace waveweb.Tests
         public void ParserTest()
         {
             Expression e = new Expression("sin(x)");
+            e.addArguments(new Argument("x"));
             e.setVerboseMode();
             string[] missingArgs = e.getMissingUserDefinedArguments();
             string[] missingUnits = e.getMissingUserDefinedUnits();
@@ -43,6 +44,7 @@ namespace waveweb.Tests
             Console.Out.WriteLine(e.getErrorMessage());
             Assert.True(e.checkSyntax());
             //e.addArguments(new Argument("x", Math.PI / 2));
+            e.setArgumentValue("x", Math.PI / 2);
             double result = e.calculate();
             Assert.AreEqual(1.0, result);
         }

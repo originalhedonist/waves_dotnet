@@ -79,7 +79,7 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, ChannelSettings, Variance, Sections, FeatureProbability } from '../dtos';
+    import { CreateFileRequest, ChannelSettings, Variance, Sections, FeatureProbability, PulseFrequency } from '../dtos';
     import '@/dtos';
     import VarianceEditor from '../components/VarianceEditor.vue';
     import ChannelEditor from '../components/ChannelEditor.vue';
@@ -116,6 +116,16 @@
                     wetnessWeighting: 0.2,
                     nothingWeighting: 0.8,
                 }),
+                pulseFrequency: new PulseFrequency({
+                    quiescent: 0.8,
+                    low: 0.4,
+                    high: 2.0,
+                    chanceOfHigh: 0.6,
+                    variation: new Variance({
+                        progression: 0.7,
+                        randomness: 0.3,
+                    }),
+                }),
             }),
             channel1: new ChannelSettings({
                 sections: new Sections({
@@ -135,6 +145,16 @@
                     frequencyWeighting: 1.0,
                     wetnessWeighting: 0.2,
                     nothingWeighting: 0.8,
+                }),
+                pulseFrequency: new PulseFrequency({
+                    quiescent: 0.8,
+                    low: 0.4,
+                    high: 2.0,
+                    chanceOfHigh: 0.6,
+                    variation: new Variance({
+                        progression: 0.7,
+                        randomness: 0.3,
+                    }),
                 }),
             }),
         });

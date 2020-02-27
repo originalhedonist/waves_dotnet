@@ -40,6 +40,10 @@
             ['x', 'y'],
             [0, 0],
         ];
+        public chartOptions = {
+            legend: 'none',
+            pointSize: 5,
+        };
 
         public mounted() {
             this.redrawChartNow();
@@ -66,13 +70,6 @@
                 newChartData.push(newData);
             }
             this.chartData = newChartData;
-        }
-
-        get chartOptions() {
-            return {
-                legend: 'none',
-                pointSize: 5,
-            };
         }
     }
 
