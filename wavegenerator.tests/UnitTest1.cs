@@ -16,8 +16,8 @@ namespace wavegenerator.tests
         [Fact]
         public void CreateFile1()
         {
-            output.WriteLine(Environment.CurrentDirectory);
-            Assert.True(File.Exists("Settings1.json"));
+            //C6CE387BCE819FA67AC23EEE999DA4A22A2248D02C6A33B98448FEAE469A0FD3
+            //5929D9FF329610B930D5316F952F9FFEBED1530376DAA9A3843C0B6DF0DDC30E
         }
     }
 }

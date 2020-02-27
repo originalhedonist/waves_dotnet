@@ -14,7 +14,7 @@ namespace wavegenerator
         protected readonly bool[] inPeak;
         protected readonly bool[] inTrough;
         
-        private readonly ConcurrentDictionary<(int, FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbability), string>();
+        private readonly ConcurrentDictionary<(int Section, FeatureProbability FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbability), string>();
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         private readonly Script<double> waveformScript;
 
@@ -156,7 +156,7 @@ namespace wavegenerator
             {
                 var isThisFeature = nameof(FeatureProbability.Wetness) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
                 {
-                    string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
+                    string v = k.FeatureProbability.Decide(Randomizer.GetRandom(defaultValue: 0.5));
                     return v;
                 });
 
@@ -178,7 +178,7 @@ namespace wavegenerator
             int section = Section(n);
             var isThisFeature = nameof(FeatureProbability.PeaksAndTroughs) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
             {
-                string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
+                string v = k.FeatureProbability.Decide(Randomizer.GetRandom(defaultValue: 0.5));
                 return v;
             });
             if (!isThisFeature) return 1;
@@ -211,7 +211,7 @@ namespace wavegenerator
             int section = Section(n);
             var isThisFeature = nameof(FeatureProbability.Frequency) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
             {
-                string v = k.Item2.Decide(Randomizer.GetRandom(defaultValue: 0));
+                string v = k.FeatureProbability.Decide(Randomizer.GetRandom(defaultValue: 0.5));
                 return v;
             });
             if (!isThisFeature) return channelSettings.PulseFrequency.Quiescent;

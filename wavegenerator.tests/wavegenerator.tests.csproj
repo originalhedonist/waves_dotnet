@@ -7,11 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Settings1.json" />
+    <None Remove="Settings_Frequency.json" />
+    <None Remove="Settings_Wetness.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Settings1.json">
+    <Content Include="Settings_Wetness.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Settings_Frequency.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

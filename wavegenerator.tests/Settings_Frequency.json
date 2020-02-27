@@ -1,35 +1,34 @@
 {
-  "Randomization": true,
+  "Randomization": false,
   "ConvertToMp3": false,
   "NumFiles": 1,
   "Naming": {
-    "Specific": [ "Test" ]
+    "Specific": [ "TestFrequency" ]
   },
-  "TrackLength": "00:05:00",
+  "TrackLength": "00:01:00",
   "NumberOfChannels": 2,
   "PhaseShiftCarrier": false,
   "PhaseShiftPulses": true,
   "ChannelSettings": [
     {
-      "WaveformExpression": "(Math.Pow(x-(int)x, 0.5) - Math.Pow(x-(int)x, 8)) * 2/0.779282548848943 - 1",
       "Sections": {
         "TotalLength": "00:01:00",
         "MinFeatureLength": "00:00:10",
         "MaxFeatureLength": "00:00:30",
         "FeatureLengthVariation": {
           "Randomness": 0.0,
-          "Progression": 1.0
+          "Progression": 0.0
         },
         "MinRampLength": "00:00:15",
         "MaxRampLength": "00:00:40",
         "RampLengthVariation": {
           "Randomness": 0.8,
-          "Progression": 1.5
+          "Progression": 0.0
         }
       },
       "FeatureProbability": {
         "Wetness": 0.2,
-        "Frequency": 0.8,
+        "Frequency": 0.6,
         "PeaksAndTroughs": 0.2
       },
       "CarrierFrequency": {
@@ -42,8 +41,8 @@
         "High": 5.0,
         "ChanceOfHigh": 0.8,
         "Variation": {
-          "Randomness": 1.0,
-          "Progression": 0.8
+          "Randomness": 0.8,
+          "Progression": 0.0
         }
       },
       "Wetness": {
@@ -56,17 +55,17 @@
         }
       },
       "Breaks": {
-        "MinTimeSinceStartOfTrack": "00:02:00",
-        "MinTimeBetweenBreaks": "00:05:00",
-        "MaxTimeBetweenBreaks": "00:30:00",
+        "MinTimeSinceStartOfTrack": "00:00:30",
+        "MinTimeBetweenBreaks": "00:00:05",
+        "MaxTimeBetweenBreaks": "00:00:10",
         "MinLength": "00:00:02",
-        "MaxLength": "00:00:25",
+        "MaxLength": "00:00:05",
         "RampLength": "00:00:05"
       },
       "Rises": {
         "Count": 1,
-        "EarliestTime": "00:01:00",
-        "LengthEach": "00:00:30",
+        "EarliestTime": "00:00:30",
+        "LengthEach": "00:00:05",
         "Amount": 0.08
       }
     }

@@ -1,9 +1,9 @@
 {
   "Randomization": false,
-  "ConvertToMp3": true,
+  "ConvertToMp3": false,
   "NumFiles": 1,
   "Naming": {
-    "Specific": [ "Test" ]
+    "Specific": [ "TestWetness" ]
   },
   "TrackLength": "00:01:00",
   "NumberOfChannels": 2,
@@ -17,18 +17,18 @@
         "MaxFeatureLength": "00:00:30",
         "FeatureLengthVariation": {
           "Randomness": 0.0,
-          "Progression": 1.0
+          "Progression": 0.0
         },
         "MinRampLength": "00:00:15",
         "MaxRampLength": "00:00:40",
         "RampLengthVariation": {
           "Randomness": 0.8,
-          "Progression": 1.5
+          "Progression": 0.0
         }
       },
       "FeatureProbability": {
-        "Wetness": 0.2,
-        "Frequency": 0.5,
+        "Wetness": 0.6,
+        "Frequency": 0.2,
         "PeaksAndTroughs": 0.2
       },
       "CarrierFrequency": {
@@ -38,11 +38,11 @@
       "PulseFrequency": {
         "Quiescent": 0.8,
         "Low": 0.4,
-        "High": 2.0,
+        "High": 5.0,
         "ChanceOfHigh": 0.8,
         "Variation": {
-          "Randomness": 1.0,
-          "Progression": 0.8
+          "Randomness": 0.8,
+          "Progression": 0.0
         }
       },
       "Wetness": {
@@ -51,7 +51,7 @@
         "Maximum": 0.7,
         "Variation": {
           "Randomness": 0.5,
-          "Progression": 1.5
+          "Progression": 0.0
         }
       },
       "Breaks": {
