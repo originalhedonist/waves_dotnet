@@ -1,7 +1,6 @@
-﻿using Lamar;
-using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using wavegenerator.library;
 
 namespace wavegenerator
 {
@@ -9,13 +8,11 @@ namespace wavegenerator
     {
         private readonly ChannelComponentStack[] channelStacks;
 
-        public ChannelSplitter(Settings settings, IContainer container)
+        public ChannelSplitter(Settings settings, IParameterizedResolver parameterizedResolver)
         {
             channelStacks = settings.ChannelSettings.Select(channelSettings =>
             {
-                var nestedContainer = container.GetNestedContainer();
-                nestedContainer.Inject(channelSettings);
-                var componentStack = nestedContainer.GetRequiredService<ChannelComponentStack>();
+                var componentStack = parameterizedResolver.GetRequiredService<ChannelComponentStack>(i => i.Inject(channelSettings));
                 return componentStack;
             }).ToArray();
         }

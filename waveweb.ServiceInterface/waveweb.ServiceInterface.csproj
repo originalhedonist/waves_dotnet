@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wavegenerator\wavegenerator.csproj" />
+    <ProjectReference Include="..\wavegenerator.library\wavegenerator.library.csproj" />
     <ProjectReference Include="..\waveweb.ServiceModel\waveweb.ServiceModel.csproj" />
   </ItemGroup>
 

@@ -21,5 +21,6 @@ namespace wavegenerator
             _buffer[3] = (byte)(value >> 24);
             await s.WriteAsync(_buffer, 0, 4);
         }
+        public static Task WriteAsync(this Stream s, byte[] b) => s.WriteAsync(b, 0, b.Length);
     }
 }

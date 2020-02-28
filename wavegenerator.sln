@@ -25,6 +25,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "waveweb", "waveweb\waveweb.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wavegenerator.tests", "wavegenerator.tests\wavegenerator.tests.csproj", "{81F57A52-8BFA-4844-A34A-ADFB6C543F27}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wavegenerator.library", "wavegenerator.library\wavegenerator.library.csproj", "{939E3434-8A00-442C-9B27-9C9BBBBCF352}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{81F57A52-8BFA-4844-A34A-ADFB6C543F27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81F57A52-8BFA-4844-A34A-ADFB6C543F27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81F57A52-8BFA-4844-A34A-ADFB6C543F27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{939E3434-8A00-442C-9B27-9C9BBBBCF352}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{939E3434-8A00-442C-9B27-9C9BBBBCF352}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{939E3434-8A00-442C-9B27-9C9BBBBCF352}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{939E3434-8A00-442C-9B27-9C9BBBBCF352}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

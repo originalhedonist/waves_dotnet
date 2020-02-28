@@ -15,8 +15,8 @@ namespace wavegenerator
         {
             this.midTime = midTime;
             rampLength = breakModel.RampLength;
-            length = randomizer.GetRandom(0.5) * (breakModel.MaxLength - breakModel.MinLength) + breakModel.MinLength;
-            startTime = (this.midTime - (0.5 * length) - rampLength).TotalSeconds;
+            length = TimeSpan.FromSeconds(randomizer.GetRandom(0.5) * (breakModel.MaxLength.TotalSeconds - breakModel.MinLength.TotalSeconds) + breakModel.MinLength.TotalSeconds);
+            startTime = (this.midTime.TotalSeconds - (0.5 * length.TotalSeconds) - rampLength.TotalSeconds);
             endTime = startTime + 2 * rampLength.TotalSeconds + length.TotalSeconds;
             tabletopParams = new TabletopParams
             {

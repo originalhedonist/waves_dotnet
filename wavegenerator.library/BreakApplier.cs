@@ -33,9 +33,10 @@ namespace wavegenerator
             {
                 do
                 {
-                    var minTime = (lastBreakTime + breakModel.MinTimeBetweenBreaks + 2 * breakModel.RampLength) ?? breakModel.MinTimeSinceStartOfTrack;
+                    var minTime = TimeSpan.FromSeconds(
+                        lastBreakTime?.TotalSeconds + breakModel.MinTimeBetweenBreaks.TotalSeconds + 2 * breakModel.RampLength.TotalSeconds ?? breakModel.MinTimeSinceStartOfTrack.TotalSeconds);
                     var maxTime = minTime + breakModel.MaxTimeBetweenBreaks;
-                    lastBreakTime = minTime + (randomizer.GetRandom(0.5) * (maxTime - minTime));
+                    lastBreakTime = TimeSpan.FromSeconds(minTime.TotalSeconds + (randomizer.GetRandom(0.5) * (maxTime - minTime).TotalSeconds));
                     yield return lastBreakTime.Value;
                 } while (lastBreakTime.Value < settings.TrackLength);
             }
