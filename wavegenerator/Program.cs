@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
-using Autofac;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
+using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
@@ -44,8 +38,7 @@ namespace wavegenerator
                 {
                     var filePath = args.Single();
                     var settings = SettingsLoader.LoadAndValidateSettings(filePath);
-                    var settingsModule = new SettingsModule(settings);
-                    var container = DependencyConfig.ConfigureContainer(settingsModule);
+                    var container = DependencyConfig.ConfigureContainer(r => r.AddSingleton(settings));
 
                     string[] names = new string[settings.NumFiles];
                     for(int i = 0; i < settings.NumFiles; i++)
@@ -79,10 +72,10 @@ namespace wavegenerator
 
         public static readonly object ConsoleLockObj = new object();
 
-        private static async Task WriteFile(IComponentContext componentContext, Settings settings, int uniqueifier, string name)
+        private static async Task WriteFile(IContainer componentContext, Settings settings, int uniqueifier, string name)
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
-            var waveStream = componentContext.Resolve<WaveStream>();
+            var waveStream = componentContext.GetRequiredService<WaveStream>();
             await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(settings, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
 
             await waveStream.Write($"{compositionName}.wav");

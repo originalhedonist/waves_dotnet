@@ -9,15 +9,13 @@ namespace wavegenerator
         private readonly Settings settings;
         private readonly Randomizer randomizer;
         private readonly RiserModel riseModel;
-        private readonly WaveStream pattern;
         private readonly TimeSpan[] riseStartTimes;
 
-        public RiseApplier(Settings settings, Randomizer randomizer, RiserModel riseModel, WaveStream pattern)
+        public RiseApplier(Settings settings, Randomizer randomizer, ChannelSettingsModel channelSettings)
         {
             this.settings = settings;
             this.randomizer = randomizer;
-            this.riseModel = riseModel;
-            this.pattern = pattern;
+            this.riseModel = channelSettings.Rises;
             riseStartTimes = MakeTimes(riseModel).ToArray();
         }
 
@@ -68,7 +66,7 @@ namespace wavegenerator
                 }
             }
 
-            return proportionOfPattern * await pattern.Amplitude(t, n, channel);
+            return proportionOfPattern;
         }
     }
 }

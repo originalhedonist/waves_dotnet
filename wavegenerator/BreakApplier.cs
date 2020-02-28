@@ -8,25 +8,22 @@ namespace wavegenerator
     public class BreakApplier : IPerChannelComponent
     {
         private readonly Settings settings;
-        private readonly WaveStream pattern;
         private readonly Randomizer randomizer;
         private readonly Break[] breaks;
 
-        public BreakApplier(Settings settings, BreakModel breakModel, WaveStream pattern, Randomizer randomizer)
+        public BreakApplier(Settings settings, ChannelSettingsModel channelSettings, Randomizer randomizer)
         {
             this.settings = settings;
-            this.pattern = pattern;
             this.randomizer = randomizer;
-            var breakTimes = MakeBreaks(breakModel).ToArray();
-            breaks = breakTimes.Select(t => new Break(randomizer, t, breakModel)).ToArray();
+            var breakTimes = MakeBreaks(channelSettings.Breaks).ToArray();
+            breaks = breakTimes.Select(t => new Break(randomizer, t, channelSettings.Breaks)).ToArray();
         }
 
         public async Task<double> Amplitude(double t, int n, int channel)
         {
             var brk = breaks.FirstOrDefault(b => b.IsWithin(t));
             var att = brk?.Attenuation(t) ?? 1;
-            var a = att * await pattern.Amplitude(t, n, channel);
-            return a;
+            return att;
         }
 
         private IEnumerable<TimeSpan> MakeBreaks(BreakModel breakModel)

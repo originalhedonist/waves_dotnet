@@ -1,25 +1,16 @@
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace wavegenerator.tests
 {
     public class FileIntegrityTests
     {
-        private readonly ITestOutputHelper output;
-
-        public FileIntegrityTests(ITestOutputHelper output)
-        {
-            this.output = output;
-        }
-
         [Fact]
         public void InvalidSettings()
         {
@@ -37,9 +28,10 @@ namespace wavegenerator.tests
             using (var memoryStream = new MemoryStream())
             {
                 var settings = SettingsLoader.LoadAndValidateSettings(settingsFile);
-                var settingsModule = new SettingsModule(settings);
-                var container = DependencyConfig.ConfigureContainer(settingsModule);
-
+                var container = DependencyConfig.ConfigureContainer(r => r.AddSingleton(settings));
+                
+                var waveStream = container.GetRequiredService<WaveStream>();
+                await waveStream.Write(memoryStream);
                 await memoryStream.FlushAsync();
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 var hash = sha256.ComputeHash(memoryStream);
@@ -56,6 +48,5 @@ namespace wavegenerator.tests
             Validator.ValidateObject(newSettings, new ValidationContext(newSettings), true);
             return newSettings;
         }
-
     }
 }

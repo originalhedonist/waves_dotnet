@@ -24,7 +24,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="autofac" Version="5.1.2" />
+    <PackageReference Include="lamar" Version="4.1.0" />
     <PackageReference Include="MathParser.org-mXparser" Version="4.4.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.4.0" />
     <PackageReference Include="microsoft.extensions.dependencyinjection" Version="3.1.2" />

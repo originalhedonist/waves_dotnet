@@ -9,23 +9,14 @@ namespace wavegenerator
     {
         private readonly Settings settings;
         private readonly ChannelSettingsModel channelSettings;
-        private readonly WaveStream pattern;
         private readonly FeatureProvider featureProvider;
 
-        public CarrierFrequencyApplier(Settings settings, ChannelSettingsModel channelSettingsModel, WaveStream pattern, FeatureProvider featureProvider) : 
+        public CarrierFrequencyApplier(Settings settings, ChannelSettingsModel channelSettingsModel, FeatureProvider featureProvider) : 
             base(numberOfChannels: settings.NumberOfChannels, phaseShiftChannels: settings.PhaseShiftCarrier)
         {
             this.settings = settings;
             this.channelSettings = channelSettingsModel;
-            this.pattern = pattern;
             this.featureProvider = featureProvider;
-        }
-
-        public override async Task<double> Amplitude(double t, int n, int channel)
-        {
-            double carrierAmplitude = await base.Amplitude(t, n, channel);
-            double patternAmplitude = Math.Abs(await pattern.Amplitude(t, n, channel));
-            return carrierAmplitude * patternAmplitude;
         }
 
         protected override async Task<double> Frequency(double t, int n, int channel)

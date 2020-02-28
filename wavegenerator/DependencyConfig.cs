@@ -1,30 +1,23 @@
-﻿using Autofac;
-using Autofac.Core;
-using Autofac.Core.Registration;
-using System.Reflection;
+﻿using Lamar;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace wavegenerator
 {
     public class DependencyConfig
     {
-        public static IComponentContext ConfigureContainer(params IModule[] modules)
+        public static IContainer ConfigureContainer(Action<IServiceCollection> additionalRegistrations = null )
         {
-            var containerBuilder = new ContainerBuilder();
-            foreach (var module in modules)
+            var container = new Container(r =>
             {
-                containerBuilder.RegisterModule(module);
-            }
-            containerBuilder.RegisterType<RiseApplier>().As<IPerChannelComponent>();
-            containerBuilder.RegisterType<BreakApplier>().As<IPerChannelComponent>();
-            containerBuilder.RegisterType<PulseGenerator>().As<IPerChannelComponent>();
-            containerBuilder.RegisterType<CarrierFrequencyApplier>().As<IPerChannelComponent>();
-            containerBuilder.RegisterType<ChannelComponentStack>().AsSelf();
-            containerBuilder.RegisterType<ChannelSplitter>().AsSelf();
-            containerBuilder.RegisterType<WaveStream>().AsSelf();
-            containerBuilder.RegisterType<Probability>().AsSelf();
-            containerBuilder.RegisterType<Randomizer>().AsSelf();
-            
-            return containerBuilder.Build();
+                r.AddTransient<IPerChannelComponent, RiseApplier>();
+                r.AddTransient<IPerChannelComponent, BreakApplier>();
+                r.AddTransient<IPerChannelComponent, PulseGenerator>();
+                r.AddTransient<IPerChannelComponent, CarrierFrequencyApplier>();
+                r.Injectable<ChannelSettingsModel>();
+                additionalRegistrations?.Invoke(r);
+            });
+            return container;
         }
     }
 }
