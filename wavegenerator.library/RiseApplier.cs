@@ -27,11 +27,11 @@ namespace wavegenerator
             var totalAllowedTime = settings.TrackLength - riserModel.EarliestTime;
             var times = riseIndexes.Select(s =>
             {
-                var earliestStartTime = TimeSpan.FromSeconds(riserModel.EarliestTime.TotalSeconds + totalAllowedTime.TotalSeconds * s / riserModel.Count);
-                var latestEndTime = TimeSpan.FromSeconds(riserModel.EarliestTime.TotalSeconds + totalAllowedTime.TotalSeconds * (double)(s + 1) / riserModel.Count); //the total time window the rise can occur in.
+                var earliestStartTime = riserModel.EarliestTime + totalAllowedTime * s / riserModel.Count;
+                var latestEndTime = riserModel.EarliestTime + totalAllowedTime * (double)(s + 1) / riserModel.Count; //the total time window the rise can occur in.
                 var latestStartTime = latestEndTime - riserModel.LengthEach; // but we don't want rises to overlap (calculation too complicated if nothing else), so limit the latest start time
                 if (latestStartTime < earliestStartTime) throw new InvalidOperationException($"Error in rise calculation - latestStartTime was before earliestStartTime"); //sanity check (shouldn't occur if validation is correct)
-                var time = TimeSpan.FromSeconds(earliestStartTime.TotalSeconds + randomizer.GetRandom(defaultValue: 0.5) * (latestStartTime.TotalSeconds - earliestStartTime.TotalSeconds));
+                var time = earliestStartTime + randomizer.GetRandom(defaultValue: 0.5) * (latestStartTime - earliestStartTime);
                 return time;
             }).ToArray();
             return times;

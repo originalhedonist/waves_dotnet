@@ -19,11 +19,11 @@ namespace wavegenerator
             breaks = breakTimes.Select(t => new Break(randomizer, t, channelSettings.Breaks)).ToArray();
         }
 
-        public async Task<double> Amplitude(double t, int n, int channel)
+        public Task<double> Amplitude(double t, int n, int channel)
         {
             var brk = breaks.FirstOrDefault(b => b.IsWithin(t));
             var att = brk?.Attenuation(t) ?? 1;
-            return att;
+            return Task.FromResult(att);
         }
 
         private IEnumerable<TimeSpan> MakeBreaks(BreakModel breakModel)
@@ -33,10 +33,9 @@ namespace wavegenerator
             {
                 do
                 {
-                    var minTime = TimeSpan.FromSeconds(
-                        lastBreakTime?.TotalSeconds + breakModel.MinTimeBetweenBreaks.TotalSeconds + 2 * breakModel.RampLength.TotalSeconds ?? breakModel.MinTimeSinceStartOfTrack.TotalSeconds);
+                    var minTime = lastBreakTime + breakModel.MinTimeBetweenBreaks + 2 * breakModel.RampLength ?? breakModel.MinTimeSinceStartOfTrack;
                     var maxTime = minTime + breakModel.MaxTimeBetweenBreaks;
-                    lastBreakTime = TimeSpan.FromSeconds(minTime.TotalSeconds + (randomizer.GetRandom(0.5) * (maxTime - minTime).TotalSeconds));
+                    lastBreakTime = minTime + (randomizer.GetRandom(0.5) * (maxTime - minTime));
                     yield return lastBreakTime.Value;
                 } while (lastBreakTime.Value < settings.TrackLength);
             }
