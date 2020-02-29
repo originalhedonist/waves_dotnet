@@ -34,11 +34,5 @@ namespace wavegenerator
 
         [ValidateObject]
         public RiserModel Rises { get; set; }
-
-        [ValidateObject]
-        public PulseTopLengthModel Peaks { get; set; }
-
-        [ValidateObject]
-        public PulseTopLengthModel Troughs { get; set; }
     }
 }

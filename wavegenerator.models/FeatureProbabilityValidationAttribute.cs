@@ -12,7 +12,7 @@ namespace wavegenerator
             var featureProbability = (FeatureProbability)value;
             if (featureProbability != null)
             {
-                if (featureProbability.Frequency + featureProbability.PeaksAndTroughs + featureProbability.Wetness > 1)
+                if (featureProbability.Frequency + featureProbability.Wetness > 1)
                 {
                     return new ValidationResult("Total FeatureProbability cannot be > 1.");
                 }

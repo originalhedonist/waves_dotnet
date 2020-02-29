@@ -28,8 +28,7 @@
       },
       "FeatureProbability": {
         "Wetness": 0.2,
-        "Frequency": 0.6,
-        "PeaksAndTroughs": 0.2
+        "Frequency": 0.6
       },
       "CarrierFrequency": {
         "Left": 500.0,
@@ -87,8 +86,7 @@
       },
       "FeatureProbability": {
         "Wetness": 0.2,
-        "Frequency": 0.6,
-        "PeaksAndTroughs": 0.2
+        "Frequency": 0.6
       },
       "CarrierFrequency": {
         "Left": 800.0,
