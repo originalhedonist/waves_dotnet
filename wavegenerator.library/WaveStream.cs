@@ -17,20 +17,20 @@ namespace wavegenerator.library
 
         public WaveStream(Settings settings, ChannelSplitter channelSplitter)
         {
-            this.LengthSeconds = settings.TrackLength.TotalSeconds;
-            this.Channels = settings.NumberOfChannels;
-            this.N = (int) (this.LengthSeconds * Settings.SamplingFrequency);
-            this.overallDataSize = N * this.Channels * BytesPerSample;
-            this.overallFileSize = this.overallDataSize + 44;
-            if (this.Channels < 1 || this.Channels > 2)
-            {
-                throw new InvalidOperationException("Channels must be either 1 or 2.");
-            }
+            LengthSeconds = settings.TrackLength.TotalSeconds;
+            Channels = settings.NumberOfChannels;
+            N = (int) (LengthSeconds * Settings.SamplingFrequency);
+            overallDataSize = N * Channels * BytesPerSample;
+            overallFileSize = overallDataSize + 44;
+            if (Channels < 1 || Channels > 2) throw new InvalidOperationException("Channels must be either 1 or 2.");
 
             this.channelSplitter = channelSplitter;
         }
 
-        public Task<double> Amplitude(double t, int n, int channel) => channelSplitter.Amplitude(t, n, channel);
+        public Task<double> Amplitude(double t, int n, int channel)
+        {
+            return channelSplitter.Amplitude(t, n, channel);
+        }
 
 
         public async Task Write(string filePath)
@@ -56,20 +56,18 @@ namespace wavegenerator.library
             await stream.WriteAsync(Encoding.ASCII.GetBytes("data"));
             await stream.WriteAsync(overallDataSize);
 
-            for (int n = 0; n < N; n++)
+            for (var n = 0; n < N; n++)
             {
-                double t = LengthSeconds * ((double) n) / N;
+                var t = LengthSeconds * (double) n / N;
 
-                for (int c = 0; c < Channels; c++)
+                for (var c = 0; c < Channels; c++)
                 {
-                    double A = await Amplitude(t, n, c);
+                    var A = await Amplitude(t, n, c);
                     if (A < -1 || A > 1)
-                    {
                         throw new InvalidOperationException(
                             $"Amplitude must be -1 to 1. Amplitude for n = {n}, c = {c} was {A}.");
-                    }
 
-                    short a = (short) (((A + 1) * (65535f / 2)) - 32768);
+                    var a = (short) ((A + 1) * (65535f / 2) - 32768);
 
                     await stream.WriteAsync(a);
                 }
