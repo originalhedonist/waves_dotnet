@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using wavegenerator.models;
 
 namespace wavegenerator
 {

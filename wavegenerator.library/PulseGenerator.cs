@@ -12,6 +12,7 @@ namespace wavegenerator.library
             new ConcurrentDictionary<int, double>();
 
         private readonly ChannelSettingsModel channelSettings;
+        private readonly PulseFrequencyModel pulseFrequency;
         private readonly Settings settings;
         private readonly Randomizer randomizer;
         private readonly Probability probability;
@@ -23,11 +24,12 @@ namespace wavegenerator.library
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         private readonly Script<double> waveformScript;
 
-        public PulseGenerator(ChannelSettingsModel channelSettings, Settings settings, Randomizer randomizer,
+        public PulseGenerator(ChannelSettingsModel channelSettings, PulseFrequencyModel pulseFrequency, Settings settings, Randomizer randomizer,
             Probability probability, FeatureProvider featureProvider) :
             base(settings.NumberOfChannels, settings.PhaseShiftPulses)
         {
             this.channelSettings = channelSettings;
+            this.pulseFrequency = pulseFrequency;
             this.settings = settings;
             this.randomizer = randomizer;
             this.probability = probability;
@@ -40,11 +42,10 @@ namespace wavegenerator.library
 
         public override async Task<double> Amplitude(double t, int n, int channel)
         {
-            var baseA = channelSettings.PulseFrequency == null
+            var baseA = pulseFrequency == null
                 ? -1
                 : // if we have no PulseFrequencySection at all - we don't care about frequency (or about incrementing anything)
-                await base.Amplitude(t, n,
-                    channel); // but if we have a pulse frequency, must always calculate it, even if we don't use it - it might (does) increment something important
+                await base.Amplitude(t, n, channel); // but if we have a pulse frequency, must always calculate it, even if we don't use it - it might (does) increment something important
 
             //apply wetness
             var wetness = Wetness(t, n);
@@ -80,10 +81,10 @@ namespace wavegenerator.library
             //20% of being a fall, 80% chance a rise
             var isRise = probability.Resolve(
                 randomizer.GetRandom(),
-                channelSettings.PulseFrequency.ChanceOfHigh, true);
-            var frequencyLimit = isRise ? channelSettings.PulseFrequency.High : channelSettings.PulseFrequency.Low;
-            var topFrequency = randomizer.ProportionAlong(channelSettings.PulseFrequency.Variation, progression,
-                channelSettings.PulseFrequency.Quiescent,
+                pulseFrequency.ChanceOfHigh, true);
+            var frequencyLimit = isRise ? pulseFrequency.High : pulseFrequency.Low;
+            var topFrequency = randomizer.ProportionAlong(pulseFrequency.Variation, progression,
+                pulseFrequency.Quiescent,
                 frequencyLimit);
             if (topFrequency <= 0)
                 throw new InvalidOperationException("TopFrequency must be > 0");
@@ -137,7 +138,7 @@ namespace wavegenerator.library
 
         protected override async Task<double> Frequency(double t, int n, int channel)
         {
-            if (channelSettings.Sections == null) return channelSettings.PulseFrequency.Quiescent;
+            if (channelSettings.Sections == null) return pulseFrequency.Quiescent;
             var section = Section(n);
             var isThisFeature = nameof(FeatureProbabilityModel.Frequency) == featureTypeCache.GetOrAdd(
                 (section, channelSettings.FeatureProbability), k =>
@@ -145,10 +146,10 @@ namespace wavegenerator.library
                     var v = k.FeatureProbability.Decide(randomizer.GetRandom(0.5));
                     return v;
                 });
-            if (!isThisFeature) return channelSettings.PulseFrequency.Quiescent;
+            if (!isThisFeature) return pulseFrequency.Quiescent;
 
             var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
-            var frequency = featureProvider.FeatureValue(t, n, channelSettings.PulseFrequency.Quiescent, topFrequency);
+            var frequency = featureProvider.FeatureValue(t, n, pulseFrequency.Quiescent, topFrequency);
             return frequency;
         }
     }

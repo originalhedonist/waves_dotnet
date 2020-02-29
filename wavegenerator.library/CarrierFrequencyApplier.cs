@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
+using wavegenerator.models;
 
 namespace wavegenerator.library
 {

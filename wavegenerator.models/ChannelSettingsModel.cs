@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-using wavegenerator.models;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace wavegenerator
+namespace wavegenerator.models
 {
     public class ChannelSettingsModel
     {

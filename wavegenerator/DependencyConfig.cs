@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using wavegenerator.library;
+using wavegenerator.models;
 
 namespace wavegenerator
 {
@@ -17,6 +18,7 @@ namespace wavegenerator
                 r.AddTransient<IPerChannelComponent, CarrierFrequencyApplier>();
                 r.AddTransient<IParameterizedResolver, ParameterizedResolver>();
                 r.Injectable<ChannelSettingsModel>();
+                r.AddTransient<PulseFrequencyModel>(provider => provider.GetRequiredService<ChannelSettingsModel>().PulseFrequency);
                 additionalRegistrations?.Invoke(r);
             });
             return container;
