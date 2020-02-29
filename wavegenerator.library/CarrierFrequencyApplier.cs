@@ -1,10 +1,9 @@
-﻿using Microsoft.CodeAnalysis.Scripting;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using wavegenerator.library;
+using Microsoft.CodeAnalysis.Scripting;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public class CarrierFrequencyApplier : FrequencyFunctionWaveFile, IPerChannelComponent
     {

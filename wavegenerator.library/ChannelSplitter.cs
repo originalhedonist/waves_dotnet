@@ -1,8 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using wavegenerator.library;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public class ChannelSplitter : IAmplitude
     {

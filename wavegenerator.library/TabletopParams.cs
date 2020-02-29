@@ -1,4 +1,4 @@
-﻿namespace wavegenerator
+﻿namespace wavegenerator.library
 {
     public struct TabletopParams
     {

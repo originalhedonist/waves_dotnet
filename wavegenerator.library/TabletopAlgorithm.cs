@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public static class TabletopAlgorithm
     {
@@ -18,7 +18,8 @@ namespace wavegenerator
 
         public static double GetY(double x, double xmax, double ymin, double ymax, TabletopParams p)
         {
-            double prefixLength = (xmax - p.TopLength - 2 * p.RampLength) / 2; //length of the bit at base frequency before the first ramp
+            double prefixLength =
+                (xmax - p.TopLength - 2 * p.RampLength) / 2; //length of the bit at base frequency before the first ramp
             double dy = ymax - ymin;
             if (x < prefixLength)
             {
@@ -30,7 +31,9 @@ namespace wavegenerator
                 // on the first ('up') ramp
                 double timeAlongRamp = x - prefixLength;
                 double proportionAlongRamp = timeAlongRamp / p.RampLength;
-                double proportionUpRamp = p.RampsUseSin2 ? Math.Pow(Math.Sin(proportionAlongRamp * Math.PI / 2), 2) : proportionAlongRamp;
+                double proportionUpRamp = p.RampsUseSin2
+                    ? Math.Pow(Math.Sin(proportionAlongRamp * Math.PI / 2), 2)
+                    : proportionAlongRamp;
                 return ymin + proportionUpRamp * dy;
             }
             else if (x <= prefixLength + p.RampLength + p.TopLength)
@@ -43,7 +46,9 @@ namespace wavegenerator
                 //on the second ('down') ramp
                 double timeAlongRamp = x - prefixLength - p.RampLength - p.TopLength;
                 double proportionAlongRamp = timeAlongRamp / p.RampLength;
-                double proportionUpRamp = p.RampsUseSin2 ? Math.Pow(Math.Sin(proportionAlongRamp * Math.PI / 2), 2) : proportionAlongRamp;
+                double proportionUpRamp = p.RampsUseSin2
+                    ? Math.Pow(Math.Sin(proportionAlongRamp * Math.PI / 2), 2)
+                    : proportionAlongRamp;
                 return ymin + (1 - proportionUpRamp) * dy;
             }
             else

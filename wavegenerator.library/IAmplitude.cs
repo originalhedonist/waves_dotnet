@@ -1,14 +1,9 @@
 ﻿using System.Threading.Tasks;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public interface IAmplitude
     {
         Task<double> Amplitude(double t, int n, int channel);
-    }
-
-    public interface IPerChannelComponent : IAmplitude
-    {
-
     }
 }

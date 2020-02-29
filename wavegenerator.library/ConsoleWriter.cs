@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public static class ConsoleWriter
     {

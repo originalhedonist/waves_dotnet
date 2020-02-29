@@ -6,19 +6,20 @@ namespace wavegenerator.library
     public abstract class FrequencyFunctionWaveFile : IAmplitude
     {
         protected readonly double[] X;
-        protected readonly bool PhaseShiftChannels = false;
+        protected readonly bool PhaseShiftChannels;
 
         protected FrequencyFunctionWaveFile(int numberOfChannels, bool phaseShiftChannels)
         {
             X = new double[numberOfChannels];
-            this.PhaseShiftChannels = phaseShiftChannels;
-
+            PhaseShiftChannels = phaseShiftChannels;
         }
 
         protected abstract Task<double> Frequency(double t, int n, int channel);
 
-        protected virtual Task<double> GetWaveformSample(double[] x, bool phaseShiftChannels, int channel) =>
-            Task.FromResult((phaseShiftChannels && channel == 1) ? Math.Cos(x[channel]) : Math.Sin(x[channel]));
+        protected virtual Task<double> GetWaveformSample(double[] x, bool phaseShiftChannels, int channel)
+        {
+            return Task.FromResult(phaseShiftChannels && channel == 1 ? Math.Cos(x[channel]) : Math.Sin(x[channel]));
+        }
 
         public virtual async Task<double> Amplitude(double t, int n, int channel)
         {

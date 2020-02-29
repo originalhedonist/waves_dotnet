@@ -1,4 +1,5 @@
 ﻿using System;
+using wavegenerator.library;
 
 namespace wavegenerator
 {

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public class RiseApplier : IPerChannelComponent
     {
@@ -15,7 +15,7 @@ namespace wavegenerator
         {
             this.settings = settings;
             this.randomizer = randomizer;
-            this.riseModel = channelSettings.Rises;
+            riseModel = channelSettings.Rises;
             riseStartTimes = MakeTimes(riseModel).ToArray();
         }
 
@@ -28,10 +28,18 @@ namespace wavegenerator
             var times = riseIndexes.Select(s =>
             {
                 var earliestStartTime = riserModel.EarliestTime + totalAllowedTime * s / riserModel.Count;
-                var latestEndTime = riserModel.EarliestTime + totalAllowedTime * (double)(s + 1) / riserModel.Count; //the total time window the rise can occur in.
-                var latestStartTime = latestEndTime - riserModel.LengthEach; // but we don't want rises to overlap (calculation too complicated if nothing else), so limit the latest start time
-                if (latestStartTime < earliestStartTime) throw new InvalidOperationException($"Error in rise calculation - latestStartTime was before earliestStartTime"); //sanity check (shouldn't occur if validation is correct)
-                var time = earliestStartTime + randomizer.GetRandom(defaultValue: 0.5) * (latestStartTime - earliestStartTime);
+                var latestEndTime =
+                    riserModel.EarliestTime +
+                    totalAllowedTime * (double) (s + 1) /
+                    riserModel.Count; //the total time window the rise can occur in.
+                var latestStartTime =
+                    latestEndTime -
+                    riserModel
+                        .LengthEach; // but we don't want rises to overlap (calculation too complicated if nothing else), so limit the latest start time
+                if (latestStartTime < earliestStartTime)
+                    throw new InvalidOperationException(
+                        $"Error in rise calculation - latestStartTime was before earliestStartTime"); //sanity check (shouldn't occur if validation is correct)
+                var time = earliestStartTime + randomizer.GetRandom(0.5) * (latestStartTime - earliestStartTime);
                 return time;
             }).ToArray();
             return times;
@@ -50,14 +58,20 @@ namespace wavegenerator
                 var numRisesAfter = riseStartTimes.Count(rst => t < rst.TotalSeconds); //wholly after, i.e. yet to start
                 var maxAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter);
                 //are we in a rise?
-                var spanning = riseStartTimes.Where(rst => t >= rst.TotalSeconds && t < (rst + riseModel.LengthEach).TotalSeconds).ToArray(); //FirstOrDefault doesn't return null as TimeSpan is a struct
+                var spanning = riseStartTimes
+                    .Where(rst => t >= rst.TotalSeconds && t < (rst + riseModel.LengthEach).TotalSeconds)
+                    .ToArray(); //FirstOrDefault doesn't return null as TimeSpan is a struct
                 if (spanning.Any())
                 {
                     var riseStartTime = spanning.First();
-                    double proportionAlongRise = (t - riseStartTime.TotalSeconds) / riseModel.LengthEach.TotalSeconds;
-                    if (proportionAlongRise < 0 || proportionAlongRise > 1) throw new InvalidOperationException($"Invalid proportionAlongRise, should be between 0 and 1"); // sanity check
-                    double proportionUpRise = Math.Pow(Math.Sin(proportionAlongRise * Math.PI / 2), 2);//sin^2 from 0 to 1 to give a smooth rise
-                    double minAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter + 1);
+                    var proportionAlongRise = (t - riseStartTime.TotalSeconds) / riseModel.LengthEach.TotalSeconds;
+                    if (proportionAlongRise < 0 || proportionAlongRise > 1)
+                        throw new InvalidOperationException(
+                            $"Invalid proportionAlongRise, should be between 0 and 1"); // sanity check
+                    var proportionUpRise =
+                        Math.Pow(Math.Sin(proportionAlongRise * Math.PI / 2),
+                            2); //sin^2 from 0 to 1 to give a smooth rise
+                    var minAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter + 1);
                     proportionOfPattern = minAmplitude + (maxAmplitude - minAmplitude) * proportionUpRise;
                 }
                 else

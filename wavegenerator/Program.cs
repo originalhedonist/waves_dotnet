@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Lamar;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using wavegenerator.library;
 
 namespace wavegenerator
 {

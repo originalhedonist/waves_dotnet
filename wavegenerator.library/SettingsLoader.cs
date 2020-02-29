@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.IO;
+using Newtonsoft.Json;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public static class SettingsLoader
     {

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using wavegenerator.models;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public class FeatureProvider
     {
@@ -15,7 +13,7 @@ namespace wavegenerator
             this.randomizer = randomizer;
         }
         private int Section(int n) => (int)(n / (channelSettings.Sections.TotalLength.TotalSeconds * Settings.SamplingFrequency));
-        private static readonly ConcurrentDictionary<int, TabletopParams> paramsCache = new ConcurrentDictionary<int, TabletopParams>();
+        private static readonly ConcurrentDictionary<int, TabletopParams> ParamsCache = new ConcurrentDictionary<int, TabletopParams>();
         private readonly ChannelSettingsModel channelSettings;
         private readonly Settings settings;
         private readonly Randomizer randomizer;
@@ -35,7 +33,7 @@ namespace wavegenerator
 
         private TabletopParams GetTabletopParamsBySection(int section, string feature)
         {
-            return paramsCache.GetOrAdd(section, s =>
+            return ParamsCache.GetOrAdd(section, s =>
             {
                 var p = CreateFeatureParamsForSection(section);
                 ValidateParams(p);

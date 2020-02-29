@@ -1,26 +1,31 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public static class StreamExtensions
     {
         public static async Task WriteAsync(this Stream s, short value)
         {
-            var _buffer = new byte[2];
-            _buffer[0] = (byte)value;
-            _buffer[1] = (byte)(value >> 8);
-            await s.WriteAsync(_buffer, 0, 2);
+            var buffer = new byte[2];
+            buffer[0] = (byte) value;
+            buffer[1] = (byte) (value >> 8);
+            await s.WriteAsync(buffer, 0, 2);
         }
+
         public static async Task WriteAsync(this Stream s, int value)
         {
-            var _buffer = new byte[4];
-            _buffer[0] = (byte)value;
-            _buffer[1] = (byte)(value >> 8);
-            _buffer[2] = (byte)(value >> 16);
-            _buffer[3] = (byte)(value >> 24);
-            await s.WriteAsync(_buffer, 0, 4);
+            var buffer = new byte[4];
+            buffer[0] = (byte) value;
+            buffer[1] = (byte) (value >> 8);
+            buffer[2] = (byte) (value >> 16);
+            buffer[3] = (byte) (value >> 24);
+            await s.WriteAsync(buffer, 0, 4);
         }
-        public static Task WriteAsync(this Stream s, byte[] b) => s.WriteAsync(b, 0, b.Length);
+
+        public static Task WriteAsync(this Stream s, byte[] b)
+        {
+            return s.WriteAsync(b, 0, b.Length);
+        }
     }
 }

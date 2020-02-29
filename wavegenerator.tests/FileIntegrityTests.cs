@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using wavegenerator.library;
 using Xunit;
 
 namespace wavegenerator.tests

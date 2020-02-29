@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public class Randomizer
     {
@@ -8,19 +8,22 @@ namespace wavegenerator
         {
             this.settings = settings;
         }
+
         private readonly Random random = new Random();
         private readonly Settings settings;
 
-        public double GetRandom(double defaultValue = 1.0) => 
-            settings.Randomization ? random.NextDouble() : defaultValue;
+        public double GetRandom(double defaultValue = 1.0)
+        {
+            return settings.Randomization ? random.NextDouble() : defaultValue;
+        }
 
         public double MakeValue(VarianceModel variance, double progress)
         {
-            int isTopHalf = GetRandom() >= 0.5 ? -1 : 1;
-            double randomnessComponent = Math.Pow(GetRandom(), isTopHalf * variance.Randomness);
-            double progressionComponent = Math.Pow(progress, variance.Progression);
-            double desiredValue = randomnessComponent * progressionComponent;
-            double normalizedValue = Math.Min(1, desiredValue);
+            var isTopHalf = GetRandom() >= 0.5 ? -1 : 1;
+            var randomnessComponent = Math.Pow(GetRandom(), isTopHalf * variance.Randomness);
+            var progressionComponent = Math.Pow(progress, variance.Progression);
+            var desiredValue = randomnessComponent * progressionComponent;
+            var normalizedValue = Math.Min(1, desiredValue);
             return normalizedValue;
         }
 
