@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace wavegenerator
 {
-    public class RiserModel
+    public class RisesModel
     {
         public int Count { get; set; }
 

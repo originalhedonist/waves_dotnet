@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace wavegenerator
+namespace wavegenerator.models
 {
-    public class FeatureProbability
+    public class FeatureProbabilityModel
     {
         [Range(0, 1)]
         public double Wetness { get; set; }

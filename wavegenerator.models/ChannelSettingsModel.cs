@@ -13,11 +13,11 @@ namespace wavegenerator
 
         [SectionModelValidation(nameof(Sections))]
         [ValidateObject]
-        public SectionModel Sections { get; set; }
+        public SectionsModel Sections { get; set; }
 
         [FeatureProbabilityValidation]
         [ValidateObject]
-        public FeatureProbability FeatureProbability { get; set; }
+        public FeatureProbabilityModel FeatureProbability { get; set; }
 
         [Required]
         [ValidateObject]
@@ -30,9 +30,9 @@ namespace wavegenerator
         public WetnessModel Wetness { get; set; }
 
         [ValidateObject]
-        public BreakModel Breaks { get; set; }
+        public BreaksModel Breaks { get; set; }
 
         [ValidateObject]
-        public RiserModel Rises { get; set; }
+        public RisesModel Rises { get; set; }
     }
 }

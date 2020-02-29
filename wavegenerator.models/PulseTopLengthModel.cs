@@ -18,6 +18,6 @@ namespace wavegenerator
         [Range(double.Epsilon, double.MaxValue)]
         public double MaxWavelengthFactor { get; set; }
 
-        public VariationModel Variation { get; set; }
+        public VarianceModel Variation { get; set; }
     }
 }

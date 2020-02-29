@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace wavegenerator
 {
-    public class VariationModel
+    public class VarianceModel
     {
         [Range(0.0, 1.0)]
         public double Randomness { get; set; }

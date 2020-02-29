@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace wavegenerator
 {
-    public class BreakModel
+    public class BreaksModel
     {
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
         public TimeSpan MinTimeSinceStartOfTrack { get; set; }
@@ -28,10 +28,10 @@ namespace wavegenerator
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var breakModel = (BreakModel)value;
+            var breakModel = (BreaksModel)value;
 
-            if (breakModel.MaxTimeBetweenBreaks < breakModel.MinTimeBetweenBreaks) return new ValidationResult($"{nameof(BreakModel.MaxTimeBetweenBreaks)} must be >= {nameof(BreakModel.MinTimeBetweenBreaks)}");
-            if (breakModel.MaxLength < breakModel.MinLength) return new ValidationResult($"{nameof(BreakModel.MaxLength)} must be >= {nameof(BreakModel.MinLength)}");
+            if (breakModel.MaxTimeBetweenBreaks < breakModel.MinTimeBetweenBreaks) return new ValidationResult($"{nameof(BreaksModel.MaxTimeBetweenBreaks)} must be >= {nameof(BreaksModel.MinTimeBetweenBreaks)}");
+            if (breakModel.MaxLength < breakModel.MinLength) return new ValidationResult($"{nameof(BreaksModel.MaxLength)} must be >= {nameof(BreaksModel.MinLength)}");
             return ValidationResult.Success;
         }
         public override bool RequiresValidationContext => true;

@@ -37,9 +37,9 @@ export class Variance
 export class Sections
 {
     public sectionLengthSeconds: number;
-    public featureLengthRange: number[];
+    public featureLengthRangeSeconds: number[];
     public featureLengthVariation: Variance;
-    public rampLengthRange: number[];
+    public rampLengthRangeSeconds: number[];
     public rampLengthVariation: Variance;
 
     public constructor(init?: Partial<Sections>) { (Object as any).assign(this, init); }

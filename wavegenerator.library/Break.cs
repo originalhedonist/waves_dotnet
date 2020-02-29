@@ -11,7 +11,7 @@ namespace wavegenerator
         private readonly double endTime;
         private readonly TabletopParams tabletopParams;
 
-        public Break(Randomizer randomizer, TimeSpan midTime, BreakModel breakModel)
+        public Break(Randomizer randomizer, TimeSpan midTime, BreaksModel breakModel)
         {
             this.midTime = midTime;
             rampLength = breakModel.RampLength;

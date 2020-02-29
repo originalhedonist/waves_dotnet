@@ -26,7 +26,7 @@ namespace wavegenerator
             return Task.FromResult(att);
         }
 
-        private IEnumerable<TimeSpan> MakeBreaks(BreakModel breakModel)
+        private IEnumerable<TimeSpan> MakeBreaks(BreaksModel breakModel)
         {
             TimeSpan? lastBreakTime = null;
             if (breakModel != null)

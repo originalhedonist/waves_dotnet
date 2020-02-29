@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
+using wavegenerator.models;
 
 namespace wavegenerator
 {
@@ -17,7 +18,7 @@ namespace wavegenerator
         private readonly Probability probability;
         private readonly FeatureProvider featureProvider;
         
-        private readonly ConcurrentDictionary<(int Section, FeatureProbability FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbability), string>();
+        private readonly ConcurrentDictionary<(int Section, FeatureProbabilityModel FeatureProbability), string> featureTypeCache = new ConcurrentDictionary<(int, FeatureProbabilityModel), string>();
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         private readonly Script<double> waveformScript;
 
@@ -117,7 +118,7 @@ namespace wavegenerator
             double value;
             if (channelSettings.Wetness.LinkToFeature)
             {
-                var isThisFeature = nameof(FeatureProbability.Wetness) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
+                var isThisFeature = nameof(FeatureProbabilityModel.Wetness) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
                 {
                     string v = k.FeatureProbability.Decide(randomizer.GetRandom(defaultValue: 0.5));
                     return v;
@@ -136,7 +137,7 @@ namespace wavegenerator
         {
             if (channelSettings.Sections == null) return channelSettings.PulseFrequency.Quiescent;
             int section = Section(n);
-            var isThisFeature = nameof(FeatureProbability.Frequency) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
+            var isThisFeature = nameof(FeatureProbabilityModel.Frequency) == featureTypeCache.GetOrAdd((section, channelSettings.FeatureProbability), k =>
             {
                 string v = k.FeatureProbability.Decide(randomizer.GetRandom(defaultValue: 0.5));
                 return v;

@@ -25,25 +25,24 @@ namespace wavegenerator.tests
         public async Task ValidSettings_VerifyFile(string settingsFile, string expectedSha256Hash)
         {
             var sha256 = SHA256.Create();
-            using (var memoryStream = new MemoryStream())
-            {
-                var settings = SettingsLoader.LoadAndValidateSettings(settingsFile);
-                var container = DependencyConfig.ConfigureContainer(r => r.AddSingleton(settings));
-                
-                var waveStream = container.GetRequiredService<WaveStream>();
-                await waveStream.Write(memoryStream);
-                await memoryStream.FlushAsync();
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                var hash = sha256.ComputeHash(memoryStream);
-                var hashString = BitConverter.ToString(hash).Replace("-", "").ToUpperInvariant();
-                Assert.Equal(expectedSha256Hash.Length, hashString.Length);
-                Assert.Equal(expectedSha256Hash, hashString);
-            }
+            await using var memoryStream = new MemoryStream();
+            var settings = SettingsLoader.LoadAndValidateSettings(settingsFile);
+            var container = DependencyConfig.ConfigureContainer(r => r.AddSingleton(settings));
+
+            var waveStream = container.GetRequiredService<WaveStream>();
+            await waveStream.Write(memoryStream);
+            await memoryStream.FlushAsync();
+            memoryStream.Seek(0, SeekOrigin.Begin);
+
+            var hash = sha256.ComputeHash(memoryStream);
+            var hashString = BitConverter.ToString(hash).Replace("-", "").ToUpperInvariant();
+            Assert.Equal(expectedSha256Hash.Length, hashString.Length);
+            Assert.Equal(expectedSha256Hash, hashString);
         }
 
         private static Settings LoadAndValidateSettings(string filePath)
         {
-            string json = File.ReadAllText(filePath);
+            var json = File.ReadAllText(filePath);
             var newSettings = JsonConvert.DeserializeObject<Settings>(json);
             Validator.ValidateObject(newSettings, new ValidationContext(newSettings), true);
             return newSettings;

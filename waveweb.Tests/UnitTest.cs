@@ -48,5 +48,6 @@ namespace waveweb.Tests
             double result = e.calculate();
             Assert.AreEqual(1.0, result);
         }
+
     }
 }

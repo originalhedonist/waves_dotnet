@@ -8,7 +8,7 @@ namespace wavegenerator
     {
         private readonly Settings settings;
         private readonly Randomizer randomizer;
-        private readonly RiserModel riseModel;
+        private readonly RisesModel riseModel;
         private readonly TimeSpan[] riseStartTimes;
 
         public RiseApplier(Settings settings, Randomizer randomizer, ChannelSettingsModel channelSettings)
@@ -19,7 +19,7 @@ namespace wavegenerator
             riseStartTimes = MakeTimes(riseModel).ToArray();
         }
 
-        private TimeSpan[] MakeTimes(RiserModel riserModel)
+        private TimeSpan[] MakeTimes(RisesModel riserModel)
         {
             if (riserModel == null) return new TimeSpan[] { };
 

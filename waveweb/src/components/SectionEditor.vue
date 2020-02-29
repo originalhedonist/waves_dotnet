@@ -8,7 +8,7 @@
             <h4>Ramp length</h4>
 
             <section>
-                <v-range-slider v-model="sections.rampLengthRange" label="Range (seconds)" thumb-label="always" :min="minRampLength" :max="maxRampLength"/>
+                <v-range-slider v-model="sections.rampLengthRangeSeconds" label="Range (seconds)" thumb-label="always" :min="minRampLength" :max="maxRampLength"/>
             </section>
 
             <VarianceExpansionPanel :variance="sections.rampLengthVariation" title="Ramp length variation" />
@@ -19,7 +19,7 @@
             <h4>Feature length</h4>
 
             <section>
-                <v-range-slider v-model="sections.featureLengthRange" :min="minFeatureLength" :max="maxFeatureLength" label="Range (seconds)" thumb-label="always"/>
+                <v-range-slider v-model="sections.featureLengthRangeSeconds" :min="minFeatureLength" :max="maxFeatureLength" label="Range (seconds)" thumb-label="always"/>
             </section>
 
             <VarianceExpansionPanel :variance="sections.featureLengthVariation" title="Feature length variation" />
@@ -62,7 +62,7 @@
         }
 
         public get minSectionLength(): number {
-            return this.sections.rampLengthRange[0] * 2 + this.sections.featureLengthRange[0];
+            return this.sections.rampLengthRangeSeconds[0] * 2 + this.sections.featureLengthRangeSeconds[0];
         }
 
         public get maxRampLength(): number {
@@ -75,8 +75,8 @@
 
         @Debounce({ millisecondsDelay: 500 })
         @Watch('sections.sectionLengthSeconds')
-        @Watch('sections.featureLengthRange')
-        @Watch('sections.rampLengthRange')
+        @Watch('sections.featureLengthRangeSeconds')
+        @Watch('sections.rampLengthRangeSeconds')
         public redrawVisualization() {
             this.redrawVisualizationNow();
         }
@@ -84,16 +84,16 @@
         public redrawVisualizationNow() {
             const newChartData: [any] = [['Time', 'Short', 'Long']];
             const minFeatureLength = Math.min(
-                this.sections.featureLengthRange[0],
-                this.sections.sectionLengthSeconds - this.sections.rampLengthRange[0] * 2); // min usable feature length
+                this.sections.featureLengthRangeSeconds[0],
+                this.sections.sectionLengthSeconds - this.sections.rampLengthRangeSeconds[0] * 2); // min usable feature length
             const maxFeatureLength = Math.min(
-                this.sections.featureLengthRange[1],
-                this.sections.sectionLengthSeconds - this.sections.rampLengthRange[0] * 2); // max usable feature length
+                this.sections.featureLengthRangeSeconds[1],
+                this.sections.sectionLengthSeconds - this.sections.rampLengthRangeSeconds[0] * 2); // max usable feature length
 
-            const minRampLength = this.sections.rampLengthRange[0]; // this is the one thing that can't be reduced
+            const minRampLength = this.sections.rampLengthRangeSeconds[0]; // this is the one thing that can't be reduced
             const maxRampLength = Math.min(
-                Math.min(this.sections.rampLengthRange[1], (this.sections.sectionLengthSeconds - minFeatureLength) / 2),
-                this.sections.rampLengthRange[0]); // therefore max ramp length can't be less than minRampLength either
+                Math.min(this.sections.rampLengthRangeSeconds[1], (this.sections.sectionLengthSeconds - minFeatureLength) / 2),
+                this.sections.rampLengthRangeSeconds[0]); // therefore max ramp length can't be less than minRampLength either
             for (let seconds = 0; seconds <= this.sections.sectionLengthSeconds; seconds += 0.5) {
                 const short = this.getYVal(seconds, minRampLength, minFeatureLength);
                 const long = this.getYVal(seconds, maxRampLength, maxFeatureLength);

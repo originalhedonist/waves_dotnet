@@ -14,7 +14,7 @@ namespace wavegenerator
         public double GetRandom(double defaultValue = 1.0) => 
             settings.Randomization ? random.NextDouble() : defaultValue;
 
-        public double MakeValue(VariationModel variance, double progress)
+        public double MakeValue(VarianceModel variance, double progress)
         {
             int isTopHalf = GetRandom() >= 0.5 ? -1 : 1;
             double randomnessComponent = Math.Pow(GetRandom(), isTopHalf * variance.Randomness);
@@ -24,7 +24,7 @@ namespace wavegenerator
             return normalizedValue;
         }
 
-        public double ProportionAlong(VariationModel variance, double progress, double minValue, double maxValue)
+        public double ProportionAlong(VarianceModel variance, double progress, double minValue, double maxValue)
         {
             return minValue + MakeValue(variance, progress) * (maxValue - minValue);
         }

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using wavegenerator.models;
 
 namespace wavegenerator
 {
@@ -27,7 +28,7 @@ namespace wavegenerator
             double sectionLengthSeconds = channelSettings.Sections.TotalLength.TotalSeconds;
             int section = Section(n);
             double ts = t - (section * channelSettings.Sections.TotalLength.TotalSeconds); //time through the current section
-            var p = GetTabletopParamsBySection(section, nameof(FeatureProbability.Wetness));
+            var p = GetTabletopParamsBySection(section, nameof(FeatureProbabilityModel.Wetness));
             var a = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, min, max, p);
             return a;
         }

@@ -100,8 +100,8 @@
             channel0: new ChannelSettings({
                 sections: new Sections({
                     sectionLengthSeconds: 30,
-                    featureLengthRange: [10, 20],
-                    rampLengthRange: [2, 5],
+                    featureLengthRangeSeconds: [10, 20],
+                    rampLengthRangeSeconds: [2, 5],
                     rampLengthVariation: new Variance({
                         progression: 0.7,
                         randomness: 0.3,
@@ -130,8 +130,8 @@
             channel1: new ChannelSettings({
                 sections: new Sections({
                     sectionLengthSeconds: 30,
-                    featureLengthRange: [10, 20],
-                    rampLengthRange: [2, 5],
+                    featureLengthRangeSeconds: [10, 20],
+                    rampLengthRangeSeconds: [2, 5],
                     rampLengthVariation: new Variance({
                         progression: 0.7,
                         randomness: 0.3,
