@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using wavegenerator;
+using wavegenerator.library;
 
 namespace waveweb.ServiceInterface
 {

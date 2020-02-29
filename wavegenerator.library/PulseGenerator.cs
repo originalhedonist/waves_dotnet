@@ -4,14 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
 using wavegenerator.models;
 
-namespace wavegenerator
-{
-
+namespace wavegenerator.library
+{ 
     public class PulseGenerator : FrequencyFunctionWaveFile, IPerChannelComponent
     {
         private readonly ConcurrentDictionary<int, double> maxWetnessForSectionCache = new ConcurrentDictionary<int, double>();
-        private readonly ConcurrentDictionary<int, double> maxPeakWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
-        private readonly ConcurrentDictionary<int, double> maxTroughWavelengthFactorForSectionCache = new ConcurrentDictionary<int, double>();
         private readonly ChannelSettingsModel channelSettings;
         private readonly Settings settings;
         private readonly Randomizer randomizer;
@@ -41,13 +38,13 @@ namespace wavegenerator
         public override async Task<double> Amplitude(double t, int n, int channel)
         {
             double baseA = channelSettings.PulseFrequency == null ? -1 : // if we have no PulseFrequencySection at all - we don't care about frequency (or about incrementing anything)
-                await AmplitudeInternal(t, n, channel);// but if we have a pulse frequency, must always calculate it, even if we don't use it - it might (does) increment something important
+                await base.Amplitude(t, n, channel);// but if we have a pulse frequency, must always calculate it, even if we don't use it - it might (does) increment something important
 
             //apply wetness
-            double wetness = Wetness(t, n);
-            double apos = (baseA + 1) / 2; //base amplitude, always positive - but with proper curves unlike abs
-            double dryness = 1 - wetness;
-            double a = 1 - dryness * apos;
+            var wetness = Wetness(t, n);
+            var apos = (baseA + 1) / 2; //base amplitude, always positive - but with proper curves unlike abs
+            var dryness = 1 - wetness;
+            var a = 1 - dryness * apos;
 
             return a;
         }
@@ -63,19 +60,6 @@ namespace wavegenerator
             }
             else return await base.GetWaveformSample(x, phaseShiftChannels, channel);
         }
-
-        private async Task<double> AmplitudeInternal(double t, int n, int channel)
-        {
-            double amplitude;
-            var f = await Frequency(t, n, channel);
-
-            var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
-            x[channel] += dx;
-            amplitude = await GetWaveformSample(x, phaseShiftChannels, channel);
-
-            return amplitude;
-        }
-
 
         private double CreateTopFrequency(int section)
         {
