@@ -28,9 +28,9 @@ namespace wavegenerator.tests
             var sha256 = SHA256.Create();
             await using var memoryStream = new MemoryStream();
             var settings = SettingsLoader.LoadAndValidateSettings(settingsFile);
-            var container = DependencyConfig.ConfigureContainer(r => r.AddSingleton(settings));
+            var container = DependencyConfig.ConfigureContainer(r => r.AddInstance(settings));
 
-            var waveStream = container.GetRequiredService<WaveStream>();
+            var waveStream = container.Resolve<WaveStream>();
             await waveStream.Write(memoryStream);
             await memoryStream.FlushAsync();
             memoryStream.Seek(0, SeekOrigin.Begin);

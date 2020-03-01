@@ -1,5 +1,5 @@
-﻿using Lamar;
-using System;
+﻿using System;
+using Ultimate.DI;
 using wavegenerator.library;
 
 namespace wavegenerator
@@ -16,23 +16,22 @@ namespace wavegenerator
 
         public T GetRequiredService<T>(Action<IInjector> injections)
         {
-            using (var nestedContainer = container.GetNestedContainer())
-            {
-                var injector = new Injector(nestedContainer);
-                injections(injector);
-                return nestedContainer.GetInstance<T>();
-            }
+            var nestedContainer = container.GetNestedContainer();
+            var injector = new Injector(nestedContainer);
+            injections(injector);
+            var resolution = nestedContainer.Resolve<T>();
+            return resolution;
         }
     }
 
     public class Injector : IInjector
     {
-        private readonly INestedContainer nestedContainer;
+        private readonly IContainer nestedContainer;
 
-        public Injector(INestedContainer nestedContainer)
+        public Injector(IContainer nestedContainer)
         {
             this.nestedContainer = nestedContainer;
         }
-        public void Inject<T>(T t) => nestedContainer.Inject<T>(t);
+        public void Inject<T>(T t) => nestedContainer.AddInstance<T>(t);
     }
 }

@@ -6,17 +6,20 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class CarrierFrequencyApplier : FrequencyFunctionWaveFile, IPerChannelComponent
+    public class CarrierFrequencyApplier : FrequencyFunctionWaveFile, IPerChannelComponentTranscendsWetness
     {
         private readonly Settings settings;
         private readonly ChannelSettingsModel channelSettings;
         private readonly FeatureProvider featureProvider;
 
-        public CarrierFrequencyApplier(Settings settings, ChannelSettingsModel channelSettingsModel, FeatureProvider featureProvider) : 
+        public CarrierFrequencyApplier(
+            Settings settings, 
+            ISettingsSectionProvider<ChannelSettingsModel> channelSettingsModelProvider, 
+            FeatureProvider featureProvider) : 
             base(numberOfChannels: settings.NumberOfChannels, phaseShiftChannels: settings.PhaseShiftCarrier)
         {
             this.settings = settings;
-            this.channelSettings = channelSettingsModel;
+            this.channelSettings = channelSettingsModelProvider.GetSetting();
             this.featureProvider = featureProvider;
         }
 

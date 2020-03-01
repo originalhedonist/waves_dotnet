@@ -25,7 +25,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "waveweb", "waveweb\waveweb.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wavegenerator.tests", "wavegenerator.tests\wavegenerator.tests.csproj", "{81F57A52-8BFA-4844-A34A-ADFB6C543F27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "wavegenerator.library", "wavegenerator.library\wavegenerator.library.csproj", "{939E3434-8A00-442C-9B27-9C9BBBBCF352}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wavegenerator.library", "wavegenerator.library\wavegenerator.library.csproj", "{939E3434-8A00-442C-9B27-9C9BBBBCF352}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

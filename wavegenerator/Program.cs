@@ -5,9 +5,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Lamar;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Ultimate.DI;
 using wavegenerator.library;
 
 namespace wavegenerator
@@ -39,7 +38,7 @@ namespace wavegenerator
                 {
                     var filePath = args.Single();
                     var settings = SettingsLoader.LoadAndValidateSettings(filePath);
-                    var container = DependencyConfig.ConfigureContainer(r => r.AddSingleton(settings));
+                    var container = DependencyConfig.ConfigureContainer(r => r.AddInstance(settings));
 
                     string[] names = new string[settings.NumFiles];
                     for(int i = 0; i < settings.NumFiles; i++)
@@ -76,7 +75,7 @@ namespace wavegenerator
         private static async Task WriteFile(IContainer componentContext, Settings settings, int uniqueifier, string name)
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
-            var waveStream = componentContext.GetRequiredService<WaveStream>();
+            var waveStream = componentContext.Resolve<WaveStream>();
             await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(settings, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
 
             await waveStream.Write($"{compositionName}.wav");

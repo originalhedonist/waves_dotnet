@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using wavegenerator.library;
 using wavegenerator.models;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
-    public class BreakApplier : IPerChannelComponent
+    public class BreakApplier : IPerChannelComponentTranscendsWetness
     {
         private readonly Settings settings;
         private readonly Randomizer randomizer;
         private readonly Break[] breaks;
 
-        public BreakApplier(Settings settings, ChannelSettingsModel channelSettings, Randomizer randomizer)
+        public BreakApplier(Settings settings, ISettingsSectionProvider<ChannelSettingsModel> channelSettingsProvider, Randomizer randomizer)
         {
             this.settings = settings;
             this.randomizer = randomizer;
+            var channelSettings = channelSettingsProvider.GetSetting();
             var breakTimes = MakeBreaks(channelSettings.Breaks).ToArray();
             breaks = breakTimes.Select(t => new Break(randomizer, t, channelSettings.Breaks)).ToArray();
         }

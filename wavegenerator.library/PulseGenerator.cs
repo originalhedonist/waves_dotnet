@@ -8,34 +8,36 @@ namespace wavegenerator.library
 {
     public class PulseGenerator : FrequencyFunctionWaveFile, IPerChannelComponent
     {
-        private readonly ConcurrentDictionary<int, double> maxWetnessForSectionCache =
-            new ConcurrentDictionary<int, double>();
-
         private readonly ChannelSettingsModel channelSettings;
         private readonly PulseFrequencyModel pulseFrequency;
-        private readonly Settings settings;
         private readonly Randomizer randomizer;
         private readonly Probability probability;
         private readonly FeatureProvider featureProvider;
-
-        private readonly ConcurrentDictionary<(int Section, FeatureProbabilityModel FeatureProbability), string>
-            featureTypeCache = new ConcurrentDictionary<(int, FeatureProbabilityModel), string>();
+        private readonly FeatureChooser featureChooser;
+        private readonly ISectionsProvider sectionsProvider;
 
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
         private readonly Script<double> waveformScript;
 
-        public PulseGenerator(ChannelSettingsModel channelSettings, PulseFrequencyModel pulseFrequency, Settings settings, Randomizer randomizer,
-            Probability probability, FeatureProvider featureProvider) :
+        public PulseGenerator(
+            ISettingsSectionProvider<ChannelSettingsModel> channelSettingsProvider,
+            ISettingsSectionProvider<PulseFrequencyModel> pulseFrequencyModelProvider, 
+            Settings settings, 
+            Randomizer randomizer,
+            Probability probability, 
+            FeatureProvider featureProvider,
+            FeatureChooser featureChooser,
+            ISectionsProvider sectionsProvider) :
             base(settings.NumberOfChannels, settings.PhaseShiftPulses)
         {
-            this.channelSettings = channelSettings;
-            this.pulseFrequency = pulseFrequency;
-            this.settings = settings;
+            this.channelSettings = channelSettingsProvider.GetSetting();
+            this.pulseFrequency = pulseFrequencyModelProvider.GetSetting();
             this.randomizer = randomizer;
             this.probability = probability;
             this.featureProvider = featureProvider;
+            this.featureChooser = featureChooser;
+            this.sectionsProvider = sectionsProvider;
 
-            var numberOfChannels = settings.NumberOfChannels;
             if (channelSettings.WaveformExpression != null)
                 waveformScript = WaveformExpression.Parse(channelSettings.WaveformExpression);
         }
@@ -47,13 +49,7 @@ namespace wavegenerator.library
                 : // if we have no PulseFrequencySection at all - we don't care about frequency (or about incrementing anything)
                 await base.Amplitude(t, n, channel); // but if we have a pulse frequency, must always calculate it, even if we don't use it - it might (does) increment something important
 
-            //apply wetness
-            var wetness = Wetness(t, n);
-            var apos = (baseA + 1) / 2; //base amplitude, always positive - but with proper curves unlike abs
-            var dryness = 1 - wetness;
-            var a = 1 - dryness * apos;
-
-            return a;
+            return baseA;
         }
 
         protected override async Task<double> GetWaveformSample(double[] x, bool phaseShiftChannels, int channel)
@@ -76,7 +72,7 @@ namespace wavegenerator.library
 
         private double CreateTopFrequency(int section)
         {
-            var numSections = channelSettings.NumSections(settings);
+            var numSections = sectionsProvider.NumSections();
             double progression = (float) section / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
             var isRise = probability.Resolve(
@@ -97,60 +93,16 @@ namespace wavegenerator.library
             return (int) (n / (channelSettings.Sections.TotalLength.TotalSeconds * Settings.SamplingFrequency));
         }
 
-        private double Wetness(double t, int n)
+        protected override Task<double> Frequency(double t, int n, int channel)
         {
-            if (channelSettings.Wetness == null) return 0;
-
-            if (channelSettings.Sections == null) return channelSettings.Wetness.Maximum;
-
-            // rise in a sin^2 fashion from MinWetness to MaxWetness
+            if (channelSettings.Sections == null) return Task.FromResult(pulseFrequency.Quiescent);
             var section = Section(n);
-            var ts = t - section * channelSettings.Sections.TotalLength.TotalSeconds; //time through the current section
-
-            var maxForSection = maxWetnessForSectionCache.GetOrAdd(section, s =>
-            {
-                var numSections = channelSettings.NumSections(settings);
-                var progression = (double) s / Math.Max(1, numSections - 1); // <= 1
-                var max = randomizer.ProportionAlong(channelSettings.Wetness.Variation, progression,
-                    channelSettings.Wetness.Minimum, channelSettings.Wetness.Maximum);
-                return max;
-            });
-
-            double value;
-            if (channelSettings.Wetness.LinkToFeature)
-            {
-                var isThisFeature = nameof(FeatureProbabilityModel.Wetness) == featureTypeCache.GetOrAdd(
-                    (section, channelSettings.FeatureProbability), k =>
-                    {
-                        var v = k.FeatureProbability.Decide(randomizer.GetRandom(0.5));
-                        return v;
-                    });
-
-                value = featureProvider.FeatureValue(t, n, channelSettings.Wetness.Minimum, maxForSection);
-            }
-            else
-            {
-                value = maxForSection;
-            }
-
-            return value;
-        }
-
-        protected override async Task<double> Frequency(double t, int n, int channel)
-        {
-            if (channelSettings.Sections == null) return pulseFrequency.Quiescent;
-            var section = Section(n);
-            var isThisFeature = nameof(FeatureProbabilityModel.Frequency) == featureTypeCache.GetOrAdd(
-                (section, channelSettings.FeatureProbability), k =>
-                {
-                    var v = k.FeatureProbability.Decide(randomizer.GetRandom(0.5));
-                    return v;
-                });
-            if (!isThisFeature) return pulseFrequency.Quiescent;
+            var isThisFeature = featureChooser.IsFeature(n, nameof(FeatureProbabilityModel.Frequency));
+            if (!isThisFeature) return Task.FromResult(pulseFrequency.Quiescent);
 
             var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
             var frequency = featureProvider.FeatureValue(t, n, pulseFrequency.Quiescent, topFrequency);
-            return frequency;
+            return Task.FromResult(frequency);
         }
     }
 }

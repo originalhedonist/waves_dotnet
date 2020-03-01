@@ -5,18 +5,18 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class RiseApplier : IPerChannelComponent
+    public class RiseApplier : IPerChannelComponentTranscendsWetness
     {
         private readonly Settings settings;
         private readonly Randomizer randomizer;
         private readonly RisesModel riseModel;
         private readonly TimeSpan[] riseStartTimes;
 
-        public RiseApplier(Settings settings, Randomizer randomizer, ChannelSettingsModel channelSettings)
+        public RiseApplier(Settings settings, Randomizer randomizer, ISettingsSectionProvider<RisesModel> riseModelProvider)
         {
             this.settings = settings;
             this.randomizer = randomizer;
-            riseModel = channelSettings.Rises;
+            riseModel = riseModelProvider.GetSetting();
             riseStartTimes = MakeTimes(riseModel).ToArray();
         }
 
@@ -46,7 +46,7 @@ namespace wavegenerator.library
             return times;
         }
 
-        public async Task<double> Amplitude(double t, int n, int channel)
+        public Task<double> Amplitude(double t, int n, int channel)
         {
             //Inclusive at start, exclusive at end, always have 't' at LHS for consistency.
             double proportionOfPattern;
@@ -81,7 +81,7 @@ namespace wavegenerator.library
                 }
             }
 
-            return proportionOfPattern;
+            return Task.FromResult(proportionOfPattern);
         }
     }
 }
