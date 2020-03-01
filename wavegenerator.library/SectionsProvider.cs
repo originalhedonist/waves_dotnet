@@ -5,10 +5,10 @@
         private readonly Settings settings;
         private readonly SectionsModel sections;
 
-        public SectionsProvider(Settings settings, ISettingsSectionProvider<SectionsModel> sectionsModelProvider)
+        public SectionsProvider(Settings settings, SectionsModel sections)
         {
             this.settings = settings;
-            this.sections = sectionsModelProvider.GetSetting();
+            this.sections = sections;
         }
 
         public int NumSections()

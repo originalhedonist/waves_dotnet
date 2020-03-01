@@ -14,12 +14,12 @@ namespace wavegenerator.library
 
         public FeatureChooser(
             ISectionsProvider sectionsProvider,
-            ISettingsSectionProvider<FeatureProbabilityModel> featureProbabilityModelProvider,
+            FeatureProbabilityModel featureProbability,
             Randomizer randomizer
             )
         {
             this.sectionsProvider = sectionsProvider;
-            this.featureProbability = featureProbabilityModelProvider.GetSetting();
+            this.featureProbability = featureProbability;
             this.randomizer = randomizer;
         }
 

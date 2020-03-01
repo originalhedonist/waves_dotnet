@@ -4,22 +4,6 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-
-    public class ChannelSettingsProvider : ISettingsSectionProvider<ChannelSettingsModel>
-    {
-        private readonly ChannelSettingsModel channelSettingsModel;
-
-        public ChannelSettingsProvider(ChannelSettingsModel channelSettingsModel)
-        {
-            this.channelSettingsModel = channelSettingsModel;
-        }
-
-        public ChannelSettingsModel GetSetting()
-        {
-            return channelSettingsModel;
-        }
-    }
-
     public class ChannelSplitter : IAmplitude
     {
         private readonly ChannelComponentStack[] channelStacks;
@@ -28,8 +12,17 @@ namespace wavegenerator.library
         {
             channelStacks = settings.ChannelSettings.Select(channelSettings =>
             {
-                var channelSettingsModelProvider = new ChannelSettingsProvider(channelSettings);
-                var componentStack = parameterizedResolver.GetRequiredService<ChannelComponentStack>(i => i.Inject<ISettingsSectionProvider<ChannelSettingsModel>>(channelSettingsModelProvider));
+                var componentStack = parameterizedResolver.GetRequiredService<ChannelComponentStack>(i =>
+                {
+                    i.Inject(channelSettings.Wetness);
+                    i.Inject(channelSettings.Sections);
+                    i.Inject(channelSettings.FeatureProbability);
+                    i.Inject(channelSettings.PulseFrequency);
+                    i.Inject(channelSettings.Breaks);
+                    i.Inject(channelSettings.Rises);
+                    i.Inject(channelSettings.CarrierFrequency);
+                    i.Inject<IWaveformExpressionProvider>(channelSettings);
+                });
                 return componentStack;
             }).ToArray();
         }

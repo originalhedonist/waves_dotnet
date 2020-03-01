@@ -7,11 +7,11 @@ namespace wavegenerator.library
     public class FeatureProvider
     {
         public FeatureProvider(
-            ISettingsSectionProvider<SectionsModel> sectionsModelProvider, 
+            SectionsModel sectionsModel, 
             Randomizer randomizer,
             ISectionsProvider sectionsProvider)
         {
-            this.sectionModel = sectionsModelProvider.GetSetting();
+            this.sectionModel = sectionsModel;
             this.randomizer = randomizer;
             this.sectionsProvider = sectionsProvider;
         }

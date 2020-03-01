@@ -12,11 +12,11 @@ namespace wavegenerator.library
         private readonly RisesModel riseModel;
         private readonly TimeSpan[] riseStartTimes;
 
-        public RiseApplier(Settings settings, Randomizer randomizer, ISettingsSectionProvider<RisesModel> riseModelProvider)
+        public RiseApplier(Settings settings, Randomizer randomizer, RisesModel riseModel)
         {
             this.settings = settings;
             this.randomizer = randomizer;
-            riseModel = riseModelProvider.GetSetting();
+            this.riseModel = riseModel;
             riseStartTimes = MakeTimes(riseModel).ToArray();
         }
 

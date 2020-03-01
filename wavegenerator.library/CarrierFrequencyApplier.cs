@@ -2,37 +2,36 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
-using wavegenerator.models;
 
 namespace wavegenerator.library
 {
     public class CarrierFrequencyApplier : FrequencyFunctionWaveFile, IPerChannelComponentTranscendsWetness
     {
         private readonly Settings settings;
-        private readonly ChannelSettingsModel channelSettings;
+        private readonly CarrierFrequencyModel carrierFrequency;
         private readonly FeatureProvider featureProvider;
 
         public CarrierFrequencyApplier(
             Settings settings, 
-            ISettingsSectionProvider<ChannelSettingsModel> channelSettingsModelProvider, 
+            CarrierFrequencyModel carrierFrequency, 
             FeatureProvider featureProvider) : 
             base(numberOfChannels: settings.NumberOfChannels, phaseShiftChannels: settings.PhaseShiftCarrier)
         {
             this.settings = settings;
-            this.channelSettings = channelSettingsModelProvider.GetSetting();
+            this.carrierFrequency = carrierFrequency;
             this.featureProvider = featureProvider;
         }
 
         protected override async Task<double> Frequency(double t, int n, int channel)
         {
             var carrierFrequencyString = channel == 0 ?
-                channelSettings.CarrierFrequency.Left :
-                channelSettings.CarrierFrequency.Right;
-            return await EvaluateCarrierFrequency(t, n, carrierFrequencyString, channelSettings);
+                carrierFrequency.Left :
+                carrierFrequency.Right;
+            return await EvaluateCarrierFrequency(t, n, carrierFrequencyString);
         }
 
         private static readonly ConcurrentDictionary<string, Script<double>> scripts = new ConcurrentDictionary<string, Script<double>>();
-        private async Task<double> EvaluateCarrierFrequency(double t, int n, string carrierFrequencyString, ChannelSettingsModel channelSettings)
+        private async Task<double> EvaluateCarrierFrequency(double t, int n, string carrierFrequencyString)
         {
             var script = scripts.GetOrAdd(carrierFrequencyString, CarrierFrequenyExpression.Parse);
             var carrierFrequencyExpressionParams = new CarrierFrequencyExpressionParams

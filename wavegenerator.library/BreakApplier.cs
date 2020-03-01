@@ -12,13 +12,12 @@ namespace wavegenerator.library
         private readonly Randomizer randomizer;
         private readonly Break[] breaks;
 
-        public BreakApplier(Settings settings, ISettingsSectionProvider<ChannelSettingsModel> channelSettingsProvider, Randomizer randomizer)
+        public BreakApplier(Settings settings, BreaksModel breaksSettings, Randomizer randomizer)
         {
             this.settings = settings;
             this.randomizer = randomizer;
-            var channelSettings = channelSettingsProvider.GetSetting();
-            var breakTimes = MakeBreaks(channelSettings.Breaks).ToArray();
-            breaks = breakTimes.Select(t => new Break(randomizer, t, channelSettings.Breaks)).ToArray();
+            var breakTimes = MakeBreaks(breaksSettings).ToArray();
+            breaks = breakTimes.Select(t => new Break(randomizer, t, breaksSettings)).ToArray();
         }
 
         public Task<double> Amplitude(double t, int n, int channel)

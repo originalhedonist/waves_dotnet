@@ -26,14 +26,14 @@ namespace wavegenerator.library
             FeatureChooser featureChooser,
             Randomizer randomizer,
             FeatureProvider featureProvider,
-            ISettingsSectionProvider<WetnessModel> wetnessModelProvider,
-            ISettingsSectionProvider<SectionsModel> sectionModelProvider
+            WetnessModel wetness,
+            SectionsModel sections
             )
         {
             this.components = components.ToArray();
             this.sectionsProvider = sectionsProvider;
-            this.wetness = wetnessModelProvider.GetSetting();
-            this.sections = sectionModelProvider.GetSetting();
+            this.wetness = wetness;
+            this.sections = sections;
             this.featureChooser = featureChooser;
             this.randomizer = randomizer;
             this.featureProvider = featureProvider;

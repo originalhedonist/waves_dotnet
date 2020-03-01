@@ -16,11 +16,6 @@ namespace wavegenerator
             container.AddTransient<IPerChannelComponentTranscendsWetness, CarrierFrequencyApplier>();
             container.AddTransient<IPerChannelComponent, PulseGenerator>();
             container.AddTransient<IParameterizedResolver, ParameterizedResolver>();
-            container.AddTransient<ISettingsSectionProvider<SectionsModel>, SectionModelProvider>();
-            container.AddTransient<ISettingsSectionProvider<WetnessModel>, WetnessModelProvider>();
-            container.AddTransient<ISettingsSectionProvider<PulseFrequencyModel>, PulseFrequencyModelProvider>();
-            container.AddTransient<ISettingsSectionProvider<FeatureProbabilityModel>, FeatureProbabilityModelProvider>();
-            container.AddTransient<ISettingsSectionProvider<RisesModel>, RiseSectionModelProvider>();
             container.AddSingleton<FeatureChooser>();
             container.AddTransient<ISectionsProvider, SectionsProvider>();
             container.AddTransient<ChannelSplitter>();

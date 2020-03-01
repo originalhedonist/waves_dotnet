@@ -2,7 +2,7 @@
 
 namespace wavegenerator.models
 {
-    public class ChannelSettingsModel
+    public class ChannelSettingsModel : IWaveformExpressionProvider
     {
         [WaveformExpressionValidation]
         public string WaveformExpression { get; set; }

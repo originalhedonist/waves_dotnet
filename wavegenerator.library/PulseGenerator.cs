@@ -8,8 +8,8 @@ namespace wavegenerator.library
 {
     public class PulseGenerator : FrequencyFunctionWaveFile, IPerChannelComponent
     {
-        private readonly ChannelSettingsModel channelSettings;
         private readonly PulseFrequencyModel pulseFrequency;
+        private readonly SectionsModel sections;
         private readonly Randomizer randomizer;
         private readonly Probability probability;
         private readonly FeatureProvider featureProvider;
@@ -20,8 +20,9 @@ namespace wavegenerator.library
         private readonly Script<double> waveformScript;
 
         public PulseGenerator(
-            ISettingsSectionProvider<ChannelSettingsModel> channelSettingsProvider,
-            ISettingsSectionProvider<PulseFrequencyModel> pulseFrequencyModelProvider, 
+            PulseFrequencyModel pulseFrequency,
+            SectionsModel sections,
+            IWaveformExpressionProvider waveformExpressionProvider,
             Settings settings, 
             Randomizer randomizer,
             Probability probability, 
@@ -30,16 +31,19 @@ namespace wavegenerator.library
             ISectionsProvider sectionsProvider) :
             base(settings.NumberOfChannels, settings.PhaseShiftPulses)
         {
-            this.channelSettings = channelSettingsProvider.GetSetting();
-            this.pulseFrequency = pulseFrequencyModelProvider.GetSetting();
+            this.pulseFrequency = pulseFrequency;
+            this.sections = sections;
             this.randomizer = randomizer;
             this.probability = probability;
             this.featureProvider = featureProvider;
             this.featureChooser = featureChooser;
             this.sectionsProvider = sectionsProvider;
 
-            if (channelSettings.WaveformExpression != null)
-                waveformScript = WaveformExpression.Parse(channelSettings.WaveformExpression);
+            var waveformExpression = waveformExpressionProvider.WaveformExpression;
+            if (waveformExpression != null)
+            {
+                waveformScript = WaveformExpression.Parse(waveformExpression);
+            }
         }
 
         public override async Task<double> Amplitude(double t, int n, int channel)
@@ -88,17 +92,11 @@ namespace wavegenerator.library
             return topFrequency;
         }
 
-        private int Section(int n)
-        {
-            return (int) (n / (channelSettings.Sections.TotalLength.TotalSeconds * Settings.SamplingFrequency));
-        }
-
         protected override Task<double> Frequency(double t, int n, int channel)
         {
-            if (channelSettings.Sections == null) return Task.FromResult(pulseFrequency.Quiescent);
-            var section = Section(n);
             var isThisFeature = featureChooser.IsFeature(n, nameof(FeatureProbabilityModel.Frequency));
             if (!isThisFeature) return Task.FromResult(pulseFrequency.Quiescent);
+            var section = sectionsProvider.Section(n);
 
             var topFrequency = topFrequencyCache.GetOrAdd(section, CreateTopFrequency);
             var frequency = featureProvider.FeatureValue(t, n, pulseFrequency.Quiescent, topFrequency);
