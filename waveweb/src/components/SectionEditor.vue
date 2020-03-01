@@ -85,15 +85,20 @@
             const newChartData: [any] = [['Time', 'Short', 'Long']];
             const minFeatureLength = Math.min(
                 this.sections.featureLengthRangeSeconds[0],
-                this.sections.sectionLengthSeconds - this.sections.rampLengthRangeSeconds[0] * 2); // min usable feature length
+                this.sections.sectionLengthSeconds - this.sections.rampLengthRangeSeconds[0] * 2);
+                // min usable feature length
+
             const maxFeatureLength = Math.min(
                 this.sections.featureLengthRangeSeconds[1],
-                this.sections.sectionLengthSeconds - this.sections.rampLengthRangeSeconds[0] * 2); // max usable feature length
+                this.sections.sectionLengthSeconds - this.sections.rampLengthRangeSeconds[0] * 2);
+                // max usable feature length
 
             const minRampLength = this.sections.rampLengthRangeSeconds[0]; // this is the one thing that can't be reduced
             const maxRampLength = Math.min(
-                Math.min(this.sections.rampLengthRangeSeconds[1], (this.sections.sectionLengthSeconds - minFeatureLength) / 2),
-                this.sections.rampLengthRangeSeconds[0]); // therefore max ramp length can't be less than minRampLength either
+                Math.min(this.sections.rampLengthRangeSeconds[1],
+                    (this.sections.sectionLengthSeconds - minFeatureLength) / 2),
+                this.sections.rampLengthRangeSeconds[0]);
+                // therefore max ramp length can't be less than minRampLength either
             for (let seconds = 0; seconds <= this.sections.sectionLengthSeconds; seconds += 0.5) {
                 const short = this.getYVal(seconds, minRampLength, minFeatureLength);
                 const long = this.getYVal(seconds, maxRampLength, maxFeatureLength);

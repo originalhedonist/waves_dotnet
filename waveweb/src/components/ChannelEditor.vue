@@ -88,23 +88,23 @@
         public waveformDemoChartOptionsNoFeature = {
             legend: 'none',
             curveType: 'function',
-            title: 'No feature'
-        }
+            title: 'No feature',
+        };
         public waveformDemoChartOptionsHighFrequency = {
             legend: 'none',
             curveType: 'function',
-            title: 'High frequency feature'
-        }
+            title: 'High frequency feature',
+        };
         public waveformDemoChartOptionsLowFrequency = {
             legend: 'none',
             curveType: 'function',
-            title: 'Low frequency feature'
-        }
+            title: 'Low frequency feature',
+        };
 
         public showWaveformDemoCharts: boolean = false;
-        public waveformDemoDataNoFeature : any[][] = [['t', 'y']];
-        public waveformDemoDataHighFrequency : any[][] = [['t', 'y']];
-        public waveformDemoDataLowFrequency : any[][] = [['t', 'y']];
+        public waveformDemoDataNoFeature: any[][] = [['t', 'y']];
+        public waveformDemoDataHighFrequency: any[][] = [['t', 'y']];
+        public waveformDemoDataLowFrequency: any[][] = [['t', 'y']];
 
         @Watch('channel.waveformExpression')
         public onWaveformExpressionChanged() {
@@ -116,7 +116,7 @@
             const testWaveformRequest = new TestPulseWaveformRequest({
                 sections: this.channel.sections,
                 pulseFrequency: this.channel.pulseFrequency,
-                waveformExpression: this.channel.waveformExpression
+                waveformExpression: this.channel.waveformExpression,
             });
             try {
                 const result = await client.post(testWaveformRequest);
@@ -132,7 +132,6 @@
             }
             catch (error) {
                 this.waveformExpressionError = 'An unknown error occurred on the server.';
-                console.error(error);
             }
             finally {
                 this.testingWaveformExpression = false;
