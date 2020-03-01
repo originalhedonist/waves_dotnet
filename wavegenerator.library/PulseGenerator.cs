@@ -6,7 +6,7 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class PulseGenerator : FrequencyFunctionWaveFile, IPerChannelComponent
+    public class PulseGenerator : FrequencyFunctionWaveFile
     {
         private readonly PulseFrequencyModel pulseFrequency;
         private readonly Randomizer randomizer;

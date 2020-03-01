@@ -6,7 +6,7 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class BreakApplier : IPerChannelComponentTranscendsWetness
+    public class BreakApplier : IPerChannelComponent
     {
         private readonly Settings settings;
         private readonly Randomizer randomizer;

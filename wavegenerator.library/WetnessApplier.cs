@@ -7,9 +7,9 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class WetnessApplier : IAmplitude, IPerChannelComponentTranscendsWetness
+    public class WetnessApplier : IAmplitude, IPerChannelComponent
     {
-        private readonly IPerChannelComponent[] components;
+        private readonly PulseGenerator pulseGenerator;
         private readonly ISectionsProvider sectionsProvider;
         private readonly WetnessModel wetness;
         private readonly SectionsModel sections;
@@ -21,7 +21,7 @@ namespace wavegenerator.library
             new ConcurrentDictionary<int, double>();
 
         public WetnessApplier(
-            IEnumerable<IPerChannelComponent> components,
+            PulseGenerator pulseGenerator,
             ISectionsProvider sectionsProvider,
             FeatureChooser featureChooser,
             Randomizer randomizer,
@@ -30,7 +30,7 @@ namespace wavegenerator.library
             SectionsModel sections
             )
         {
-            this.components = components.ToArray();
+            this.pulseGenerator = pulseGenerator;
             this.sectionsProvider = sectionsProvider;
             this.wetness = wetness;
             this.sections = sections;
@@ -41,7 +41,7 @@ namespace wavegenerator.library
 
         public async Task<double> Amplitude(double t, int n, int channel)
         {
-            var baseA = await ComponentAmplitude(t, n, channel); // but if we have a pulse frequency, must always calculate it, even if we don't use it - it might (does) increment something important
+            var baseA = await pulseGenerator.Amplitude(t, n, channel); // but if we have a pulse frequency, must always calculate it, even if we don't use it - it might (does) increment something important
 
             //apply wetness
             var wetnessVal = Wetness(t, n);
@@ -49,17 +49,6 @@ namespace wavegenerator.library
             var dryness = 1 - wetnessVal;
             var a = 1 - dryness * apos;
             return a;
-        }
-
-        private async Task<double> ComponentAmplitude(double t, int n, int channel)
-        {
-            double retval = 1;
-            foreach (var component in components)
-            {
-                var componentAmplitude = await component.Amplitude(t, n, channel);
-                retval *= componentAmplitude;
-            }
-            return retval;
         }
 
         private double Wetness(double t, int n)

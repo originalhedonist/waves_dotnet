@@ -5,7 +5,7 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class RiseApplier : IPerChannelComponentTranscendsWetness
+    public class RiseApplier : IPerChannelComponent
     {
         private readonly Settings settings;
         private readonly Randomizer randomizer;

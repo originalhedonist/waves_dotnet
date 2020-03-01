@@ -13,9 +13,9 @@ namespace wavegenerator.library
     // then a separate composition class will be necessary. but for now that's not necessary.
     public class ChannelComponentStack : IAmplitude
     {
-        private readonly IPerChannelComponentTranscendsWetness[] components;
+        private readonly IPerChannelComponent[] components;
 
-        public ChannelComponentStack(IEnumerable<IPerChannelComponentTranscendsWetness> components)
+        public ChannelComponentStack(IEnumerable<IPerChannelComponent> components)
         {
             this.components = components.ToArray();
         }

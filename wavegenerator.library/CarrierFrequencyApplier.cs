@@ -6,7 +6,7 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class CarrierFrequencyApplier : FrequencyFunctionWaveFile, IPerChannelComponentTranscendsWetness
+    public class CarrierFrequencyApplier : FrequencyFunctionWaveFile, IPerChannelComponent
     {
         private readonly Settings settings;
         private readonly CarrierFrequencyModel carrierFrequency;

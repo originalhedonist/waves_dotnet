@@ -10,11 +10,11 @@ namespace wavegenerator
         public static IContainer ConfigureContainer(Action<IContainer> additionalRegistrations = null )
         {
             var container = new Container();
-            container.AddTransient<IPerChannelComponentTranscendsWetness, RiseApplier>();
-            container.AddTransient<IPerChannelComponentTranscendsWetness, BreakApplier>();
-            container.AddTransient<IPerChannelComponentTranscendsWetness, WetnessApplier>();
-            container.AddTransient<IPerChannelComponentTranscendsWetness, CarrierFrequencyApplier>();
-            container.AddTransient<IPerChannelComponent, PulseGenerator>();
+            container.AddTransient<IPerChannelComponent, RiseApplier>();
+            container.AddTransient<IPerChannelComponent, BreakApplier>();
+            container.AddTransient<IPerChannelComponent, WetnessApplier>(); // which in turn uses pulse generator
+            container.AddTransient<IPerChannelComponent, CarrierFrequencyApplier>();
+            container.AddTransient<PulseGenerator>();
             container.AddTransient<IParameterizedResolver, ParameterizedResolver>();
             container.AddSingleton<FeatureChooser>();
             container.AddTransient<ISectionsProvider, SectionsProvider>();
