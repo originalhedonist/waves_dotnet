@@ -39,7 +39,7 @@ namespace wavegenerator
                 {
                     var filePath = args.Single();
                     var settings = SettingsLoader.LoadAndValidateSettings(filePath);
-                    var container = DependencyConfig.ConfigureContainer(r => r.AddInstance(settings));
+                    var container = DependencyConfig.ConfigureContainer(settings);
 
                     string[] names = new string[settings.NumFiles];
                     for(int i = 0; i < settings.NumFiles; i++)
@@ -70,8 +70,6 @@ namespace wavegenerator
                 Console.WriteLine($"If the program will not accept the settings file you are using, please go to https://github.com/originalhedonist/waves_dotnet/issues and create an issue, attaching the file, and/or email originalhedonist@gmail.com, and I will convert the file into a format that can be read by the current version of the program for you. ");
             }
         }
-
-        public static readonly object ConsoleLockObj = new object();
 
         private static async Task WriteFile(IContainer componentContext, Settings settings, int uniqueifier, string name)
         {

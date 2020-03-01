@@ -23,7 +23,7 @@ namespace wavegenerator.library
         // get a feature-dependent amplitude based on the time through the track
         public double FeatureValue(double t, int n, double min, double max)
         {
-            if (sectionModel == null) return 0;
+            if (sectionModel == null) return min;
 
             double sectionLengthSeconds = sectionModel.TotalLength.TotalSeconds;
             int section = sectionsProvider.Section(n);

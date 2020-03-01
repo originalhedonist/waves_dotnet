@@ -18,7 +18,13 @@ namespace waveweb.ServiceInterface
         public TestPulseWaveformResponse Post(
             TestPulseWaveformRequest testPulseWaveformRequest)
         {
-            var pulseGenerator = pulseGeneratorProvider.GetPulseGenerator(testPulseWaveformRequest);
+            testPulseWaveformRequest.PulseFrequency.ChanceOfHigh = 1;
+            var hfPulseGenerator = pulseGeneratorProvider.GetPulseGenerator(testPulseWaveformRequest);
+            testPulseWaveformRequest.PulseFrequency.ChanceOfHigh = 0;
+            var lfPulseGenerator = pulseGeneratorProvider.GetPulseGenerator(testPulseWaveformRequest);
+            testPulseWaveformRequest.Sections = null;
+            var nfPulseGenerator = pulseGeneratorProvider.GetPulseGenerator(testPulseWaveformRequest);
+
             return new TestPulseWaveformResponse
             {
                 Success = true,

@@ -7,6 +7,12 @@ namespace wavegenerator
 {
     public class DependencyConfig
     {
+        public static IContainer ConfigureContainer(Settings settings) => ConfigureContainer(a =>
+        {
+            a.AddInstance(settings);
+            a.AddInstance<IWaveFileMetadata>(settings);
+        });
+
         public static IContainer ConfigureContainer(Action<IContainer> additionalRegistrations = null )
         {
             var container = new Container();
