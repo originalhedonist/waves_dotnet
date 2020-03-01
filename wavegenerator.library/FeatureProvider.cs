@@ -15,7 +15,6 @@ namespace wavegenerator.library
             this.randomizer = randomizer;
             this.sectionsProvider = sectionsProvider;
         }
-        private int Section(int n) => (int)(n / (sectionModel.TotalLength.TotalSeconds * Settings.SamplingFrequency));
         private static readonly ConcurrentDictionary<int, TabletopParams> ParamsCache = new ConcurrentDictionary<int, TabletopParams>();
         private readonly Randomizer randomizer;
         private readonly ISectionsProvider sectionsProvider;
@@ -27,7 +26,7 @@ namespace wavegenerator.library
             if (sectionModel == null) return 0;
 
             double sectionLengthSeconds = sectionModel.TotalLength.TotalSeconds;
-            int section = Section(n);
+            int section = sectionsProvider.Section(n);
             double ts = t - (section * sectionModel.TotalLength.TotalSeconds); //time through the current section
             var p = GetTabletopParamsBySection(section, nameof(FeatureProbabilityModel.Wetness));
             var a = TabletopAlgorithm.GetY(ts, sectionLengthSeconds, min, max, p);

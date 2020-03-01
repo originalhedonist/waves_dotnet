@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using wavegenerator.models;
 
 namespace wavegenerator.library
 {
@@ -14,17 +15,19 @@ namespace wavegenerator.library
         private readonly int overallFileSize;
         private readonly int N;
         private readonly ChannelSplitter channelSplitter;
+        private readonly ISamplingFrequencyProvider samplingFrequencyProvider;
 
-        public WaveStream(Settings settings, ChannelSplitter channelSplitter)
+        public WaveStream(Settings settings, ChannelSplitter channelSplitter, ISamplingFrequencyProvider samplingFrequencyProvider)
         {
             LengthSeconds = settings.TrackLength.TotalSeconds;
             Channels = settings.NumberOfChannels;
-            N = (int) (LengthSeconds * Settings.SamplingFrequency);
+            N = (int) (LengthSeconds * samplingFrequencyProvider.SamplingFrequency);
             overallDataSize = N * Channels * BytesPerSample;
             overallFileSize = overallDataSize + 44;
             if (Channels < 1 || Channels > 2) throw new InvalidOperationException("Channels must be either 1 or 2.");
 
             this.channelSplitter = channelSplitter;
+            this.samplingFrequencyProvider = samplingFrequencyProvider;
         }
 
         public Task<double> Amplitude(double t, int n, int channel)
@@ -49,8 +52,8 @@ namespace wavegenerator.library
             await stream.WriteAsync((int) 16); //length of format data
             await stream.WriteAsync((short) 1); //type of format (1 = PCM)
             await stream.WriteAsync(Channels);
-            await stream.WriteAsync(Settings.SamplingFrequency);
-            await stream.WriteAsync((int) (Settings.SamplingFrequency * BytesPerSample * Channels));
+            await stream.WriteAsync(samplingFrequencyProvider.SamplingFrequency);
+            await stream.WriteAsync((int) (samplingFrequencyProvider.SamplingFrequency * BytesPerSample * Channels));
             await stream.WriteAsync((short) (BytesPerSample * Channels));
             await stream.WriteAsync((short) (BytesPerSample * 8)); // bits per sample
             await stream.WriteAsync(Encoding.ASCII.GetBytes("data"));

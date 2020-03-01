@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using wavegenerator.models;
 
 namespace wavegenerator.library
 {
@@ -7,11 +8,13 @@ namespace wavegenerator.library
     {
         protected readonly double[] X;
         protected readonly bool PhaseShiftChannels;
+        private readonly int samplingFrequency;
 
-        protected FrequencyFunctionWaveFile(int numberOfChannels, bool phaseShiftChannels)
+        protected FrequencyFunctionWaveFile(int numberOfChannels, bool phaseShiftChannels, int samplingFrequency)
         {
             X = new double[numberOfChannels];
             PhaseShiftChannels = phaseShiftChannels;
+            this.samplingFrequency = samplingFrequency;
         }
 
         protected abstract Task<double> Frequency(double t, int n, int channel);
@@ -25,7 +28,7 @@ namespace wavegenerator.library
         {
             var f = await Frequency(t, n, channel);
 
-            var dx = 2 * Math.PI * f / Settings.SamplingFrequency;
+            var dx = 2 * Math.PI * f / samplingFrequency;
             X[channel] += dx;
             var amplitude = await GetWaveformSample(X, PhaseShiftChannels, channel);
             return amplitude;

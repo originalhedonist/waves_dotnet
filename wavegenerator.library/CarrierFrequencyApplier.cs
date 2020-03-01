@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
+using wavegenerator.models;
 
 namespace wavegenerator.library
 {
@@ -10,16 +11,19 @@ namespace wavegenerator.library
         private readonly Settings settings;
         private readonly CarrierFrequencyModel carrierFrequency;
         private readonly FeatureProvider featureProvider;
+        private readonly ISamplingFrequencyProvider samplingFrequencyProvider;
 
         public CarrierFrequencyApplier(
             Settings settings, 
             CarrierFrequencyModel carrierFrequency, 
-            FeatureProvider featureProvider) : 
-            base(numberOfChannels: settings.NumberOfChannels, phaseShiftChannels: settings.PhaseShiftCarrier)
+            FeatureProvider featureProvider,
+            ISamplingFrequencyProvider samplingFrequencyProvider) : 
+            base(numberOfChannels: settings.NumberOfChannels, phaseShiftChannels: settings.PhaseShiftCarrier, samplingFrequencyProvider.SamplingFrequency)
         {
             this.settings = settings;
             this.carrierFrequency = carrierFrequency;
             this.featureProvider = featureProvider;
+            this.samplingFrequencyProvider = samplingFrequencyProvider;
         }
 
         protected override async Task<double> Frequency(double t, int n, int channel)
@@ -42,7 +46,7 @@ namespace wavegenerator.library
             };
             var result = await script.RunAsync(carrierFrequencyExpressionParams);
             if (result.Exception != null) throw result.Exception;
-            if (result.ReturnValue <= 0 || result.ReturnValue > Settings.SamplingFrequency)
+            if (result.ReturnValue <= 0 || result.ReturnValue > samplingFrequencyProvider.SamplingFrequency)
                 throw new InvalidOperationException($"Carrier frequency function returned an out of range result of {result.ReturnValue} for t = {t}");
             return result.ReturnValue;
         }

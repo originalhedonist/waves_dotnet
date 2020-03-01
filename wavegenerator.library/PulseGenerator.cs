@@ -9,7 +9,6 @@ namespace wavegenerator.library
     public class PulseGenerator : FrequencyFunctionWaveFile, IPerChannelComponent
     {
         private readonly PulseFrequencyModel pulseFrequency;
-        private readonly SectionsModel sections;
         private readonly Randomizer randomizer;
         private readonly Probability probability;
         private readonly FeatureProvider featureProvider;
@@ -21,18 +20,17 @@ namespace wavegenerator.library
 
         public PulseGenerator(
             PulseFrequencyModel pulseFrequency,
-            SectionsModel sections,
             IWaveformExpressionProvider waveformExpressionProvider,
             Settings settings, 
             Randomizer randomizer,
             Probability probability, 
             FeatureProvider featureProvider,
             FeatureChooser featureChooser,
-            ISectionsProvider sectionsProvider) :
-            base(settings.NumberOfChannels, settings.PhaseShiftPulses)
+            ISectionsProvider sectionsProvider,
+            ISamplingFrequencyProvider samplingFrequencyProvider) :
+            base(settings.NumberOfChannels, settings.PhaseShiftPulses, samplingFrequencyProvider.SamplingFrequency)
         {
             this.pulseFrequency = pulseFrequency;
-            this.sections = sections;
             this.randomizer = randomizer;
             this.probability = probability;
             this.featureProvider = featureProvider;

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Ultimate.DI;
 using wavegenerator.library;
+using wavegenerator.models;
 
 namespace wavegenerator
 {

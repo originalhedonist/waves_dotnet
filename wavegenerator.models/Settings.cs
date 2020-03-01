@@ -2,14 +2,11 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using wavegenerator.models;
 
-namespace wavegenerator
+namespace wavegenerator.models
 {
     public class Settings
     {
-        public const int SamplingFrequency = 44100;
-
         [Description("Whether to use randomization")]
         public bool Randomization { get; set; }
 

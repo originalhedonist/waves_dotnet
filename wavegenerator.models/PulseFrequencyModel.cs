@@ -1,18 +1,16 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using wavegenerator.models;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace wavegenerator
+namespace wavegenerator.models
 {
     public class PulseFrequencyModel
     {
-        [Range(0.001, Settings.SamplingFrequency)]
+        [Range(0.001, double.MaxValue)]
         public double Quiescent { get; set; }
 
-        [Range(0.001, Settings.SamplingFrequency)]
+        [Range(0.001, double.MaxValue)]
         public double Low { get; set; }
 
-        [Range(0.001, Settings.SamplingFrequency)]
+        [Range(0.001, double.MaxValue)]
         public double High { get; set; }
 
         [Range(0.0, 1.0)]

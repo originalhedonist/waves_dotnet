@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.IO;
 using Newtonsoft.Json;
+using wavegenerator.models;
 
 namespace wavegenerator.library
 {

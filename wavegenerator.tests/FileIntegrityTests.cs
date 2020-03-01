@@ -6,6 +6,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using wavegenerator.library;
+using wavegenerator.models;
 using Xunit;
 
 namespace wavegenerator.tests

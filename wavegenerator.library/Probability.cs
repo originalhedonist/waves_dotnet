@@ -1,4 +1,6 @@
-﻿namespace wavegenerator
+﻿using wavegenerator.models;
+
+namespace wavegenerator
 {
     public class Probability
     {
