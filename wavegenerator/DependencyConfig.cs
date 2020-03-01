@@ -16,7 +16,7 @@ namespace wavegenerator
             container.AddTransient<IPerChannelComponent, CarrierFrequencyApplier>();
             container.AddTransient<PulseGenerator>();
             container.AddTransient<IParameterizedResolver, ParameterizedResolver>();
-            container.AddSingleton<FeatureChooser>();
+            container.AddSingleton<IFeatureChooser, FeatureChooser>();
             container.AddTransient<ISectionsProvider, SectionsProvider>();
             container.AddTransient<ChannelSplitter>();
             container.AddTransient<ChannelComponentStack>();

@@ -6,14 +6,14 @@ namespace wavegenerator.library
     public class Randomizer
     {
         private readonly Random random = new Random();
-        private readonly Settings settings;
+        private readonly IWaveFileMetadata waveFileMetadata;
 
-        public Randomizer(Settings settings)
+        public Randomizer(IWaveFileMetadata waveFileMetadata)
         {
-            this.settings = settings;
+            this.waveFileMetadata = waveFileMetadata;
         }
 
-        public double GetRandom(double defaultValue = 1.0) => settings.Randomization ? random.NextDouble() : defaultValue;
+        public double GetRandom(double defaultValue = 1.0) => waveFileMetadata.Randomization ? random.NextDouble() : defaultValue;
 
         public double MakeValue(VarianceModel variance, double progress)
         {

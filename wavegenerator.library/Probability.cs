@@ -1,16 +1,16 @@
 ﻿using wavegenerator.models;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public class Probability
     {
-        private readonly Settings settings;
+        private readonly IWaveFileMetadata waveFileMetadata;
 
-        public Probability(Settings settings)
+        public Probability(IWaveFileMetadata waveFileMetadata)
         {
-            this.settings = settings;
+            this.waveFileMetadata = waveFileMetadata;
         }
         public bool Resolve(double currentValue, double probability, bool defaultValue) =>
-            settings.Randomization ? currentValue >= 1 - probability : defaultValue;
+            waveFileMetadata.Randomization ? currentValue >= 1 - probability : defaultValue;
     }
 }

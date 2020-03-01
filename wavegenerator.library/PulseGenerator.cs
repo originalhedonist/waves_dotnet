@@ -12,7 +12,7 @@ namespace wavegenerator.library
         private readonly Randomizer randomizer;
         private readonly Probability probability;
         private readonly FeatureProvider featureProvider;
-        private readonly FeatureChooser featureChooser;
+        private readonly IFeatureChooser featureChooser;
         private readonly ISectionsProvider sectionsProvider;
 
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
@@ -21,14 +21,14 @@ namespace wavegenerator.library
         public PulseGenerator(
             PulseFrequencyModel pulseFrequency,
             IWaveformExpressionProvider waveformExpressionProvider,
-            Settings settings, 
+            IWaveFileMetadata waveFileMetadata, 
             Randomizer randomizer,
             Probability probability, 
             FeatureProvider featureProvider,
-            FeatureChooser featureChooser,
+            IFeatureChooser featureChooser,
             ISectionsProvider sectionsProvider,
             ISamplingFrequencyProvider samplingFrequencyProvider) :
-            base(settings.NumberOfChannels, settings.PhaseShiftPulses, samplingFrequencyProvider.SamplingFrequency)
+            base(waveFileMetadata.NumberOfChannels, waveFileMetadata.PhaseShiftPulses, samplingFrequencyProvider.SamplingFrequency)
         {
             this.pulseFrequency = pulseFrequency;
             this.randomizer = randomizer;

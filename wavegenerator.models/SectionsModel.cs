@@ -1,8 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using wavegenerator.models;
 
-namespace wavegenerator
+namespace wavegenerator.models
 {
     public class SectionsModel
     {

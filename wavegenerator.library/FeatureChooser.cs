@@ -3,7 +3,7 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class FeatureChooser
+    public class FeatureChooser : IFeatureChooser
     {
         private readonly ISectionsProvider sectionsProvider;
         private readonly FeatureProbabilityModel featureProbability;

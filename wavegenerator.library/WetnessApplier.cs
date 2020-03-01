@@ -13,7 +13,7 @@ namespace wavegenerator.library
         private readonly ISectionsProvider sectionsProvider;
         private readonly WetnessModel wetness;
         private readonly SectionsModel sections;
-        private readonly FeatureChooser featureChooser;
+        private readonly IFeatureChooser featureChooser;
         private readonly Randomizer randomizer;
         private readonly FeatureProvider featureProvider;
 
@@ -23,7 +23,7 @@ namespace wavegenerator.library
         public WetnessApplier(
             PulseGenerator pulseGenerator,
             ISectionsProvider sectionsProvider,
-            FeatureChooser featureChooser,
+            IFeatureChooser featureChooser,
             Randomizer randomizer,
             FeatureProvider featureProvider,
             WetnessModel wetness,

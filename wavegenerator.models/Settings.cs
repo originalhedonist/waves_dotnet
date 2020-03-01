@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace wavegenerator.models
 {
-    public class Settings
+    public class Settings : IWaveFileMetadata
     {
         [Description("Whether to use randomization")]
         public bool Randomization { get; set; }
