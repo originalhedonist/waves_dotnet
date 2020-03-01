@@ -20,6 +20,8 @@ namespace wavegenerator.models
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
         public TimeSpan TrackLength { get; set; }
 
+        public double TrackLengthSeconds => TrackLength.TotalSeconds;
+
         [Range(1, 2)]
         public short NumberOfChannels { get; set; }
 

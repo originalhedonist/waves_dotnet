@@ -17,6 +17,7 @@
   
   <ItemGroup>
     <PackageReference Include="ServiceStack" Version="5.*" />
+    <PackageReference Include="ultimate.di" Version="1.0.0" />
   </ItemGroup>
   
   <ItemGroup>

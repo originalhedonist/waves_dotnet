@@ -8,19 +8,19 @@ namespace wavegenerator.library
 {
     public class CarrierFrequencyApplier : FrequencyFunctionWaveFile, IPerChannelComponent
     {
-        private readonly Settings settings;
+        private readonly IWaveFileMetadata metadata;
         private readonly CarrierFrequencyModel carrierFrequency;
         private readonly FeatureProvider featureProvider;
         private readonly ISamplingFrequencyProvider samplingFrequencyProvider;
 
         public CarrierFrequencyApplier(
-            Settings settings, 
+            IWaveFileMetadata metadata, 
             CarrierFrequencyModel carrierFrequency, 
             FeatureProvider featureProvider,
             ISamplingFrequencyProvider samplingFrequencyProvider) : 
-            base(numberOfChannels: settings.NumberOfChannels, phaseShiftChannels: settings.PhaseShiftCarrier, samplingFrequencyProvider.SamplingFrequency)
+            base(numberOfChannels: metadata.NumberOfChannels, phaseShiftChannels: metadata.PhaseShiftCarrier, samplingFrequencyProvider.SamplingFrequency)
         {
-            this.settings = settings;
+            this.metadata = metadata;
             this.carrierFrequency = carrierFrequency;
             this.featureProvider = featureProvider;
             this.samplingFrequencyProvider = samplingFrequencyProvider;
@@ -41,7 +41,7 @@ namespace wavegenerator.library
             var carrierFrequencyExpressionParams = new CarrierFrequencyExpressionParams
             {
                 t = t,
-                T = settings.TrackLength.TotalSeconds,
+                T = metadata.TrackLengthSeconds,
                 v = featureProvider.FeatureValue(t, n, 0, 1)
             };
             var result = await script.RunAsync(carrierFrequencyExpressionParams);

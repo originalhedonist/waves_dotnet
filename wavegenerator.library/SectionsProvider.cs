@@ -4,11 +4,11 @@ namespace wavegenerator.library
 {
     public class SectionsProvider : ISectionsProvider
     {
-        private readonly Settings settings;
+        private readonly IWaveFileMetadata settings;
         private readonly SectionsModel sections;
         private readonly ISamplingFrequencyProvider samplingFrequencyProvider;
 
-        public SectionsProvider(Settings settings, SectionsModel sections, ISamplingFrequencyProvider samplingFrequencyProvider)
+        public SectionsProvider(IWaveFileMetadata settings, SectionsModel sections, ISamplingFrequencyProvider samplingFrequencyProvider)
         {
             this.settings = settings;
             this.sections = sections;
@@ -17,7 +17,7 @@ namespace wavegenerator.library
 
         public int NumSections()
         {
-            return (int)(settings.TrackLength.TotalSeconds / sections.TotalLength.TotalSeconds);
+            return (int)(settings.TrackLengthSeconds / sections.TotalLength.TotalSeconds);
         }
 
         public int Section(int n)

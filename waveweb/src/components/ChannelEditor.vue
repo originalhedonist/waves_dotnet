@@ -118,9 +118,8 @@
                 pulseFrequency: this.channel.pulseFrequency,
                 waveformExpression: this.channel.waveformExpression
             });
-            const result = await client.post(testWaveformRequest);
-            console.log('result = ', result);
             try {
+                const result = await client.post(testWaveformRequest);
                 if (result.errorMessage) {
                     this.waveformExpressionError = result.errorMessage;
                 } else if (result.success) {
@@ -130,6 +129,10 @@
                     this.waveformDemoDataHighFrequency = this.makeNewDemoData(result.sampleHighFrequency);
                     this.waveformDemoDataLowFrequency = this.makeNewDemoData(result.sampleLowFrequency);
                 }
+            }
+            catch (error) {
+                this.waveformExpressionError = 'An unknown error occurred on the server.';
+                console.error(error);
             }
             finally {
                 this.testingWaveformExpression = false;
