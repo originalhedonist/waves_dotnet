@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis.Scripting;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace wavegenerator
@@ -13,10 +13,9 @@ namespace wavegenerator
                 var script = WaveformExpression.Parse(expression);
                 try
                 {
-                    var val = script.RunAsync(new WaveformExpressionParams()).Result;
-                    System.Diagnostics.Debug.WriteLine(val);
+                    script.checkSyntax();
                 }
-                catch(CompilationErrorException ex)
+                catch(Exception ex)
                 {
                     return new ValidationResult(ex.Message);
                 }
@@ -35,10 +34,9 @@ namespace wavegenerator
                 var script = CarrierFrequenyExpression.Parse(expression);
                 try
                 {
-                    var val = script.RunAsync(new CarrierFrequencyExpressionParams()).Result;
-                    System.Diagnostics.Debug.WriteLine(val);
+                    script.calculate();
                 }
-                catch (CompilationErrorException ex)
+                catch (Exception ex)
                 {
                     return new ValidationResult(ex.Message);
                 }

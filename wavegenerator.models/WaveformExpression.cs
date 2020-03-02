@@ -1,25 +1,26 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
+﻿using org.mariuszgromada.math.mxparser;
 
 namespace wavegenerator
 {
     public static class WaveformExpression
     {
-        public static Script<double> Parse(string expression)
+        public static Expression Parse(string expressionString)
         {
-            return CSharpScript.Create<double>(expression,
-                ScriptOptions.Default.WithImports("System"),
-                typeof(WaveformExpressionParams));
+            var expression = new Expression(expressionString);
+            expression.addArguments(new Argument(nameof(WaveformExpressionParams.x)));
+            return expression;
         }
     }
 
     public static class CarrierFrequenyExpression
     {
-        public static Script<double> Parse(string expression)
+        public static Expression Parse(string expressionString)
         {
-            return CSharpScript.Create<double>(expression,
-                ScriptOptions.Default.WithImports("System"),
-                typeof(CarrierFrequencyExpressionParams));
+            var expression = new Expression(expressionString);
+            expression.addArguments(new Argument(nameof(CarrierFrequencyExpressionParams.t)));
+            expression.addArguments(new Argument(nameof(CarrierFrequencyExpressionParams.T)));
+            expression.addArguments(new Argument(nameof(CarrierFrequencyExpressionParams.v)));
+            return expression;
         }
     }
 }

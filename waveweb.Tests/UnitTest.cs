@@ -32,21 +32,15 @@ namespace waveweb.Tests
         }
 
         [Test]
-        public void ParserTest()
+        public void CaseSensitive()
         {
-            Expression e = new Expression("sin(x)");
+            Expression e = new Expression("x+X");
             e.addArguments(new Argument("x"));
-            e.setVerboseMode();
-            string[] missingArgs = e.getMissingUserDefinedArguments();
-            string[] missingUnits = e.getMissingUserDefinedUnits();
-            string[] missingFunctions = e.getMissingUserDefinedFunctions();
+            e.addArguments(new Argument("X"));
+            e.setArgumentValue("x", 1);
+            e.setArgumentValue("X", 2);
+            Assert.AreEqual(3, e.calculate());
 
-            Console.Out.WriteLine(e.getErrorMessage());
-            Assert.True(e.checkSyntax());
-            //e.addArguments(new Argument("x", Math.PI / 2));
-            e.setArgumentValue("x", Math.PI / 2);
-            double result = e.calculate();
-            Assert.AreEqual(1.0, result);
         }
 
     }

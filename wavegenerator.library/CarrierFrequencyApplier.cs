@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Scripting;
+using org.mariuszgromada.math.mxparser;
 using wavegenerator.models;
 
 namespace wavegenerator.library
@@ -11,7 +10,6 @@ namespace wavegenerator.library
         private readonly IWaveFileMetadata metadata;
         private readonly CarrierFrequencyModel carrierFrequency;
         private readonly FeatureProvider featureProvider;
-        private readonly ISamplingFrequencyProvider samplingFrequencyProvider;
 
         public CarrierFrequencyApplier(
             IWaveFileMetadata metadata, 
@@ -23,7 +21,6 @@ namespace wavegenerator.library
             this.metadata = metadata;
             this.carrierFrequency = carrierFrequency;
             this.featureProvider = featureProvider;
-            this.samplingFrequencyProvider = samplingFrequencyProvider;
         }
 
         protected override async Task<double> Frequency(double t, int n, int channel)
@@ -34,21 +31,21 @@ namespace wavegenerator.library
             return await EvaluateCarrierFrequency(t, n, carrierFrequencyString);
         }
 
-        private static readonly ConcurrentDictionary<string, Script<double>> scripts = new ConcurrentDictionary<string, Script<double>>();
-        private async Task<double> EvaluateCarrierFrequency(double t, int n, string carrierFrequencyString)
+        private static readonly ConcurrentDictionary<string, Expression> scripts = new ConcurrentDictionary<string, Expression>();
+        private Task<double> EvaluateCarrierFrequency(double t, int n, string carrierFrequencyString)
         {
             var script = scripts.GetOrAdd(carrierFrequencyString, CarrierFrequenyExpression.Parse);
-            var carrierFrequencyExpressionParams = new CarrierFrequencyExpressionParams
+            var p = new CarrierFrequencyExpressionParams
             {
                 t = t,
                 T = metadata.TrackLengthSeconds,
                 v = featureProvider.FeatureValue(t, n, 0, 1)
             };
-            var result = await script.RunAsync(carrierFrequencyExpressionParams);
-            if (result.Exception != null) throw result.Exception;
-            if (result.ReturnValue <= 0 || result.ReturnValue > samplingFrequencyProvider.SamplingFrequency)
-                throw new InvalidOperationException($"Carrier frequency function returned an out of range result of {result.ReturnValue} for t = {t}");
-            return result.ReturnValue;
+            script.setArgumentValue(nameof(CarrierFrequencyExpressionParams.t), p.t);
+            script.setArgumentValue(nameof(CarrierFrequencyExpressionParams.T), p.T);
+            script.setArgumentValue(nameof(CarrierFrequencyExpressionParams.v), p.v);
+            var result = script.calculate();
+            return Task.FromResult(result);
         }
     }
 }

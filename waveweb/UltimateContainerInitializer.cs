@@ -10,7 +10,6 @@ namespace waveweb
             var container = new Container();
             container.AddTransient<PulseGenerator>();
             container.AddTransient<Randomizer>();
-            container.AddTransient<Probability>();
             container.AddTransient<FeatureProvider>();
             container.AddTransient<ISectionsProvider, SectionsProvider>();
             return container;

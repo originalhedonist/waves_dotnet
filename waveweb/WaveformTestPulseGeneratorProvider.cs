@@ -18,14 +18,15 @@ namespace waveweb
             this.mapper = mapper;
         }
 
-        public PulseGenerator GetPulseGenerator(TestPulseWaveformRequest testPulseWaveformRequest)
+        public PulseGenerator GetPulseGenerator(TestPulseWaveformRequest testPulseWaveformRequest, GetPulseGeneratorParams parameters)
         {
             var pulseFrequencyModel = mapper.Map<PulseFrequency, PulseFrequencyModel>(testPulseWaveformRequest.PulseFrequency);
             var sectionsModel = mapper.Map<Sections, SectionsModel>(testPulseWaveformRequest.Sections);
             var waveformExpressionProvider = new WaveformExpressionProvider(testPulseWaveformRequest.WaveformExpression);
             var waveFileMetadata = new WavefileMetadata(numberOfChannels: 1, phaseShiftCarrier: false, phaseShiftPulses: false, randomization: false, trackLengthSeconds: testPulseWaveformRequest.Sections.SectionLengthSeconds);
-            var featureChooser = new AlwaysFeatureChooser(nameof(FeatureProbabilityModel.Frequency));
-            var samplingFrequencyProvider = new SamplingFrequencyProvider(50);
+            var featureChooser = new AlwaysFeatureChooser(parameters.ChooseFeature);
+            var samplingFrequencyProvider = new SamplingFrequencyProvider(parameters.SamplingFrequency);
+
             var nestedContainer = container.GetNestedContainer();
             nestedContainer.AddInstance(sectionsModel);
             nestedContainer.AddInstance(pulseFrequencyModel);
@@ -37,4 +38,5 @@ namespace waveweb
             return pulseGenerator;
         }
     }
+
 }

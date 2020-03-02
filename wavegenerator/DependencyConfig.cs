@@ -28,7 +28,6 @@ namespace wavegenerator
             container.AddTransient<ChannelComponentStack>();
             container.AddTransient<Randomizer>();
             container.AddTransient<FeatureProvider>();
-            container.AddTransient<Probability>();
             container.AddInstance<ISamplingFrequencyProvider>(new SamplingFrequencyProvider(44100));
             container.AddTransient<WaveStream>();
             additionalRegistrations?.Invoke(container);

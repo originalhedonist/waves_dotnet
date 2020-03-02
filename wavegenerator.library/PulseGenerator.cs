@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis.Scripting;
+using org.mariuszgromada.math.mxparser;
 using wavegenerator.models;
 
 namespace wavegenerator.library
@@ -10,20 +10,18 @@ namespace wavegenerator.library
     {
         private readonly PulseFrequencyModel pulseFrequency;
         private readonly Randomizer randomizer;
-        private readonly Probability probability;
         private readonly FeatureProvider featureProvider;
         private readonly IFeatureChooser featureChooser;
         private readonly ISectionsProvider sectionsProvider;
 
         private readonly ConcurrentDictionary<int, double> topFrequencyCache = new ConcurrentDictionary<int, double>();
-        private readonly Script<double> waveformScript;
+        private readonly Expression waveformScript;
 
         public PulseGenerator(
             PulseFrequencyModel pulseFrequency,
             IWaveformExpressionProvider waveformExpressionProvider,
             IWaveFileMetadata waveFileMetadata, 
             Randomizer randomizer,
-            Probability probability, 
             FeatureProvider featureProvider,
             IFeatureChooser featureChooser,
             ISectionsProvider sectionsProvider,
@@ -32,7 +30,6 @@ namespace wavegenerator.library
         {
             this.pulseFrequency = pulseFrequency;
             this.randomizer = randomizer;
-            this.probability = probability;
             this.featureProvider = featureProvider;
             this.featureChooser = featureChooser;
             this.sectionsProvider = sectionsProvider;
@@ -59,12 +56,13 @@ namespace wavegenerator.library
             if (waveformScript != null)
             {
                 var phaseShift = phaseShiftChannels && channel == 1 ? 0.25 : 0; //hardcode 0.25 seconds
-                var result = await waveformScript.RunAsync(new WaveformExpressionParams
+                WaveformExpressionParams p = new WaveformExpressionParams
                 {
-                    x = x[channel] / (2 * Math.PI) + phaseShift
-                }); //divide by 2pi here so the frequency matches (and we can model in excel against a 2pift sin graph)
-                if (result.Exception != null) throw result.Exception;
-                return -result.ReturnValue; // (negative, cos wetness inverts it)
+                    x = x[channel] / (2 * Math.PI) + phaseShift //divide by 2pi here so the frequency matches (and we can model in excel against a 2pift sin graph)
+                };
+                waveformScript.setArgumentValue(nameof(WaveformExpressionParams.x), p.x);
+                var result = waveformScript.calculate();
+                return -result; // (negative, cos wetness inverts it)
             }
             else
             {
@@ -77,9 +75,7 @@ namespace wavegenerator.library
             var numSections = sectionsProvider.NumSections();
             double progression = (float) section / numSections; // <= 1
             //20% of being a fall, 80% chance a rise
-            var isRise = probability.Resolve(
-                randomizer.GetRandom(),
-                pulseFrequency.ChanceOfHigh, true);
+            var isRise = randomizer.GetRandom() > 1 - pulseFrequency.ChanceOfHigh;
             var frequencyLimit = isRise ? pulseFrequency.High : pulseFrequency.Low;
             var topFrequency = randomizer.ProportionAlong(pulseFrequency.Variation, progression,
                 pulseFrequency.Quiescent,

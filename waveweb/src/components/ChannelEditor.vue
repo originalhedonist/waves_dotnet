@@ -89,16 +89,19 @@
             legend: 'none',
             curveType: 'function',
             title: 'No feature',
+            vAxes: [{viewWindowMode: 'maximized'}],
         };
         public waveformDemoChartOptionsHighFrequency = {
             legend: 'none',
             curveType: 'function',
             title: 'High frequency feature',
+            vAxes: [{viewWindowMode: 'maximized'}],
         };
         public waveformDemoChartOptionsLowFrequency = {
             legend: 'none',
             curveType: 'function',
             title: 'Low frequency feature',
+            vAxes: [{viewWindowMode: 'maximized'}],
         };
 
         public showWaveformDemoCharts: boolean = false;
@@ -119,6 +122,7 @@
                 waveformExpression: this.channel.waveformExpression,
             });
             try {
+                console.log('testWaveformRequest: ', testWaveformRequest);
                 const result = await client.post(testWaveformRequest);
                 if (result.errorMessage) {
                     this.waveformExpressionError = result.errorMessage;

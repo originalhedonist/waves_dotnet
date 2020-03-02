@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="microsoft.codeanalysis.scripting" Version="3.4.0" />
+    <PackageReference Include="mathparser.org-mxparser" Version="4.4.2" />
   </ItemGroup>
 
   <ItemGroup>
