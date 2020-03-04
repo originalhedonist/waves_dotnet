@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-04 17:09:51
+Date: 2020-03-04 17:22:57
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -14,7 +14,7 @@ AddResponseStatus: True
 DefaultImports: ResponseStatus:@servicestack/client
 */
 
-import { ResponseStatus } from "@servicestack/client";
+import { ResponseStatus } from '@servicestack/client';
 
 export interface IReturn<T>
 {
@@ -146,8 +146,8 @@ export class TestPulseWaveformResponse
     public success: boolean;
     public errorMessage: string;
     public sampleNoFeature: number[][];
-    public sampleHighFrequency: number[];
-    public sampleLowFrequency: number[];
+    public sampleHighFrequency: number[][];
+    public sampleLowFrequency: number[][];
     public responseStatus: ResponseStatus;
 
     public constructor(init?: Partial<TestPulseWaveformResponse>) { (Object as any).assign(this, init); }
