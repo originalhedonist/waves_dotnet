@@ -17,6 +17,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <PackageReference Include="hangfire.aspnetcore" Version="1.7.9" />
+    <PackageReference Include="hangfire.core" Version="1.7.9" />
+    <PackageReference Include="hangfire.sqlserver" Version="1.7.9" />
     <PackageReference Include="ServiceStack" Version="5.*" />
     <PackageReference Include="ultimate.di" Version="1.0.1" />
   </ItemGroup>

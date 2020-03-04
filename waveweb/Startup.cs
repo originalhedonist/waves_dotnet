@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Funq;
 using ServiceStack;
 using waveweb.ServiceInterface;
+using Hangfire;
+using Microsoft.Extensions.Configuration;
 
 namespace waveweb
 {
@@ -19,6 +21,9 @@ namespace waveweb
             services.AddSingleton(UltimateContainerInitializer.Initialize());
             services.AddSingleton<IMapper>(new Mapper(Mapping.CreateMapperConfiguration()));
             services.AddTransient<IWaveformTestPulseGeneratorProvider, WaveformTestPulseGeneratorProvider>();
+
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddHangfireServer();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -33,8 +38,6 @@ namespace waveweb
             {
                 AppSettings = new NetCoreAppSettings(Configuration)
             });
-
-            
         }
     }
 
