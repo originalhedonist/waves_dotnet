@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="Settings_FrequencyIndependent.json" />
+    <None Remove="Settings_FrequencyIndependent_NoWetnessOnLeft.json" />
     <None Remove="Settings_FrequencyLinked.json" />
     <None Remove="Settings_WetnessIndependent.json" />
     <None Remove="Settings_WetnessLinked.json" />
@@ -15,6 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Settings_FrequencyIndependent_NoWetnessOnLeft.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Settings_FrequencyIndependent.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

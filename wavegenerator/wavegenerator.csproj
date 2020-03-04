@@ -28,7 +28,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.4.0" />
     <PackageReference Include="microsoft.extensions.dependencyinjection" Version="3.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageReference Include="ultimate.di" Version="1.0.0" />
+    <PackageReference Include="ultimate.di" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\wavegenerator.library\wavegenerator.library.csproj" />

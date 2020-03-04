@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -20,10 +19,11 @@ namespace wavegenerator.tests
         }
 
         [Theory]
-        [InlineData("Settings_FrequencyLinked.json", "C6CE387BCE819FA67AC23EEE999DA4A22A2248D02C6A33B98448FEAE469A0FD3")]
-        [InlineData("Settings_WetnessLinked.json", "5929D9FF329610B930D5316F952F9FFEBED1530376DAA9A3843C0B6DF0DDC30E")]
-        [InlineData("Settings_FrequencyIndependent.json", "17FA901DBC00BEE55DCEE6F5FA38F8CCB92BD0F47D458F3FC36533F3069CD609")]
-        [InlineData("Settings_WetnessIndependent.json", "1E120A7FB6271590ABAD2F87822BF408B6D7D6E50CA7A63E358D30D5431713E3")]
+        [InlineData("Settings_FrequencyIndependent.json", "3A5DEDE8294960BA1A6472C0C13AA503A134A5FBBBA8D88E3282F9F6E7DC2043")]
+        [InlineData("Settings_FrequencyIndependent_NoWetnessOnLeft.json", "6C25F302AE26F2F504C51151306ECC7D3BCA0314EF371652BA28A10956174BFA")]
+        [InlineData("Settings_FrequencyLinked.json", "BD3E67599EB036294138B0F6C2A70C591B556160BF094F863E58B285F1C65C7D")]
+        [InlineData("Settings_WetnessIndependent.json", "7EA35E6A26AB060A9BC63F24467F6EB1C1A054BD3416DE99EAFD40E8B3E2366E")]
+        [InlineData("Settings_WetnessLinked.json", "DF4B8BF608E9F43F059A9D85B4223B03981A28CFF19B012EC41AB97DB4FA2BF2")]
         public async Task ValidSettings_VerifyFile(string settingsFile, string expectedSha256Hash)
         {
             var sha256 = SHA256.Create();

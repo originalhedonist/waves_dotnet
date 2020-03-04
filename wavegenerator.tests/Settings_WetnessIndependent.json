@@ -3,7 +3,7 @@
   "ConvertToMp3": false,
   "NumFiles": 1,
   "Naming": {
-    "Specific": [ "TestWetness" ]
+    "Specific": [ "Test_WetnessIndependent" ]
   },
   "TrackLength": "00:01:00",
   "NumberOfChannels": 2,

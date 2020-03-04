@@ -63,29 +63,6 @@ namespace waveweb.ServiceInterface
                 SampleHighFrequency = dataHf.ToArray(),
                 SampleLowFrequency = dataLf.ToArray()
             };
-
-            //    return new TestPulseWaveformResponse
-            //{
-            //    Success = true,
-            //    SampleNoFeature = new double[][]
-            //    {
-            //        new double[]{-1,-1},
-            //        new double[]{0,0},
-            //        new double[]{1,1}
-            //    },
-            //    SampleLowFrequency = new double[][]
-            //    {
-            //        new double[]{-1,1},
-            //        new double[]{0,0},
-            //        new double[]{1,-1}
-            //    },
-            //    SampleHighFrequency = new double[][]
-            //    {
-            //        new double[]{-1,2},
-            //        new double[]{0,1},
-            //        new double[]{1,1}
-            //    }
-            //};
         }
     }
 }

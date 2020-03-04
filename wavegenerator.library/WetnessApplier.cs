@@ -45,7 +45,7 @@ namespace wavegenerator.library
 
             //apply wetness
             var wetnessVal = Wetness(t, n);
-            var apos = (baseA + 1) / 2; //base amplitude, always positive - but with proper curves unlike abs
+            var apos = (1 - baseA) / 2; //base amplitude, always positive - but with proper curves unlike abs
             var dryness = 1 - wetnessVal;
             var a = 1 - dryness * apos;
             return a;

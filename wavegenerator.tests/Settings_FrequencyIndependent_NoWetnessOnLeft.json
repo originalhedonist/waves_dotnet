@@ -3,7 +3,7 @@
   "ConvertToMp3": false,
   "NumFiles": 1,
   "Naming": {
-    "Specific": [ "Test_FrequencyIndependent" ]
+    "Specific": [ "Test_FrequencyIndependent_NoWetnessOnLeft" ]
   },
   "TrackLength": "00:01:00",
   "NumberOfChannels": 2,
@@ -42,15 +42,6 @@
         "Variation": {
           "Randomness": 0.8,
           "Progression": 0.0
-        }
-      },
-      "Wetness": {
-        "LinkToFeature": true,
-        "Minimum": 0.2,
-        "Maximum": 0.7,
-        "Variation": {
-          "Randomness": 0.5,
-          "Progression": 1.5
         }
       },
       "Breaks": {
@@ -103,12 +94,12 @@
         }
       },
       "Wetness": {
-        "LinkToFeature": true,
+        "LinkToFeature": false,
         "Minimum": 0.0,
         "Maximum": 0.4,
         "Variation": {
           "Randomness": 0.5,
-          "Progression": 1.5
+          "Progression": 0.0
         }
       },
       "Breaks": {

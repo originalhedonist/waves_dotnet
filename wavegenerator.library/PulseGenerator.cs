@@ -62,7 +62,7 @@ namespace wavegenerator.library
                 };
                 waveformScript.setArgumentValue(nameof(WaveformExpressionParams.x), p.x);
                 var result = waveformScript.calculate();
-                return -result; // (negative, cos wetness inverts it)
+                return result; // (negative, cos wetness inverts it)
             }
             else
             {
