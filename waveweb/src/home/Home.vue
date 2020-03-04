@@ -1,7 +1,7 @@
 <template>
     
     <v-container fluid>
-        <v-expansion-panels :multiple="true" :disabled="creatingFile">
+        <v-expansion-panels :multiple="true" >
             <v-expansion-panel>
                 <v-expansion-panel-header>
                     Track details
@@ -49,7 +49,7 @@
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
-            <v-expansion-panel>
+            <v-expansion-panel :disabled="creatingFile">
                 <v-expansion-panel-header>{{Request.dualChannel ? 'Left channel settings' : 'Channel settings'}}</v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <ChannelEditor :channel="Request.channel0" :isRight="false" :dualChannel="Request.dualChannel" />
@@ -64,6 +64,14 @@
             </v-expansion-panel>
 
         </v-expansion-panels>
+        <div style="padding:12px">
+            <v-row>
+                <v-btn @click="test" :disabled="creatingFile">Test</v-btn>
+            </v-row>
+            <v-row>
+                <span>{{serverMessage}}</span>
+            </v-row>
+        </div>
     </v-container>
 </template>
 
@@ -71,10 +79,10 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, ChannelSettings, Variance, Sections, FeatureProbability, PulseFrequency, CarrierFrequency, Breaks, Rises, Wetness } from '../dtos';
+    import { CreateFileRequest, TestRequest } from '../dtos';
     import '@/dtos';
-    import VarianceEditor from '../components/VarianceEditor.vue';
     import ChannelEditor from '../components/ChannelEditor.vue';
+    import DefaultDataCreator from '../defaultdatacreator';
     
     @Component({
         components: {
@@ -86,118 +94,21 @@
         public txtName: string = this.name;
         public result: string = '';
         public show: boolean = false;
+        public creatingFile: boolean = false;
+        public serverMessage: string = '';
 
         public Request: CreateFileRequest = new CreateFileRequest({
             trackLengthMinutes: 20,
-            channel0: new ChannelSettings({
-                sections: new Sections({
-                    sectionLengthSeconds: 30,
-                    featureLengthRangeSeconds: [10, 20],
-                    rampLengthRangeSeconds: [2, 5],
-                    rampLengthVariation: new Variance({
-                        progression: 0.7,
-                        randomness: 0.3,
-                    }),
-                    featureLengthVariation: new Variance({
-                        progression: 0.7,
-                        randomness: 0.3,
-                    }),
-                }),
-                featureProbability: new FeatureProbability({
-                    frequencyWeighting: 1.0,
-                    wetnessWeighting: 0.2,
-                    nothingWeighting: 0.8,
-                }),
-                pulseFrequency: new PulseFrequency({
-                    quiescent: 0.8,
-                    low: 0.4,
-                    high: 2.0,
-                    chanceOfHigh: 0.6,
-                    variation: new Variance({
-                        progression: 0.7,
-                        randomness: 0.3,
-                    }),
-                }),
-                carrierFrequency: new CarrierFrequency({
-                    left: '800',
-                    right: '800',
-                }),
-                breaks: new Breaks({
-                    lengthSecondsRange: [10, 60],
-                    minTimeSinceStartOfTrackMinutes: 10,
-                    timeBetweenBreaksMinutesRange: [2, 20],
-                    rampLengthSeconds: 20,
-                }),
-                rises: new Rises({
-                    count: 2,
-                    earliestTimeMinutes: 10,
-                    amount: 0.08,
-                    lengthEachSeconds: 20,
-                }),
-                wetness: new Wetness({
-                    amountRange: [0.4, 0.6],
-                    linkToFeature: true,
-                    variation: new Variance({
-                        progression: 0.7,
-                        randomness: 0.3,
-                    }),
-                }),
-            }),
-            channel1: new ChannelSettings({
-                sections: new Sections({
-                    sectionLengthSeconds: 30,
-                    featureLengthRangeSeconds: [10, 20],
-                    rampLengthRangeSeconds: [2, 5],
-                    rampLengthVariation: new Variance({
-                        progression: 0.7,
-                        randomness: 0.3,
-                    }),
-                    featureLengthVariation: new Variance({
-                        progression: 0.7,
-                        randomness: 0.3,
-                    }),
-                }),
-                featureProbability: new FeatureProbability({
-                    frequencyWeighting: 1.0,
-                    wetnessWeighting: 0.2,
-                    nothingWeighting: 0.8,
-                }),
-                pulseFrequency: new PulseFrequency({
-                    quiescent: 0.8,
-                    low: 0.4,
-                    high: 2.0,
-                    chanceOfHigh: 0.6,
-                    variation: new Variance({
-                        progression: 0.7,
-                        randomness: 0.3,
-                    }),
-                }),
-                carrierFrequency: new CarrierFrequency({
-                    left: '800',
-                    right: '800',
-                }),
-                breaks: new Breaks({
-                    lengthSecondsRange: [10, 60],
-                    minTimeSinceStartOfTrackMinutes: 10,
-                    timeBetweenBreaksMinutesRange: [2, 20],
-                    rampLengthSeconds: 20,
-                }),
-                rises: new Rises({
-                    count: 2,
-                    earliestTimeMinutes: 10,
-                    amount: 0.08,
-                    lengthEachSeconds: 20,
-                }),
-                wetness: new Wetness({
-                    amountRange: [0.4, 0.6],
-                    linkToFeature: true,
-                    variation: new Variance({
-                        progression: 0.7,
-                        randomness: 0.3,
-                    }),
-                }),
-            }),
+            channel0: DefaultDataCreator.createDefaultChannelSettings(),
+            channel1: DefaultDataCreator.createDefaultChannelSettings(),
         });
+
+        public async test() {
+            this.creatingFile = true;
+            const request = new TestRequest();
+            const response = await client.post(request);
+            this.serverMessage = response.message;
+        }
     }
 </script>
 
