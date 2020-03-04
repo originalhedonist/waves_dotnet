@@ -21,7 +21,7 @@
 
                     <v-row>
                         <v-col cols="4">
-                            <v-switch v-model="Request.dualChannel" label="Dual channel"></v-switch>
+                            <v-switch v-model="Request.dualChannel" label="Independent channels"></v-switch>
                        </v-col>
                         <v-col cols="4">
                             <v-tooltip top>
@@ -52,14 +52,14 @@
             <v-expansion-panel>
                 <v-expansion-panel-header>{{Request.dualChannel ? 'Left channel settings' : 'Channel settings'}}</v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    <ChannelEditor :channel="Request.channel0" />
+                    <ChannelEditor :channel="Request.channel0" :isRight="false" :dualChannel="Request.dualChannel" />
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
             <v-expansion-panel v-show="Request.dualChannel" transition="v-guff-y-transition">
                 <v-expansion-panel-header>Right channel settings</v-expansion-panel-header>
                 <v-expansion-panel-content>
-                    <ChannelEditor :channel="Request.channel0" />
+                    <ChannelEditor :channel="Request.channel1" :isRight="true" :dualChannel="Request.dualChannel" />
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
@@ -79,7 +79,7 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, ChannelSettings, Variance, Sections, FeatureProbability, PulseFrequency } from '../dtos';
+    import { CreateFileRequest, ChannelSettings, Variance, Sections, FeatureProbability, PulseFrequency, CarrierFrequency, Breaks, Rises, Wetness } from '../dtos';
     import '@/dtos';
     import VarianceEditor from '../components/VarianceEditor.vue';
     import ChannelEditor from '../components/ChannelEditor.vue';
@@ -126,6 +126,30 @@
                         randomness: 0.3,
                     }),
                 }),
+                carrierFrequency: new CarrierFrequency({
+                    left: '800',
+                    right: '800',
+                }),
+                breaks: new Breaks({
+                    lengthSecondsRange: [10, 60],
+                    minTimeSinceStartOfTrackMinutes: 10,
+                    timeBetweenBreaksMinutesRange: [2, 20],
+                    rampLengthSeconds: 20,
+                }),
+                rises: new Rises({
+                    count: 2,
+                    earliestTimeMinutes: 10,
+                    amount: 0.08,
+                    lengthEachSeconds: 20,
+                }),
+                wetness: new Wetness({
+                    amountRange: [0.4, 0.6],
+                    linkToFeature: true,
+                    variation: new Variance({
+                        progression: 0.7,
+                        randomness: 0.3,
+                    }),
+                }),
             }),
             channel1: new ChannelSettings({
                 sections: new Sections({
@@ -151,6 +175,30 @@
                     low: 0.4,
                     high: 2.0,
                     chanceOfHigh: 0.6,
+                    variation: new Variance({
+                        progression: 0.7,
+                        randomness: 0.3,
+                    }),
+                }),
+                carrierFrequency: new CarrierFrequency({
+                    left: '800',
+                    right: '800',
+                }),
+                breaks: new Breaks({
+                    lengthSecondsRange: [10, 60],
+                    minTimeSinceStartOfTrackMinutes: 10,
+                    timeBetweenBreaksMinutesRange: [2, 20],
+                    rampLengthSeconds: 20,
+                }),
+                rises: new Rises({
+                    count: 2,
+                    earliestTimeMinutes: 10,
+                    amount: 0.08,
+                    lengthEachSeconds: 20,
+                }),
+                wetness: new Wetness({
+                    amountRange: [0.4, 0.6],
+                    linkToFeature: true,
                     variation: new Variance({
                         progression: 0.7,
                         randomness: 0.3,

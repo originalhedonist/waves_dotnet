@@ -3,8 +3,7 @@
     public class Wetness
     {
         public bool LinkToFeature { get; set; }
-        public double Minimum { get; set; }
-        public double Maximum { get; set; }
+        public double[] AmountRange { get; set; }
         public Variance Variation { get; set; }
     }
 }

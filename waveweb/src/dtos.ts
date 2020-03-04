@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-02-24 17:30:40
+Date: 2020-03-04 15:02:07
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -76,8 +76,7 @@ export class PulseFrequency
 export class Wetness
 {
     public linkToFeature: boolean;
-    public minimum: number;
-    public maximum: number;
+    public amountRange: number[];
     public variation: Variance;
 
     public constructor(init?: Partial<Wetness>) { (Object as any).assign(this, init); }
@@ -86,10 +85,8 @@ export class Wetness
 export class Breaks
 {
     public minTimeSinceStartOfTrackMinutes: number;
-    public minTimeBetweenBreaksMinutes: number;
-    public maxTimeBetweenBreaksMinutes: number;
-    public minLengthSeconds: number;
-    public maxLengthSeconds: number;
+    public timeBetweenBreaksMinutesRange: number[];
+    public lengthSecondsRange: number[];
     public rampLengthSeconds: number;
 
     public constructor(init?: Partial<Breaks>) { (Object as any).assign(this, init); }

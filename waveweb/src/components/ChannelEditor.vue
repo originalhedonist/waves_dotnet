@@ -1,7 +1,7 @@
 ﻿<template>
     <v-expansion-panels>
         <v-expansion-panel>
-            <v-expansion-panel-header>Sections</v-expansion-panel-header>
+            <v-expansion-panel-header>Feature length</v-expansion-panel-header>
             <v-expansion-panel-content>
                 <SectionEditor :sections="channel.sections" />
             </v-expansion-panel-content>
@@ -28,6 +28,10 @@
                         <v-progress-circular v-if="testingWaveformExpression" :indeterminate="true" />
                     </v-row>
                     <template v-if="showWaveformDemoCharts">
+                        <v-row v-if="testingWaveformExpression">
+                            <v-skeleton-loader/>
+                        </v-row>
+
                         <v-row>
                             <v-col cols="12">
                                 <GChart type="LineChart" :data="waveformDemoDataNoFeature" :options="waveformDemoChartOptionsNoFeature" />
@@ -51,7 +55,7 @@
         <v-expansion-panel>
             <v-expansion-panel-header>Carrier frequency</v-expansion-panel-header>
             <v-expansion-panel-content>
-                <CarrierFrequencyEditor :carrierFrequency="channel.carrierFrequency" />
+                <CarrierFrequencyEditor :carrierFrequency="channel.carrierFrequency" :dualChannel="dualChannel" :isRight="isRight" />
             </v-expansion-panel-content>
         </v-expansion-panel>
 
@@ -79,7 +83,7 @@
         <v-expansion-panel>
             <v-expansion-panel-header>Rises</v-expansion-panel-header>
             <v-expansion-panel-content>
-                <RisesEditor :probability="channel.rises" />
+                <RisesEditor :rises="channel.rises" />
             </v-expansion-panel-content>
         </v-expansion-panel>
 
@@ -122,6 +126,8 @@
     })
     export default class ChannelEditor extends Vue {
         @Prop() public channel: ChannelSettings;
+        @Prop() public dualChannel: boolean;
+        @Prop() public isRight: boolean;
 
         public testingWaveformExpression: boolean = false;
         public waveformExpressionError: string|null = null;
@@ -156,13 +162,13 @@
 
         public async testWaveformExpression() {
             this.testingWaveformExpression = true;
+            this.showWaveformDemoCharts = false;
             const testWaveformRequest = new TestPulseWaveformRequest({
                 sections: this.channel.sections,
                 pulseFrequency: this.channel.pulseFrequency,
                 waveformExpression: this.channel.waveformExpression,
             });
             try {
-                console.log('testWaveformRequest: ', testWaveformRequest);
                 const result = await client.post(testWaveformRequest);
                 if (result.errorMessage) {
                     this.waveformExpressionError = result.errorMessage;

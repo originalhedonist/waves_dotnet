@@ -17,13 +17,16 @@ namespace waveweb.ServiceInterface
             CreateMap<CarrierFrequency, CarrierFrequencyModel>();
             CreateMap<PulseFrequency, PulseFrequencyModel>();
             CreateMap<Variance, VarianceModel>();
-            CreateMap<Wetness, WetnessModel>();
+            CreateMap<Wetness, WetnessModel>()
+                .ForMember(d => d.Minimum, c => c.MapFrom(s => s.AmountRange[0]))
+                .ForMember(d => d.Maximum, c => c.MapFrom(s => s.AmountRange[1]))
+                ;
             CreateMap<Breaks, BreaksModel>()
                 .ForMember(d => d.MinTimeSinceStartOfTrack, c => c.MapFrom(s => TimeSpan.FromMinutes(s.MinTimeSinceStartOfTrackMinutes)))
-                .ForMember(d => d.MinTimeBetweenBreaks, c => c.MapFrom(s => TimeSpan.FromMinutes(s.MinTimeBetweenBreaksMinutes)))
-                .ForMember(d => d.MaxTimeBetweenBreaks, c => c.MapFrom(s => TimeSpan.FromMinutes(s.MaxTimeBetweenBreaksMinutes)))
-                .ForMember(d => d.MinLength, c => c.MapFrom((s => TimeSpan.FromSeconds(s.MinLengthSeconds))))
-                .ForMember(d => d.MaxLength, c => c.MapFrom(s => TimeSpan.FromSeconds(s.MaxLengthSeconds)))
+                .ForMember(d => d.MinTimeBetweenBreaks, c => c.MapFrom(s => TimeSpan.FromMinutes(s.TimeBetweenBreaksMinutesRange[0])))
+                .ForMember(d => d.MaxTimeBetweenBreaks, c => c.MapFrom(s => TimeSpan.FromMinutes(s.TimeBetweenBreaksMinutesRange[1])))
+                .ForMember(d => d.MinLength, c => c.MapFrom((s => TimeSpan.FromSeconds(s.LengthSecondsRange[0]))))
+                .ForMember(d => d.MaxLength, c => c.MapFrom(s => TimeSpan.FromSeconds(s.LengthSecondsRange[1])))
                 .ForMember(d => d.RampLength, c => c.MapFrom(s => TimeSpan.FromSeconds(s.RampLengthSeconds)))
                 ;
             CreateMap<Rises, RisesModel>()
