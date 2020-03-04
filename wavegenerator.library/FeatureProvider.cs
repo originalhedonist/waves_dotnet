@@ -15,7 +15,7 @@ namespace wavegenerator.library
             this.randomizer = randomizer;
             this.sectionsProvider = sectionsProvider;
         }
-        private static readonly ConcurrentDictionary<int, TabletopParams> ParamsCache = new ConcurrentDictionary<int, TabletopParams>();
+        private readonly ConcurrentDictionary<int, TabletopParams> ParamsCache = new ConcurrentDictionary<int, TabletopParams>();
         private readonly Randomizer randomizer;
         private readonly ISectionsProvider sectionsProvider;
         private readonly SectionsModel sectionModel;

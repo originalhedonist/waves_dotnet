@@ -10,22 +10,22 @@
         <v-expansion-panel>
             <v-expansion-panel-header>Pulse frequency</v-expansion-panel-header>
             <v-expansion-panel-content>
-                <PulseFrequencyEditor :frequency="channel.pulseFrequency"/>
+                <PulseFrequencyEditor :frequency="channel.pulseFrequency" />
             </v-expansion-panel-content>
         </v-expansion-panel>
 
         <v-expansion-panel>
             <v-expansion-panel-header>Waveform</v-expansion-panel-header>
             <v-expansion-panel-content>
-                <v-switch v-model="channel.useCustomWaveformExpression" label="Use custom waveform expression"/>
+                <v-switch v-model="channel.useCustomWaveformExpression" label="Use custom waveform expression" />
                 <div v-if="channel.useCustomWaveformExpression">
                     <v-row>
                         <v-text-field label="Waveform expression" v-model="channel.waveformExpression"
-                                      :error-messages="waveformExpressionError"/>
+                                      :error-messages="waveformExpressionError" />
                     </v-row>
                     <v-row>
                         <v-btn @click="testWaveformExpression" style="margin-right:20px">Test</v-btn>
-                        <v-progress-circular v-if="testingWaveformExpression" :indeterminate="true"/>
+                        <v-progress-circular v-if="testingWaveformExpression" :indeterminate="true" />
                     </v-row>
                     <template v-if="showWaveformDemoCharts">
                         <v-row>
@@ -49,11 +49,43 @@
         </v-expansion-panel>
 
         <v-expansion-panel>
-            <v-expansion-panel-header>Feature choice</v-expansion-panel-header>
+            <v-expansion-panel-header>Carrier frequency</v-expansion-panel-header>
             <v-expansion-panel-content>
-                <FeatureProbabilityEditor :probability="channel.featureProbability"/>
+                <CarrierFrequencyEditor :carrierFrequency="channel.carrierFrequency" />
             </v-expansion-panel-content>
         </v-expansion-panel>
+
+        <v-expansion-panel>
+            <v-expansion-panel-header>Feature choice</v-expansion-panel-header>
+            <v-expansion-panel-content>
+                <FeatureProbabilityEditor :probability="channel.featureProbability" />
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <v-expansion-panel>
+            <v-expansion-panel-header>Wetness</v-expansion-panel-header>
+            <v-expansion-panel-content>
+                <WetnessEditor :wetness="channel.wetness" />
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <v-expansion-panel>
+            <v-expansion-panel-header>Breaks</v-expansion-panel-header>
+            <v-expansion-panel-content>
+                <BreaksEditor :breaks="channel.breaks" />
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+
+        <v-expansion-panel>
+            <v-expansion-panel-header>Rises</v-expansion-panel-header>
+            <v-expansion-panel-content>
+                <RisesEditor :probability="channel.rises" />
+            </v-expansion-panel-content>
+        </v-expansion-panel>
+
+
+
+
     </v-expansion-panels>
 
 
@@ -71,6 +103,10 @@
     import SectionEditor from '@/components/SectionEditor.vue';
     import FeatureProbabilityEditor from '@/components/FeatureProbabilityEditor.vue';
     import PulseFrequencyEditor from '@/components/PulseFrequencyEditor.vue';
+    import CarrierFrequencyEditor from '@/components/CarrierFrequencyEditor.vue';
+    import WetnessEditor from '@/components/WetnessEditor.vue';
+    import BreaksEditor from '@/components/BreaksEditor.vue';
+    import RisesEditor from '@/components/RisesEditor.vue';
 
     import '@/dtos';
     @Component({
@@ -78,6 +114,10 @@
             SectionEditor,
             FeatureProbabilityEditor,
             PulseFrequencyEditor,
+            CarrierFrequencyEditor,
+            WetnessEditor,
+            BreaksEditor,
+            RisesEditor,
         },
     })
     export default class ChannelEditor extends Vue {
@@ -135,6 +175,8 @@
                 }
             }
             catch (error) {
+                // tslint:disable-next-line:no-console
+                console.error(error);
                 this.waveformExpressionError = 'An unknown error occurred on the server.';
             }
             finally {

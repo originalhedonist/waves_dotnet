@@ -31,7 +31,7 @@ namespace wavegenerator.library
             return await EvaluateCarrierFrequency(t, n, carrierFrequencyString);
         }
 
-        private static readonly ConcurrentDictionary<string, Expression> scripts = new ConcurrentDictionary<string, Expression>();
+        private readonly ConcurrentDictionary<string, Expression> scripts = new ConcurrentDictionary<string, Expression>();
         private Task<double> EvaluateCarrierFrequency(double t, int n, string carrierFrequencyString)
         {
             var script = scripts.GetOrAdd(carrierFrequencyString, CarrierFrequenyExpression.Parse);
