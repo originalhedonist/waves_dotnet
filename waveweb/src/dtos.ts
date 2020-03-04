@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-04 15:02:07
+Date: 2020-03-04 17:09:51
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -14,7 +14,7 @@ AddResponseStatus: True
 DefaultImports: ResponseStatus:@servicestack/client
 */
 
-import { ResponseStatus } from '@servicestack/client';
+import { ResponseStatus } from "@servicestack/client";
 
 export interface IReturn<T>
 {
@@ -133,16 +133,33 @@ export class CreateFileRequest implements IReturn<CreateFileRequest>
     public getTypeName() { return 'CreateFileRequest'; }
 }
 
+export class TestResponse
+{
+    public message: string;
+    public responseStatus: ResponseStatus;
+
+    public constructor(init?: Partial<TestResponse>) { (Object as any).assign(this, init); }
+}
+
 export class TestPulseWaveformResponse
 {
     public success: boolean;
     public errorMessage: string;
     public sampleNoFeature: number[][];
-    public sampleHighFrequency: number[][];
-    public sampleLowFrequency: number[][];
+    public sampleHighFrequency: number[];
+    public sampleLowFrequency: number[];
     public responseStatus: ResponseStatus;
 
     public constructor(init?: Partial<TestPulseWaveformResponse>) { (Object as any).assign(this, init); }
+}
+
+// @Route("/testrequest")
+export class TestRequest implements IReturn<TestResponse>
+{
+
+    public constructor(init?: Partial<TestRequest>) { (Object as any).assign(this, init); }
+    public createResponse() { return new TestResponse(); }
+    public getTypeName() { return 'TestRequest'; }
 }
 
 // @Route("/testpulsewaveform")

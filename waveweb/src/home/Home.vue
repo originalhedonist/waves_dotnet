@@ -1,7 +1,7 @@
 <template>
     
     <v-container fluid>
-        <v-expansion-panels :multiple="true">
+        <v-expansion-panels :multiple="true" :disabled="creatingFile">
             <v-expansion-panel>
                 <v-expansion-panel-header>
                     Track details
@@ -63,14 +63,6 @@
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
-            <!--<v-expansion-panel>
-        <v-expansion-panel-header>
-            Section details
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
-            <VarianceEditor :variance="Request.channel0.featureLengthVariation"/>
-        </v-expansion-panel-content>
-    </v-expansion-panel>-->
         </v-expansion-panels>
     </v-container>
 </template>
