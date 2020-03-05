@@ -27,6 +27,8 @@ namespace waveweb
             var featureChooser = new AlwaysFeatureChooser(parameters.ChooseFeature);
             var samplingFrequencyProvider = new SamplingFrequencyProvider(parameters.SamplingFrequency);
 
+            // this composes a subset of the main file-creation component stack
+            // (DependencyConfig.Configure(settings) creates the full stack)
             var nestedContainer = container.GetNestedContainer();
             nestedContainer.AddInstance(sectionsModel);
             nestedContainer.AddInstance(pulseFrequencyModel);

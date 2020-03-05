@@ -1,10 +1,11 @@
 using ServiceStack;
+using System;
 using System.ComponentModel;
 
 namespace waveweb.ServiceModel
 {
     [Route("/createfile")]
-    public class CreateFileRequest : IReturn<CreateFileRequest>
+    public class CreateFileRequest : IReturn<CreateFileResponse>
     {
         public bool Randomization { get; set; }
         public int TrackLengthMinutes { get; set; }

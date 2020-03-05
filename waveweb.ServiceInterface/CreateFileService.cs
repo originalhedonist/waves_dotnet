@@ -5,7 +5,8 @@ namespace waveweb.ServiceInterface
 {
     public class CreateFileService : Service
     {
-        public object Any(CreateFileRequest request)
+
+        public CreateFileResponse Post(CreateFileRequest request)
         {
             return new CreateFileResponse();
         }
