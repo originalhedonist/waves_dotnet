@@ -18,15 +18,16 @@
     export default class JobProgress extends Vue {
         @Prop() public model: JobProgressModel;
 
-        private progressPercentage: number = 0;
+        public progressPercentage: number = 0;
         private intervalId: NodeJS.Timeout| null = null;
 
         @Watch('model.jobId')
-        public onJobIdChanged() {
+        public async onJobIdChanged() {
             console.log('set jobId: ', this.model.jobId);
             if (this.model.jobId !== null) {
                 this.intervalId = setInterval(this.poll, 10000);
             }
+            await this.poll();
         }
 
         private async poll() {
@@ -37,6 +38,13 @@
                 const pollResponse = await client.get(pollRequest);
                 if (pollResponse.progress > 0) {
                     this.progressPercentage = pollResponse.progress * 100;
+                }
+                if (pollResponse.isComplete) {
+                    if (this.intervalId !== null) {
+                        console.log('clearing interval ', this.intervalId);
+                        clearInterval(this.intervalId)
+                    }
+                    this.$emit('complete');
                 }
             }
         }

@@ -3,6 +3,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using waveweb.ServiceInterface;
+using waveweb.ServiceModel;
 
 namespace waveweb.ServerComponents
 {
@@ -21,7 +22,8 @@ namespace waveweb.ServerComponents
         {
             var jobId = Guid.NewGuid();
             backgroundJobClient.Enqueue<TService>(s => s.Run(data, jobId, CancellationToken.None));
-            await jobProgressProvider.SetJobProgressAsync(jobId, 0); // which will get set to min of 5%
+            await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { IsComplete = false, Progress = 0 });
+            // which will get set to min of 5%
             return jobId;
         }
     }

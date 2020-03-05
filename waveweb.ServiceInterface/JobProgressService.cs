@@ -13,12 +13,9 @@ namespace waveweb.ServiceInterface
             this.jobProgressProvider = jobProgressProvider;
         }
 
-        public async Task<JobProgressResponse> Any(JobProgressRequest request)
+        public Task<JobProgress> Any(JobProgressRequest request)
         {
-            return new JobProgressResponse
-            {
-                Progress = await jobProgressProvider.GetJobProgressAsync(request.JobId)
-            };
+            return jobProgressProvider.GetJobProgressAsync(request.JobId);
         }
     }
 

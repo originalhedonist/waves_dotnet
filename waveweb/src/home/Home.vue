@@ -49,7 +49,7 @@
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
-            <v-expansion-panel :disabled="creatingFile">
+            <v-expansion-panel>
                 <v-expansion-panel-header>{{Request.dualChannel ? 'Left channel settings' : 'Channel settings'}}</v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <ChannelEditor :channel="Request.channel0" :isRight="false" :dualChannel="Request.dualChannel" />
@@ -75,7 +75,7 @@
                 <span>{{serverMessage}}</span>
             </v-row>
             <v-row v-show="jobProgressModel.jobId !== null">
-                <JobProgress :model="jobProgressModel"/>
+                <JobProgress :model="jobProgressModel" @complete="jobComplete"/>
             </v-row>
         </div>
     </v-container>
@@ -123,6 +123,12 @@
             const response = await client.post(request);
             this.serverMessage = response.message;
             this.jobProgressModel.jobId = response.jobId;
+        }
+
+        public jobComplete() {
+            this.serverMessage = 'The job completed';
+            this.jobProgressModel.jobId = null;
+            this.creatingFile = false;
         }
     }
 </script>

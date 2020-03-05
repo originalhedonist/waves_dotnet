@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-05 14:35:09
+Date: 2020-03-05 17:12:04
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -133,12 +133,13 @@ export class CreateFileRequest implements IReturn<CreateFileRequest>
     public getTypeName() { return 'CreateFileRequest'; }
 }
 
-export class JobProgressResponse
+export class JobProgress
 {
     public progress: number;
+    public isComplete: boolean;
     public responseStatus: ResponseStatus;
 
-    public constructor(init?: Partial<JobProgressResponse>) { (Object as any).assign(this, init); }
+    public constructor(init?: Partial<JobProgress>) { (Object as any).assign(this, init); }
 }
 
 export class TestResponse
@@ -163,12 +164,12 @@ export class TestPulseWaveformResponse
 }
 
 // @Route("/jobprogress")
-export class JobProgressRequest implements IReturn<JobProgressResponse>
+export class JobProgressRequest implements IReturn<JobProgress>
 {
     public jobId: string;
 
     public constructor(init?: Partial<JobProgressRequest>) { (Object as any).assign(this, init); }
-    public createResponse() { return new JobProgressResponse(); }
+    public createResponse() { return new JobProgress(); }
     public getTypeName() { return 'JobProgressRequest'; }
 }
 
@@ -193,3 +194,4 @@ export class TestPulseWaveformRequest implements IReturn<TestPulseWaveformRespon
     public createResponse() { return new TestPulseWaveformResponse(); }
     public getTypeName() { return 'TestPulseWaveformRequest'; }
 }
+
