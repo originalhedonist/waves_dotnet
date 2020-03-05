@@ -1,0 +1,51 @@
+﻿<template>
+    <v-row>
+        <v-progress-linear :value="progressPercentage" />
+    </v-row>
+</template>
+
+<script lang="ts">
+
+    import Vue from 'vue';
+    import { Component, Prop, Watch, Model, Emit } from 'vue-property-decorator';
+    import { client } from '../shared';
+
+    import '@/dtos';
+    import { JobProgressRequest } from '@/dtos';
+    import JobProgressModel from '../jobprogressodel';
+
+    @Component
+    export default class JobProgress extends Vue {
+        @Prop() public model: JobProgressModel;
+
+        private progressPercentage: number = 0;
+        private intervalId: NodeJS.Timeout| null = null;
+
+        @Watch('model.jobId')
+        public onJobIdChanged() {
+            console.log('set jobId: ', this.model.jobId);
+            if (this.model.jobId !== null) {
+                this.intervalId = setInterval(this.poll, 10000);
+            }
+        }
+
+        private async poll() {
+            if (this.model.jobId !== null) {
+                const pollRequest = new JobProgressRequest({
+                    jobId: this.model.jobId,
+                });
+                const pollResponse = await client.get(pollRequest);
+                if (pollResponse.progress > 0) {
+                    this.progressPercentage = pollResponse.progress * 100;
+                }
+            }
+        }
+
+    }
+
+
+
+</script>
+
+<style scoped>
+</style>

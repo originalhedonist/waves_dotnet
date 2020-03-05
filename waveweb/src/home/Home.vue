@@ -64,12 +64,18 @@
             </v-expansion-panel>
 
         </v-expansion-panels>
-        <div style="padding:12px">
+        <div style="padding:12px; margin-top: 50px">
+            <v-row>
+                <v-slider v-model="chunks" label="Ten second chunks" min="1" max="200" step="1" thumb-label="always"/>
+            </v-row>
             <v-row>
                 <v-btn @click="test" :disabled="creatingFile">Test</v-btn>
             </v-row>
             <v-row>
                 <span>{{serverMessage}}</span>
+            </v-row>
+            <v-row v-show="jobProgressModel.jobId !== null">
+                <JobProgress :model="jobProgressModel"/>
             </v-row>
         </div>
     </v-container>
@@ -79,23 +85,29 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, TestRequest } from '../dtos';
-    import '@/dtos';
+    import { CreateFileRequest, TestRequest, Variance } from '../dtos';
     import ChannelEditor from '../components/ChannelEditor.vue';
     import DefaultDataCreator from '../defaultdatacreator';
-    
+    import JobProgress from '../components/JobProgress.vue';
+    import JobProgressModel from '../jobprogressodel';
+
     @Component({
         components: {
             ChannelEditor,
+            JobProgress,
         },
     })
     export default class HomeComponent extends Vue {
         @Prop() public name: string;
+        public jobProgressModel: JobProgressModel = new JobProgressModel({
+            jobId: null,
+        });
         public txtName: string = this.name;
         public result: string = '';
         public show: boolean = false;
         public creatingFile: boolean = false;
         public serverMessage: string = '';
+        public chunks: number = 60;
 
         public Request: CreateFileRequest = new CreateFileRequest({
             trackLengthMinutes: 20,
@@ -105,9 +117,12 @@
 
         public async test() {
             this.creatingFile = true;
-            const request = new TestRequest();
+            const request = new TestRequest({
+                chunks: this.chunks,
+            });
             const response = await client.post(request);
             this.serverMessage = response.message;
+            this.jobProgressModel.jobId = response.jobId;
         }
     }
 </script>

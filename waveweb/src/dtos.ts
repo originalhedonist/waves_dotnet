@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-04 17:22:57
+Date: 2020-03-05 14:35:09
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -133,9 +133,18 @@ export class CreateFileRequest implements IReturn<CreateFileRequest>
     public getTypeName() { return 'CreateFileRequest'; }
 }
 
+export class JobProgressResponse
+{
+    public progress: number;
+    public responseStatus: ResponseStatus;
+
+    public constructor(init?: Partial<JobProgressResponse>) { (Object as any).assign(this, init); }
+}
+
 export class TestResponse
 {
     public message: string;
+    public jobId: string;
     public responseStatus: ResponseStatus;
 
     public constructor(init?: Partial<TestResponse>) { (Object as any).assign(this, init); }
@@ -153,9 +162,20 @@ export class TestPulseWaveformResponse
     public constructor(init?: Partial<TestPulseWaveformResponse>) { (Object as any).assign(this, init); }
 }
 
+// @Route("/jobprogress")
+export class JobProgressRequest implements IReturn<JobProgressResponse>
+{
+    public jobId: string;
+
+    public constructor(init?: Partial<JobProgressRequest>) { (Object as any).assign(this, init); }
+    public createResponse() { return new JobProgressResponse(); }
+    public getTypeName() { return 'JobProgressRequest'; }
+}
+
 // @Route("/testrequest")
 export class TestRequest implements IReturn<TestResponse>
 {
+    public chunks: number;
 
     public constructor(init?: Partial<TestRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new TestResponse(); }
@@ -173,4 +193,3 @@ export class TestPulseWaveformRequest implements IReturn<TestPulseWaveformRespon
     public createResponse() { return new TestPulseWaveformResponse(); }
     public getTypeName() { return 'TestPulseWaveformRequest'; }
 }
-

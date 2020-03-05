@@ -6,16 +6,20 @@ using System.Threading.Tasks;
 using wavegenerator;
 using waveweb.ServiceModel;
 using wavegenerator.models;
+using Microsoft.Extensions.Logging;
 
 namespace waveweb.ServiceInterface
 {
     public class TestPulseWaveformService : Service
     {
         private readonly IWaveformTestPulseGeneratorProvider pulseGeneratorProvider;
+        private readonly ILogger logger;
 
-        public TestPulseWaveformService(IWaveformTestPulseGeneratorProvider pulseGeneratorProvider)
+        public TestPulseWaveformService(
+            IWaveformTestPulseGeneratorProvider pulseGeneratorProvider)
         {
             this.pulseGeneratorProvider = pulseGeneratorProvider;
+            this.logger = logger.CreateLogger(typeof(TestPulseWaveformService));
         }
 
         public async Task<TestPulseWaveformResponse> Post(
@@ -26,6 +30,7 @@ namespace waveweb.ServiceInterface
                 throw new ArgumentException("Sections not supplied");
             }
 
+            logger.LogInformation($"Received TestPulseWaveformRequest {testPulseWaveformRequest.WaveformExpression}");
             const int samplingFrequency = 10;
 
             testPulseWaveformRequest.PulseFrequency.ChanceOfHigh = 1;
