@@ -30,7 +30,11 @@ namespace waveweb
             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfireServer();
 
-            services.AddLogging(c => c.AddConsole());
+            services.AddLogging(c => 
+            {
+                c.AddConsole();
+                c.AddAzureWebAppDiagnostics();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

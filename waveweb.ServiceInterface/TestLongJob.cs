@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using waveweb.ServiceModel;
@@ -26,6 +27,11 @@ namespace waveweb.ServiceInterface
                         IsComplete = false
                     });
             }
+            if(!Directory.Exists(DownloadService.DownloadDir))
+            {
+                Directory.CreateDirectory(DownloadService.DownloadDir);
+            }
+            await File.WriteAllTextAsync($"{DownloadService.DownloadDir}/{jobId}", "hello from the long job!");
             await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { IsComplete = true });
         }
     }

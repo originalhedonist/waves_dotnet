@@ -75,8 +75,14 @@
                 <span>{{serverMessage}}</span>
             </v-row>
             <v-row v-show="jobProgressModel.jobId !== null">
-                <JobProgress :model="jobProgressModel" @complete="jobComplete"/>
+                <JobProgress :model="jobProgressModel" @complete="jobComplete" style="padding: 12px"/>
             </v-row>
+        </div>
+        <div style="margin-top: 50px" v-show="fileDownloadLink !== null">
+            <a :href="fileDownloadLink">Click here to try to download the file if it does not download automatically</a>
+        </div>
+        <div style="margin-top: 50px">
+            <a href="/testdownload">Click here to (try to) download a file!</a>
         </div>
     </v-container>
 </template>
@@ -108,6 +114,7 @@
         public creatingFile: boolean = false;
         public serverMessage: string = '';
         public chunks: number = 60;
+        public fileDownloadLink: string | null = null;
 
         public Request: CreateFileRequest = new CreateFileRequest({
             trackLengthMinutes: 20,
@@ -126,7 +133,9 @@
         }
 
         public jobComplete() {
-            this.serverMessage = 'The job completed';
+            this.serverMessage = 'The job completed!';
+            this.fileDownloadLink = '/downloadfile/' + this.jobProgressModel.jobId;
+            window.location.href = this.fileDownloadLink;
             this.jobProgressModel.jobId = null;
             this.creatingFile = false;
         }

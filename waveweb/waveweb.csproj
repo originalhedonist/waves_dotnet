@@ -22,6 +22,7 @@
     <PackageReference Include="hangfire.core" Version="1.7.9" />
     <PackageReference Include="hangfire.sqlserver" Version="1.7.9" />
     <PackageReference Include="microsoft.extensions.logging" Version="3.1.2" />
+    <PackageReference Include="microsoft.extensions.logging.azureappservices" Version="3.1.2" />
     <PackageReference Include="ServiceStack" Version="5.*" />
     <PackageReference Include="ultimate.di" Version="1.0.1" />
   </ItemGroup>

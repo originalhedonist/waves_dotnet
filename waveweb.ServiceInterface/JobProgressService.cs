@@ -18,5 +18,4 @@ namespace waveweb.ServiceInterface
             return jobProgressProvider.GetJobProgressAsync(request.JobId);
         }
     }
-
 }
