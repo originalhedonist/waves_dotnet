@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace waveweb
 {
-    
+
     public class Startup : ModularStartup
     {
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -26,7 +26,8 @@ namespace waveweb
             services.AddTransient<IJobScheduler, JobScheduler>();
             services.AddTransient<IJobProgressProvider, JobProgressProvider>();
             services.AddTransient<TestLongJob>();
-
+            services.AddTransient<FileCreator>();
+            services.AddTransient<IFullFeatureUltimateContainerProvider, FullFeatureUltimateContainerProvider>();
             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfireServer();
 

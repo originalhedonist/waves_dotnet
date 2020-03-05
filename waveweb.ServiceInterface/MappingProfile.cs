@@ -44,7 +44,7 @@ namespace waveweb.ServiceInterface
 
             CreateMap<CreateFileRequest, Settings>()
                 .ForMember(d => d.ChannelSettings, c => c.MapFrom(s => s.DualChannel ? new[] { s.Channel0, s.Channel1 } : new[] { s.Channel0 }))
-                .ForMember(d => d.ConvertToMp3, c => c.MapFrom(s => true))
+                .ForMember(d => d.ConvertToMp3, c => c.MapFrom(s => false))
                 .ForMember(d => d.NumFiles, c => c.MapFrom(s => 1))
                 .ForMember(d => d.Naming, c => c.Ignore())
                 .ForMember(d => d.TrackLength, c => c.MapFrom(s => TimeSpan.FromMinutes(s.TrackLengthMinutes)))

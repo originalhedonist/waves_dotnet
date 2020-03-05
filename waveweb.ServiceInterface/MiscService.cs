@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using ServiceStack;
+using System;
 using System.Threading.Tasks;
 using waveweb.ServiceModel;
 
@@ -19,7 +20,8 @@ namespace waveweb.ServiceInterface
 
         public async Task<TestResponse> Post(TestRequest request)
         {
-            var jobId = await jobScheduler.ScheduleJob<TestLongJob, long>(request.Chunks);
+            var jobId = Guid.NewGuid();
+            await jobScheduler.ScheduleJob<TestLongJob, long>(jobId, request.Chunks);
             return new TestResponse { Message = "The job has started, and is running.", JobId = jobId };
         }
 

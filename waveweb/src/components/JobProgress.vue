@@ -23,7 +23,6 @@
 
         @Watch('model.jobId')
         public async onJobIdChanged() {
-            console.log('set jobId: ', this.model.jobId);
             if (this.model.jobId !== null) {
                 this.intervalId = setInterval(this.poll, 10000);
             }
@@ -41,8 +40,7 @@
                 }
                 if (pollResponse.isComplete) {
                     if (this.intervalId !== null) {
-                        console.log('clearing interval ', this.intervalId);
-                        clearInterval(this.intervalId)
+                        clearInterval(this.intervalId);
                     }
                     this.$emit('complete');
                 }

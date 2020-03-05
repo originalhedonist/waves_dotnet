@@ -2,7 +2,7 @@
 using wavegenerator.library;
 
 namespace waveweb
-{ 
+{
     public class UltimateContainerInitializer
     {
         public static IContainer Initialize()

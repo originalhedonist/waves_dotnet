@@ -18,13 +18,11 @@ namespace waveweb.ServerComponents
             this.jobProgressProvider = jobProgressProvider;
         }
 
-        public async Task<Guid> ScheduleJob<TService, TData>(TData data) where TService : ILongJobProcessor<TData>
+        public async Task ScheduleJob<TService, TData>(Guid jobId, TData data) where TService : ILongJobProcessor<TData>
         {
-            var jobId = Guid.NewGuid();
             backgroundJobClient.Enqueue<TService>(s => s.Run(data, jobId, CancellationToken.None));
             await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { IsComplete = false, Progress = 0 });
             // which will get set to min of 5%
-            return jobId;
         }
     }
 }

@@ -7,7 +7,7 @@ namespace waveweb.ServiceInterface
 {
     public interface IJobScheduler
     {
-        Task<Guid> ScheduleJob<TService, TData>(TData data) where TService : ILongJobProcessor<TData>;
+        Task ScheduleJob<TService, TData>(Guid jobId, TData data) where TService : ILongJobProcessor<TData>;
     }
 
     public interface ILongJobProcessor<TData>

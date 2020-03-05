@@ -1,10 +1,8 @@
 ﻿using System;
 using Ultimate.DI;
-using wavegenerator.library;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
-    // lamar specific
     public class ParameterizedResolver : IParameterizedResolver
     {
         private readonly IContainer container;
@@ -32,6 +30,6 @@ namespace wavegenerator
         {
             this.nestedContainer = nestedContainer;
         }
-        public void Inject<T>(T t) => nestedContainer.AddInstance<T>(t);
+        public void Inject<T>(T t) => nestedContainer.AddInstance(t);
     }
 }

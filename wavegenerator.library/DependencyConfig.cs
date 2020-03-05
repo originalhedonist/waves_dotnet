@@ -1,19 +1,19 @@
 ﻿using System;
 using Ultimate.DI;
-using wavegenerator.library;
 using wavegenerator.models;
 
-namespace wavegenerator
+namespace wavegenerator.library
 {
     public class DependencyConfig
     {
-        public static IContainer ConfigureContainer(Settings settings) => ConfigureContainer(a =>
+        public static IContainer ConfigureContainer(Settings settings, Action<IContainer> additionalRegistrations = null) => ConfigureContainer(a =>
         {
             a.AddInstance(settings);
             a.AddInstance<IWaveFileMetadata>(settings);
+            additionalRegistrations?.Invoke(a);
         });
 
-        public static IContainer ConfigureContainer(Action<IContainer> additionalRegistrations = null )
+        public static IContainer ConfigureContainer(Action<IContainer> additionalRegistrations = null)
         {
             var container = new Container();
             container.AddTransient<IPerChannelComponent, RiseApplier>();

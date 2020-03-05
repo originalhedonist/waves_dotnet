@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="mathparser.org-mxparser" Version="4.4.2" />
+    <PackageReference Include="ultimate.di" Version="1.0.1" />
   </ItemGroup>
 
   <ItemGroup>

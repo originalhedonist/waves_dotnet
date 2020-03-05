@@ -1,7 +1,9 @@
-﻿namespace wavegenerator.library
+﻿using System.Threading.Tasks;
+
+namespace wavegenerator.library
 {
     public interface IProgressReporter
     {
-        void ReportProgress(double progress);
+        Task ReportProgress(double progress, bool isComplete);
     }
 }

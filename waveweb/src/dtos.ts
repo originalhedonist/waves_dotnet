@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-05 17:12:04
+Date: 2020-03-05 20:11:30
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -117,20 +117,12 @@ export class ChannelSettings
     public constructor(init?: Partial<ChannelSettings>) { (Object as any).assign(this, init); }
 }
 
-// @Route("/createfile")
-export class CreateFileRequest implements IReturn<CreateFileRequest>
+export class CreateFileResponse
 {
-    public randomization: boolean;
-    public trackLengthMinutes: number;
-    public dualChannel: boolean;
-    public phaseShiftCarrier: boolean;
-    public phaseShiftPulses: boolean;
-    public channel0: ChannelSettings;
-    public channel1: ChannelSettings;
+    public jobId: string;
+    public responseStatus: ResponseStatus;
 
-    public constructor(init?: Partial<CreateFileRequest>) { (Object as any).assign(this, init); }
-    public createResponse() { return new CreateFileRequest(); }
-    public getTypeName() { return 'CreateFileRequest'; }
+    public constructor(init?: Partial<CreateFileResponse>) { (Object as any).assign(this, init); }
 }
 
 export class JobProgress
@@ -161,6 +153,41 @@ export class TestPulseWaveformResponse
     public responseStatus: ResponseStatus;
 
     public constructor(init?: Partial<TestPulseWaveformResponse>) { (Object as any).assign(this, init); }
+}
+
+// @Route("/createfile")
+export class CreateFileRequest implements IReturn<CreateFileResponse>
+{
+    public randomization: boolean;
+    public trackLengthMinutes: number;
+    public dualChannel: boolean;
+    public phaseShiftCarrier: boolean;
+    public phaseShiftPulses: boolean;
+    public channel0: ChannelSettings;
+    public channel1: ChannelSettings;
+
+    public constructor(init?: Partial<CreateFileRequest>) { (Object as any).assign(this, init); }
+    public createResponse() { return new CreateFileResponse(); }
+    public getTypeName() { return 'CreateFileRequest'; }
+}
+
+// @Route("/downloadfile/{Id}")
+export class DownloadFileRequest implements IReturn<Blob>
+{
+    public id: string;
+
+    public constructor(init?: Partial<DownloadFileRequest>) { (Object as any).assign(this, init); }
+    public createResponse() { return new Blob(); }
+    public getTypeName() { return 'DownloadFileRequest'; }
+}
+
+// @Route("/testdownload")
+export class TestDownloadRequest implements IReturn<Blob>
+{
+
+    public constructor(init?: Partial<TestDownloadRequest>) { (Object as any).assign(this, init); }
+    public createResponse() { return new Blob(); }
+    public getTypeName() { return 'TestDownloadRequest'; }
 }
 
 // @Route("/jobprogress")
