@@ -13,5 +13,6 @@ namespace waveweb.ServiceModel
     {
         public double Progress { get; set; }
         public bool IsComplete { get; set; }
+        public string Message { get; set; }
     }
 }

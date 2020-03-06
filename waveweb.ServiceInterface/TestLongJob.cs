@@ -24,7 +24,8 @@ namespace waveweb.ServiceInterface
                     new JobProgress
                     {
                         Progress = (double)i / data,
-                        IsComplete = false
+                        IsComplete = false,
+                        Message = $"Done {i} chunks"
                     });
             }
             if(!Directory.Exists(DownloadService.DownloadDir))
@@ -32,7 +33,7 @@ namespace waveweb.ServiceInterface
                 Directory.CreateDirectory(DownloadService.DownloadDir);
             }
             await File.WriteAllTextAsync($"{DownloadService.DownloadDir}/{jobId}", "hello from the long job!");
-            await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { IsComplete = true });
+            await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { IsComplete = true, Message = "Long job finished!" });
         }
     }
 

@@ -16,8 +16,10 @@ namespace wavegenerator.library
         private readonly int N;
         private readonly ChannelSplitter channelSplitter;
         private readonly ISamplingFrequencyProvider samplingFrequencyProvider;
+        private readonly IProgressReporter progressReporter;
 
-        public WaveStream(Settings settings, ChannelSplitter channelSplitter, ISamplingFrequencyProvider samplingFrequencyProvider)
+        public WaveStream(Settings settings, ChannelSplitter channelSplitter, ISamplingFrequencyProvider samplingFrequencyProvider,
+            IProgressReporter progressReporter)
         {
             LengthSeconds = settings.TrackLength.TotalSeconds;
             Channels = settings.NumberOfChannels;
@@ -28,6 +30,7 @@ namespace wavegenerator.library
 
             this.channelSplitter = channelSplitter;
             this.samplingFrequencyProvider = samplingFrequencyProvider;
+            this.progressReporter = progressReporter;
         }
 
         public Task<double> Amplitude(double t, int n, int channel)
@@ -73,6 +76,11 @@ namespace wavegenerator.library
                     var a = (short) ((A + 1) * (65535f / 2) - 32768);
 
                     await stream.WriteAsync(a);
+                }
+
+                if((n%10000) == 0)
+                {
+                    await progressReporter.ReportProgress(((double)n / N)*0.97, false, $"Written {n} of {N} samples"); //allow 3% for mp3 creation
                 }
             }
         }

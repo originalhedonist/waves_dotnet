@@ -12,8 +12,6 @@ namespace wavegenerator.models
 
         public bool ConvertToMp3 { get; set; }
 
-        public int NumFiles { get; set; }
-
         [ValidateNamingConvention]
         public NamingConvention Naming { get; set; }
 

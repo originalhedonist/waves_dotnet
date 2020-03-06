@@ -65,41 +65,45 @@
 
         </v-expansion-panels>
 
-        <div style="padding:12px">
-            <v-row>
-                <v-btn @click="createFile" :disabled="creatingFile">Create file</v-btn>
-            </v-row>
-            <v-row>
-                <span v-show="creatingFile">File is being created. Depending on how long you have chosen it be, this might take a while. It should download automatically when complete.</span>
-            </v-row>
-            <v-row v-show="jobProgressModel.jobId !== null">
-                <JobProgress :model="jobProgressModel" @complete="jobComplete" style="padding: 12px" />
-            </v-row>
-            <v-row v-show="fileDownloadLink !== null">
-                <a :href="fileDownloadLink">The file was created. Click here to try to download it if it did not download automatically.</a>
-            </v-row>
-        </div>
+        <v-card style="margin-top: 20px">
+            <v-card-text>
+                <div>
+                    <v-btn @click="createFile" :disabled="creatingFile">Create file</v-btn>
+                </div>
+                <div>
+                    <span v-show="creatingFile">File is being created. Depending on how long you have chosen it be, this might take a while. It should download automatically when complete.</span>
+                </div>
+                <div v-show="jobProgressModel.jobId !== null">
+                    <JobProgress :model="jobProgressModel" @complete="jobComplete" style="padding: 12px" />
+                </div>
+                <div v-show="fileDownloadLink !== null">
+                    <a :href="fileDownloadLink">The file was created. Click here to try to download it if it did not download automatically.</a>
+                </div>
+            </v-card-text>
+        </v-card>
 
-        <div style="padding:12px">
-            <v-row>
-                <v-slider v-model="chunks" label="Ten second chunks" min="1" max="200" step="1" thumb-label="always" />
-            </v-row>
-            <v-row>
-                <v-btn @click="test" :disabled="runningTest">Test</v-btn>
-            </v-row>
-            <v-row>
-                <span>{{testServerMessage}}</span>
-            </v-row>
-            <v-row v-show="testJobProgressModel.jobId !== null">
-                <JobProgress :model="testJobProgressModel" @complete="testJobComplete" style="padding: 12px" />
-            </v-row>
-            <div style="margin-top: 50px" v-show="testFileDownloadLink !== null">
-                <a :href="testFileDownloadLink">Click here to try to download the file if it does not download automatically</a>
-            </div>
-            <div style="margin-top: 50px">
-                <a href="/testdownload">Click here to (try to) download a file!</a>
-            </div>
-        </div>
+        <v-card style="margin-top: 20px">
+            <v-card-text>
+                <div class="top-space">
+                    <v-slider v-model="chunks" label="Ten second chunks" min="1" max="200" step="1" thumb-label="always" />
+                </div>
+                <div>
+                    <v-btn @click="test" :disabled="runningTest">Test</v-btn>
+                </div>
+                <div>
+                    <span>{{testServerMessage}}</span>
+                </div>
+                <div v-show="testJobProgressModel.jobId !== null">
+                    <JobProgress :model="testJobProgressModel" @complete="testJobComplete" style="padding: 12px" />
+                </div>
+                <div class="top-space" v-show="testFileDownloadLink !== null">
+                    <a :href="testFileDownloadLink">Click here to try to download the file if it does not download automatically</a>
+                </div>
+                <div class="top-space">
+                    <a href="/testdownload">Click here to (try to) download a file!</a>
+                </div>
+            </v-card-text>
+        </v-card>
 
     </v-container>
 </template>

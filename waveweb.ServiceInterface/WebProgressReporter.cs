@@ -17,7 +17,7 @@ namespace waveweb.ServiceInterface
             this.jobId = jobIdProvider.JobId;
         }
 
-        public async Task ReportProgress(double progress, bool complete)
+        public async Task ReportProgress(double progress, bool complete, string message)
         {
             if(lastReport == null || DateTime.Now.Subtract(lastReport.Value) > TimeSpan.FromSeconds(30))
             {
@@ -26,11 +26,10 @@ namespace waveweb.ServiceInterface
                     new JobProgress
                     {
                         Progress = progress,
-                        IsComplete = complete
+                        IsComplete = complete,
+                        Message = message
                     });
             }
         }
     }
-
-
 }

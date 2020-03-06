@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-05 20:11:30
+Date: 2020-03-06 13:20:05
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -129,6 +129,7 @@ export class JobProgress
 {
     public progress: number;
     public isComplete: boolean;
+    public message: string;
     public responseStatus: ResponseStatus;
 
     public constructor(init?: Partial<JobProgress>) { (Object as any).assign(this, init); }

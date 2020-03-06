@@ -1,7 +1,12 @@
 ﻿<template>
-    <v-row>
-        <v-progress-linear :value="progressPercentage" />
-    </v-row>
+    <div>
+        <v-row>
+            <v-progress-linear :value="progressPercentage" />
+        </v-row>
+        <v-row>
+            <span>{{message}}</span>
+        </v-row>
+    </div>
 </template>
 
 <script lang="ts">
@@ -19,6 +24,7 @@
         @Prop() public model: JobProgressModel;
 
         public progressPercentage: number = 0;
+        public message: string | null = null;
         private intervalId: NodeJS.Timeout| null = null;
 
         @Watch('model.jobId')
@@ -38,6 +44,7 @@
                 if (pollResponse.progress > 0) {
                     this.progressPercentage = pollResponse.progress * 100;
                 }
+                this.message = pollResponse.message;
                 if (pollResponse.isComplete) {
                     if (this.intervalId !== null) {
                         clearInterval(this.intervalId);

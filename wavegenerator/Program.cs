@@ -15,7 +15,6 @@ namespace wavegenerator
 
     public class Program
     {
-        private static bool hasLame;
         private static bool acceptName;
         public static async Task Main(string[] allArgs)
         {
@@ -39,28 +38,19 @@ namespace wavegenerator
                 {
                     var filePath = args.Single();
                     var settings = SettingsLoader.LoadAndValidateSettings(filePath);
-                    var container = DependencyConfig.ConfigureContainer(settings);
-
-                    string[] names = new string[settings.NumFiles];
-                    for(int i = 0; i < settings.NumFiles; i++)
+                    var container = DependencyConfig.ConfigureContainer(settings, c =>
                     {
-                        names[i] = await GetName(settings, i);
-                    }
+                        c.AddInstance<IProgressReporter>(new ConsoleProgressReporter());
+                    });
 
-                    var maxNameLength = names.Max(n => n.Length);
-                    for(int i = 0; i < settings.NumFiles; i++)
-                    {
-                        Console.WriteLine($"Writing {names[i].PadRight(maxNameLength)}...");
-                    }
+                    var name = await GetName(settings);
+                    
+                    Console.WriteLine($"Writing {name}...");
 
-                    hasLame = settings.ConvertToMp3 && TestForLame();
-                    var tasks = Enumerable.Range(0, settings.NumFiles)
-                        .Select(i => WriteFile(container, settings, i, names[i]))
-                        .ToArray();
-                    await Task.WhenAll(tasks);
+                    await WriteFile(container, settings, name);
 
                     stopwatch.Stop();
-                    ConsoleWriter.WriteLine($"{tasks.Length} file(s) successfully created in {stopwatch.Elapsed}", ConsoleColor.Green);
+                    ConsoleWriter.WriteLine($"File successfully created in {stopwatch.Elapsed}", ConsoleColor.Green);
                 }
             }
             catch (Exception ex)
@@ -71,81 +61,23 @@ namespace wavegenerator
             }
         }
 
-        private static async Task WriteFile(IContainer componentContext, Settings settings, int uniqueifier, string name)
+        private static async Task WriteFile(IContainer componentContext, Settings settings, string name)
         {
-            var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}_{uniqueifier}";
-            var waveStream = componentContext.Resolve<WaveStream>();
+            var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}";
+            var mp3Stream = componentContext.Resolve<Mp3Stream>();
             await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(settings, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
 
-            await waveStream.Write($"{compositionName}.wav");
-
-            if (settings.ConvertToMp3 && hasLame)
-            {
-                if (ConvertToMp3($"{compositionName}.wav"))
-                {
-                    File.Delete($"{compositionName}.wav");
-                }
-                else
-                {
-                    ConsoleWriter.WriteLine($"(could not convert {compositionName} to .mp3)", ConsoleColor.Red);
-                }
-            }
-        }
-
-        private static bool TestForLame()
-        {
-            ProcessStartInfo processStartInfo = new ProcessStartInfo("lame", "--version")
-            {
-                UseShellExecute = true,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
-            try
-            {
-                using (var process = new Process { StartInfo = processStartInfo })
-                {
-                    process.Start();
-                    process.WaitForExit();
-                    return process.ExitCode == 0;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        private static bool ConvertToMp3(string fileName)
-        {
-            ProcessStartInfo processStartInfo = new ProcessStartInfo("lame", $"-V0 \"{fileName}\"")
-            {
-                UseShellExecute = true,
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-            };
-            try
-            {
-                using (var lameProcess = new Process { StartInfo = processStartInfo })
-                {
-                    lameProcess.Start();
-                    lameProcess.WaitForExit();
-                    return lameProcess.ExitCode == 0;
-                }
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            await mp3Stream.Write($"{compositionName}.mp3");
         }
 
         private static readonly Random random = new Random();
         private static readonly ConcurrentDictionary<string, string[]> nameListCache = new ConcurrentDictionary<string, string[]>();
 
-        public static async Task<string> GetName(Settings settings, int fileIndex)
+        public static async Task<string> GetName(Settings settings)
         {
             if (settings.Naming.Specific != null)
             {
-                return settings.Naming.Specific[fileIndex];
+                return settings.Naming.Specific;
             }
             else
             {

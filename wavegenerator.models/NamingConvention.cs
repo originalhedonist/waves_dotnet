@@ -13,7 +13,7 @@ namespace wavegenerator
 
     public class NamingConvention
     {
-        public string[] Specific { get; set; }
+        public string Specific { get; set; }
         public NamingStrategy? Strategy { get; set; }
     }
 
@@ -33,14 +33,6 @@ namespace wavegenerator
             if(namingConvention.Specific == null && namingConvention.Strategy == null)
             {
                 return new ValidationResult("Must specify either 'Specific' or 'Strategy'");
-            }
-
-            if(namingConvention.Specific != null)
-            {
-                if(settingsModel.NumFiles > namingConvention.Specific.Length)
-                {
-                    return new ValidationResult($"Must specify at least {settingsModel.NumFiles} names, one for each file.");
-                }
             }
 
             return ValidationResult.Success;
