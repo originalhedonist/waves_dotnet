@@ -1,0 +1,1 @@
+for f in wavegenerator.tests/*.json; do if [[ $f != *"Invalid"* ]]; then dotnet run --project wavegenerator/wavegenerator.csproj $f --acceptName --configuration=Release; fi; done;

@@ -27,11 +27,11 @@ namespace wavegenerator.tests
         }
 
         [Theory]
-        [InlineData("Settings_FrequencyIndependent.json", "3A5DEDE8294960BA1A6472C0C13AA503A134A5FBBBA8D88E3282F9F6E7DC2043")]
-        [InlineData("Settings_FrequencyIndependent_NoWetnessOnLeft.json", "6C25F302AE26F2F504C51151306ECC7D3BCA0314EF371652BA28A10956174BFA")]
-        [InlineData("Settings_FrequencyLinked.json", "BD3E67599EB036294138B0F6C2A70C591B556160BF094F863E58B285F1C65C7D")]
-        [InlineData("Settings_WetnessIndependent.json", "7EA35E6A26AB060A9BC63F24467F6EB1C1A054BD3416DE99EAFD40E8B3E2366E")]
-        [InlineData("Settings_WetnessLinked.json", "DF4B8BF608E9F43F059A9D85B4223B03981A28CFF19B012EC41AB97DB4FA2BF2")]
+        [InlineData("Settings_FrequencyIndependent.json", "0482ADF98F71289BB2670D868C40E8C6CE8CB8A54ACECCC1D22049BD161DDA1A")]
+        [InlineData("Settings_FrequencyIndependent_NoWetnessOnLeft.json", "51EB3981EEB2D40361C1A94182041BF7719A792EB9B815F6E6B21B46F4008648")]
+        [InlineData("Settings_FrequencyLinked.json", "FC233821F85D9D9DFE048F4B0934CB17C639E3FD5762C8102B7B60E756327256")]
+        [InlineData("Settings_WetnessIndependent.json", "8E48C44288421CCB99BDAE1383DC2743FA418BFE58FAB34DFF75E9B7583F1FD0")]
+        [InlineData("Settings_WetnessLinked.json", "42CEEC630E2696D622FE9D5E4CB07D16FB82E16B23EC4A3497E68C74DC30F4EC")]
         public async Task ValidSettings_VerifyFile(string settingsFile, string expectedSha256Hash)
         {
             var sha256 = SHA256.Create();
@@ -42,8 +42,8 @@ namespace wavegenerator.tests
                 c.AddInstance<IProgressReporter>(new XUnitProgressReporter(testOutputHelper));
             });
 
-            var waveStream = container.Resolve<WaveStream>();
-            await waveStream.Write(memoryStream);
+            var mp3Stream = container.Resolve<Mp3Stream>();
+            await mp3Stream.Write(memoryStream);
             await memoryStream.FlushAsync();
             memoryStream.Seek(0, SeekOrigin.Begin);
 

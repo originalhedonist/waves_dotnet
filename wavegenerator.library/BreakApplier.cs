@@ -16,8 +16,7 @@ namespace wavegenerator.library
         {
             this.settings = settings;
             this.randomizer = randomizer;
-            var breakTimes = MakeBreaks(breaksSettings).ToArray();
-            breaks = breakTimes.Select(t => new Break(randomizer, t, breaksSettings)).ToArray();
+            breaks = MakeBreaks(breaksSettings).ToArray();
         }
 
         public Task<double> Amplitude(double t, int n, int channel)
@@ -27,18 +26,20 @@ namespace wavegenerator.library
             return Task.FromResult(att);
         }
 
-        private IEnumerable<TimeSpan> MakeBreaks(BreaksModel breakModel)
+        private IEnumerable<Break> MakeBreaks(BreaksModel breakModel)
         {
-            TimeSpan? lastBreakTime = null;
+            Break b = null;
             if (breakModel != null)
             {
                 do
                 {
-                    var minTime = lastBreakTime + breakModel.MinTimeBetweenBreaks + 2 * breakModel.RampLength ?? breakModel.MinTimeSinceStartOfTrack;
-                    var maxTime = minTime + breakModel.MaxTimeBetweenBreaks;
-                    lastBreakTime = minTime + (randomizer.GetRandom(0.5) * (maxTime - minTime));
-                    yield return lastBreakTime.Value;
-                } while (lastBreakTime.Value < settings.TrackLength);
+                    var minTime = b?.EndTime + breakModel.MinTimeBetweenBreaks ?? breakModel.MinTimeSinceStartOfTrack;
+                    var maxTime = minTime + (breakModel.MaxTimeBetweenBreaks - breakModel.MinTimeBetweenBreaks);
+                    var breakTime = minTime + (randomizer.GetRandom(0.5) * (maxTime - minTime));
+                    var topLength = breakModel.MinLength + (randomizer.GetRandom(0.5) * (breakModel.MaxLength - breakModel.MinLength));
+                    b = new Break(breakTime, topLength, breakModel.RampLength);
+                    yield return b;
+                } while (b.EndTime < settings.TrackLength);
             }
         }
     }

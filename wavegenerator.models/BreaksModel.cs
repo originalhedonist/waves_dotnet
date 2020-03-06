@@ -5,7 +5,7 @@ namespace wavegenerator
 {
     public class BreaksModel
     {
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
+        [Range(typeof(TimeSpan), "00:00:00", "13:31:35")]
         public TimeSpan MinTimeSinceStartOfTrack { get; set; }
 
         [Range(typeof(TimeSpan), "00:00:00", "13:31:35")]
