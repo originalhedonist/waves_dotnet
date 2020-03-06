@@ -3,7 +3,7 @@
   "ConvertToMp3": false,
   "NumFiles": 1,
   "Naming": {
-    "Specific": [ "Test_FrequencyLinked" ]
+    "Specific": "Test_FrequencyLinked"
   },
   "TrackLength": "00:01:00",
   "NumberOfChannels": 2,

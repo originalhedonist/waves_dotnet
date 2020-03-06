@@ -7,11 +7,19 @@ using System.Threading.Tasks;
 using wavegenerator.library;
 using wavegenerator.models;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace wavegenerator.tests
 {
     public class FileIntegrityTests
     {
+        private readonly ITestOutputHelper testOutputHelper;
+
+        public FileIntegrityTests(ITestOutputHelper testOutputHelper)
+        {
+            this.testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public void InvalidSettings()
         {
@@ -29,7 +37,10 @@ namespace wavegenerator.tests
             var sha256 = SHA256.Create();
             await using var memoryStream = new MemoryStream();
             var settings = SettingsLoader.LoadAndValidateSettings(settingsFile);
-            var container = DependencyConfig.ConfigureContainer(settings);
+            var container = DependencyConfig.ConfigureContainer(settings, c =>
+            {
+                c.AddInstance<IProgressReporter>(new XUnitProgressReporter(testOutputHelper));
+            });
 
             var waveStream = container.Resolve<WaveStream>();
             await waveStream.Write(memoryStream);
