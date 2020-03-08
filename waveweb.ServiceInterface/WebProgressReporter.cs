@@ -19,7 +19,7 @@ namespace waveweb.ServiceInterface
 
         public async Task ReportProgress(double progress, bool complete, string message)
         {
-            if(lastReport == null || DateTime.Now.Subtract(lastReport.Value) > TimeSpan.FromSeconds(30))
+            if(lastReport == null || complete || DateTime.Now.Subtract(lastReport.Value) > TimeSpan.FromSeconds(5))
             {
                 lastReport = DateTime.Now;
                 await this.jobProgressProvider.SetJobProgressAsync(this.jobId,

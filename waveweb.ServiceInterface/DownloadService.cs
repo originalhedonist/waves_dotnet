@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using ServiceStack;
-using ServiceStack.Web;
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using waveweb.ServiceModel;
 
 namespace waveweb.ServiceInterface
@@ -18,10 +18,20 @@ namespace waveweb.ServiceInterface
         public const string DownloadDir = "DownloadableFiles";
         private readonly ILogger<DownloadService> logger;
 
-        public Stream Get(DownloadFileRequest request)
+        public async Task<Stream> Get(DownloadFileRequest request)
         {
-            string filePath = Path.Combine(DownloadDir, request.Id.ToString());
-            return new DownloadFileResult($"{DateTime.Now:yyyyMMdd_HHmmss}.txt", filePath);
+            var filePath = Directory.GetFiles(DownloadDir, $"{request.Id}.*").FirstOrDefault();
+            if (filePath == null)
+            {
+                return await NotFoundFileResult.Create();
+            }
+            else
+            {
+                var extension = Path.GetExtension(filePath);
+                var downloadName = $"{DateTime.Now:yyyyMMdd_HHmmss}{extension}";
+                return new DownloadFileResult(downloadName, filePath);
+            }
+            
         }
 
         public Stream Get(TestDownloadRequest request)
@@ -46,22 +56,4 @@ namespace waveweb.ServiceInterface
             }
         }
     }
-
-    public class DownloadFileResult : FileStream, IHasOptions
-    {
-        private readonly string downloadName;
-
-        public DownloadFileResult(string downloadName, string fullPath) :
-            base(fullPath, FileMode.Open, FileAccess.Read)
-        {
-            this.downloadName = downloadName;
-        }
-
-        public IDictionary<string, string> Options => new Dictionary<string, string>
-        {
-            { "Content-Disposition", $"attachment;filename={downloadName}" }
-        };
-    }
-
-
 }

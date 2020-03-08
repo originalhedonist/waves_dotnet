@@ -8,15 +8,18 @@
                 </v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <v-row>
-                        <v-switch v-model="Request.randomization" label="Use randomization" />
+                        <v-col cols="12">
+                            <v-switch v-model="Request.randomization" label="Use randomization" />
+                        </v-col>
                     </v-row>
                     <v-row>
-                        <v-slider v-model="Request.trackLengthMinutes"
-                                  label="Track length (minutes)"
-                                  thumb-label="always"
-                                  min="1"
-                                  max="60" />
-
+                        <v-col cols="12">
+                            <v-slider v-model="Request.trackLengthMinutes"
+                                      label="Track length (minutes)"
+                                      thumb-label="always"
+                                      min="1"
+                                      max="60" />
+                        </v-col>
                     </v-row>
 
                     <v-row>
@@ -56,7 +59,7 @@
                 </v-expansion-panel-content>
             </v-expansion-panel>
 
-            <v-expansion-panel v-show="Request.dualChannel" transition="v-guff-y-transition">
+            <v-expansion-panel v-show="Request.dualChannel">
                 <v-expansion-panel-header>Right channel settings</v-expansion-panel-header>
                 <v-expansion-panel-content>
                     <ChannelEditor :channel="Request.channel1" :isRight="true" :dualChannel="Request.dualChannel" />
@@ -70,41 +73,25 @@
                 <div>
                     <v-btn @click="createFile" :disabled="creatingFile">Create file</v-btn>
                 </div>
-                <div>
-                    <span v-show="creatingFile">File is being created. Depending on how long you have chosen it be, this might take a while. It should download automatically when complete.</span>
+                <div v-show="creatingFile" class="top-space">
+                    <div style="float:left">
+                        <img src="@/assets/img/tea.svg" alt="Go and make a cup of tea" style="width: 100px; height: 100px" />
+                    </div>
+                    <div style="float:left">
+                        <p>File is being created.</p>
+                        <p>Depending on how long you have chosen it be, this might take a while.</p>
+                        <p>It should download automatically when complete.</p>
+                    </div>
+                    <div style="clear:both"/>
                 </div>
                 <div v-show="jobProgressModel.jobId !== null">
                     <JobProgress :model="jobProgressModel" @complete="jobComplete" style="padding: 12px" />
                 </div>
-                <div v-show="fileDownloadLink !== null">
+                <div v-show="fileDownloadLink !== null" class="top-space">
                     <a :href="fileDownloadLink">The file was created. Click here to try to download it if it did not download automatically.</a>
                 </div>
             </v-card-text>
         </v-card>
-
-        <v-card style="margin-top: 20px">
-            <v-card-text>
-                <div class="top-space">
-                    <v-slider v-model="chunks" label="Ten second chunks" min="1" max="200" step="1" thumb-label="always" />
-                </div>
-                <div>
-                    <v-btn @click="test" :disabled="runningTest">Test</v-btn>
-                </div>
-                <div>
-                    <span>{{testServerMessage}}</span>
-                </div>
-                <div v-show="testJobProgressModel.jobId !== null">
-                    <JobProgress :model="testJobProgressModel" @complete="testJobComplete" style="padding: 12px" />
-                </div>
-                <div class="top-space" v-show="testFileDownloadLink !== null">
-                    <a :href="testFileDownloadLink">Click here to try to download the file if it does not download automatically</a>
-                </div>
-                <div class="top-space">
-                    <a href="/testdownload">Click here to (try to) download a file!</a>
-                </div>
-            </v-card-text>
-        </v-card>
-
     </v-container>
 </template>
 

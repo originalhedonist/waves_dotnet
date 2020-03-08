@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Hangfire;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Threading;
@@ -23,6 +24,7 @@ namespace waveweb.ServiceInterface
             this.logger = logger;
         }
 
+        [AutomaticRetry(Attempts = 0)]
         public async Task Run(Settings data, Guid jobId, CancellationToken cancellationToken)
         {
             try
@@ -39,7 +41,7 @@ namespace waveweb.ServiceInterface
                 {
                     Directory.CreateDirectory(DownloadService.DownloadDir);
                 }
-                var fullPath = Path.Combine(DownloadService.DownloadDir, jobId.ToString());
+                var fullPath = Path.Combine(DownloadService.DownloadDir, $"{jobId}.mp3");
 
                 // write it
                 await mp3Stream.Write(fullPath);

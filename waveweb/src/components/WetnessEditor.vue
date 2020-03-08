@@ -1,12 +1,18 @@
 ﻿<template>
     <div>
         <v-row>
-            <v-switch v-model="wetness.linkToFeature" label="Link to feature" />
+            <v-col cols="12">
+                <v-switch v-model="wetness.linkToFeature" label="Link to feature" />
+            </v-col>
         </v-row>
         <v-row>
-            <v-range-slider v-model="wetness.amountRange" label="Range" min="0" max="1" step="0.01" thumb-label="always">
-                <template v-slot:thumb-label="p">{{(p.value*100).toFixed(0)}}%</template>
-            </v-range-slider>
+            <v-col cols="12">
+                <v-range-slider v-model="wetness.amountRange" label="Range" min="0" max="1" step="0.01" thumb-label="always">
+                    <template v-slot:thumb-label="p">
+                        {{(p.value*100).toFixed(0)}}%
+                    </template>
+                </v-range-slider>
+            </v-col>
         </v-row>
         <v-row>
             <VarianceExpansionPanel :variance="wetness.variation" title="Variation" />

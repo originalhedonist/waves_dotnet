@@ -80,7 +80,7 @@ namespace wavegenerator.library
 
                 if((n%10000) == 0)
                 {
-                    await progressReporter.ReportProgress(((double)n / N)*0.97, false, $"Written {n} of {N} samples"); //allow 3% for mp3 creation
+                    await progressReporter.ReportProgress(((double)n / N)*0.97, false, $"Written {n:n0} of {N:n0} samples"); //allow 3% for mp3 creation
                 }
             }
         }

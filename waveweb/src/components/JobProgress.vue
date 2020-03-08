@@ -30,7 +30,7 @@
         @Watch('model.jobId')
         public async onJobIdChanged() {
             if (this.model.jobId !== null) {
-                this.intervalId = setInterval(this.poll, 10000);
+                this.intervalId = setInterval(this.poll, 5000);
             }
             await this.poll();
         }

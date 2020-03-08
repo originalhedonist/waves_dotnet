@@ -1,7 +1,9 @@
 ﻿<template>
     <div>
         <v-row>
-            <v-switch v-model="isHigh" label="High frequency range"/>
+            <v-col cols="12">
+                <v-switch v-model="isHigh" label="High frequency range" />
+            </v-col>
         </v-row>
         <v-row>
             <v-col cols="1">Quiescent</v-col>
