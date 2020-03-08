@@ -27,11 +27,12 @@ namespace wavegenerator.tests
         }
 
         [Theory]
-        [InlineData("Settings_FrequencyIndependent.json", "0482ADF98F71289BB2670D868C40E8C6CE8CB8A54ACECCC1D22049BD161DDA1A")]
-        [InlineData("Settings_FrequencyIndependent_NoWetnessOnLeft.json", "51EB3981EEB2D40361C1A94182041BF7719A792EB9B815F6E6B21B46F4008648")]
-        [InlineData("Settings_FrequencyLinked.json", "FC233821F85D9D9DFE048F4B0934CB17C639E3FD5762C8102B7B60E756327256")]
+        [InlineData("Settings_FrequencyIndependent.json", "D4DB906BC43671F3A535CB70FF648E98D4AA5E732AF9459811B18F53AFE86F96")]
+        [InlineData("Settings_FrequencyIndependent_NoWetnessOnLeft.json", "7BB0A7E63E387A14676CD35B4A3B1EAE6D717F710333CAAC9B4E148A84803EDA")]
+        [InlineData("Settings_FrequencyLinked.json", "D6242B11A5EE12549C4ECCC82DFCD7A7D8F08C1E172D33395137CDBEED4FC56C")]
         [InlineData("Settings_WetnessIndependent.json", "8E48C44288421CCB99BDAE1383DC2743FA418BFE58FAB34DFF75E9B7583F1FD0")]
-        [InlineData("Settings_WetnessLinked.json", "42CEEC630E2696D622FE9D5E4CB07D16FB82E16B23EC4A3497E68C74DC30F4EC")]
+        [InlineData("Settings_WetnessLinked.json", "C47B459E44ACF965FD1C54AD17C56908466B3C980EC7362F4746D823836C283A")]
+
         public async Task ValidSettings_VerifyFile(string settingsFile, string expectedSha256Hash)
         {
             var sha256 = SHA256.Create();
@@ -49,6 +50,12 @@ namespace wavegenerator.tests
 
             var hash = sha256.ComputeHash(memoryStream);
             var hashString = BitConverter.ToString(hash).Replace("-", "").ToUpperInvariant();
+            if(expectedSha256Hash != hashString)
+            {
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                await using var fileStream = new FileStream(settingsFile + ".mp3", FileMode.Create, FileAccess.Write);
+                await memoryStream.CopyToAsync(fileStream);
+            }
             Assert.Equal(expectedSha256Hash.Length, hashString.Length);
             Assert.Equal(expectedSha256Hash, hashString);
         }

@@ -3,7 +3,7 @@
   "ConvertToMp3": false,
   "NumFiles": 1,
   "Naming": {
-    "Specific": "TestWetness"
+    "Specific": "CantSpecifyNameAsWell", "Strategy": "RandomMaleName"
   },
   "TrackLength": "00:00:30",
   "NumberOfChannels": 2,

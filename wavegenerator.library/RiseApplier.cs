@@ -10,23 +10,23 @@ namespace wavegenerator.library
         private readonly Settings settings;
         private readonly Randomizer randomizer;
         private readonly RisesModel riseModel;
-        private readonly TimeSpan[] riseStartTimes;
+        private readonly Rise[] rises;
 
         public RiseApplier(Settings settings, Randomizer randomizer, RisesModel riseModel)
         {
             this.settings = settings;
             this.randomizer = randomizer;
             this.riseModel = riseModel;
-            riseStartTimes = MakeTimes(riseModel).ToArray();
+            rises = MakeRises(riseModel).ToArray();
         }
 
-        private TimeSpan[] MakeTimes(RisesModel riserModel)
+        private Rise[] MakeRises(RisesModel riserModel)
         {
-            if (riserModel == null) return new TimeSpan[] { };
+            if (riserModel == null) return new Rise[] { };
 
             var riseIndexes = Enumerable.Range(0, riserModel.Count);
             var totalAllowedTime = settings.TrackLength - riserModel.EarliestTime;
-            var times = riseIndexes.Select(s =>
+            var rises = riseIndexes.Select(s =>
             {
                 var earliestStartTime = riserModel.EarliestTime + totalAllowedTime * s / riserModel.Count;
                 var latestEndTime =
@@ -38,50 +38,54 @@ namespace wavegenerator.library
                     riserModel
                         .LengthEach; // but we don't want rises to overlap (calculation too complicated if nothing else), so limit the latest start time
                 if (latestStartTime < earliestStartTime)
-                    throw new InvalidOperationException(
-                        $"Error in rise calculation - latestStartTime was before earliestStartTime"); //sanity check (shouldn't occur if validation is correct)
-                var time = earliestStartTime + randomizer.GetRandom(0.5) * (latestStartTime - earliestStartTime);
-                return time;
+                    latestStartTime = earliestStartTime;
+                var startTime = earliestStartTime + randomizer.GetRandom(0.5) * (latestStartTime - earliestStartTime);
+                var endTime = startTime + riseModel.LengthEach;
+                var minAttenuation = Math.Pow(1 - riserModel.Amount, riserModel.Count - s);
+                var maxAttenuation = Math.Pow(1 - riserModel.Amount, riserModel.Count - s - 1);
+                return new Rise(startTime, endTime, 1 - riserModel.Amount, 1);
             }).ToArray();
-            return times;
+            return rises;
         }
 
         public Task<double> Amplitude(double t, int n, int channel)
         {
             //Inclusive at start, exclusive at end, always have 't' at LHS for consistency.
-            double proportionOfPattern;
-            if (riseStartTimes.Length == 0)
+            double amplitude = 1;
+            var ts = TimeSpan.FromSeconds(t);
+            foreach(var rise in rises)
             {
-                proportionOfPattern = 1;
-            }
-            else
-            {
-                var numRisesAfter = riseStartTimes.Count(rst => t < rst.TotalSeconds); //wholly after, i.e. yet to start
-                var maxAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter);
-                //are we in a rise?
-                var spanning = riseStartTimes
-                    .Where(rst => t >= rst.TotalSeconds && t < (rst + riseModel.LengthEach).TotalSeconds)
-                    .ToArray(); //FirstOrDefault doesn't return null as TimeSpan is a struct
-                if (spanning.Any())
-                {
-                    var riseStartTime = spanning.First();
-                    var proportionAlongRise = (t - riseStartTime.TotalSeconds) / riseModel.LengthEach.TotalSeconds;
-                    if (proportionAlongRise < 0 || proportionAlongRise > 1)
-                        throw new InvalidOperationException(
-                            $"Invalid proportionAlongRise, should be between 0 and 1"); // sanity check
-                    var proportionUpRise =
-                        Math.Pow(Math.Sin(proportionAlongRise * Math.PI / 2),
-                            2); //sin^2 from 0 to 1 to give a smooth rise
-                    var minAmplitude = Math.Pow(1 - riseModel.Amount, numRisesAfter + 1);
-                    proportionOfPattern = minAmplitude + (maxAmplitude - minAmplitude) * proportionUpRise;
-                }
+                double attenuation;
+                if (ts > rise.EndTime) attenuation = rise.MaxAttenuation;
+                else if (ts < rise.StartTime) attenuation = rise.MinAttenuation;
                 else
                 {
-                    proportionOfPattern = maxAmplitude;
+                    var proportionAlongRise = (ts - rise.StartTime) / rise.Length;
+                    var proportionUpRise = Math.Pow(Math.Sin(proportionAlongRise * Math.PI / 2), 2);
+                    // sin^2 from 0 to 1 to give a smooth rise
+                    attenuation = rise.MinAttenuation + (rise.MaxAttenuation - rise.MinAttenuation) * proportionUpRise;
                 }
-            }
 
-            return Task.FromResult(proportionOfPattern);
+                amplitude *= attenuation;
+            }
+            return Task.FromResult(amplitude);
         }
+    }
+
+    public class Rise
+    {
+        public Rise(TimeSpan startTime, TimeSpan endTime, double minAttenuation, double maxAttenuation)
+        {
+            StartTime = startTime;
+            EndTime = endTime;
+            MinAttenuation = minAttenuation;
+            MaxAttenuation = maxAttenuation;
+        }
+
+        public TimeSpan StartTime { get;  }
+        public TimeSpan EndTime { get; }
+        public TimeSpan Length  => EndTime - StartTime;
+        public double MinAttenuation { get; }
+        public double MaxAttenuation { get; }
     }
 }
