@@ -11,7 +11,7 @@ namespace wavegenerator
         {
             var channelSettings = (ChannelSettingsModel[])value;
             var settingsModel = (Settings)validationContext.ObjectInstance;
-            if(channelSettings.Any(cs => cs.Rises != null && cs.Rises.Count > 0 && cs.Rises.EarliestTime.TotalSeconds + (cs.Rises.Count * cs.Rises.LengthEach.TotalSeconds) > settingsModel.TrackLength.TotalSeconds))
+            if (channelSettings.Any(cs => cs.Rises != null && cs.Rises.Count > 0 && cs.Rises.EarliestTime.TotalSeconds + (cs.Rises.Count * cs.Rises.LengthEach.TotalSeconds) > settingsModel.TrackLength.TotalSeconds))
             {
                 return new ValidationResult($"Rises: EarliestTime + (Count * LengthEach) must be <= total track length.");
             }

@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Ultimate.DI;
 using wavegenerator.library;
 using wavegenerator.models;
 using waveweb.ServiceModel;
@@ -11,11 +12,11 @@ namespace waveweb.ServiceInterface
 {
     public class FileCreator : ILongJobProcessor<Settings>
     {
-        private readonly IFullFeatureUltimateContainerProvider containerProvider;
+        private readonly IUltimateContainerProvider containerProvider;
         private readonly IJobProgressProvider jobProgressProvider;
         private readonly ILogger<FileCreator> logger;
 
-        public FileCreator(IFullFeatureUltimateContainerProvider containerProvider, IJobProgressProvider jobProgressProvider, ILogger<FileCreator> logger)
+        public FileCreator(IUltimateContainerProvider containerProvider, IJobProgressProvider jobProgressProvider, ILogger<FileCreator> logger)
         {
             this.containerProvider = containerProvider;
             this.jobProgressProvider = jobProgressProvider;
@@ -27,11 +28,11 @@ namespace waveweb.ServiceInterface
             try
             {
                 // set up the stack
-                var ultimateContainer = containerProvider.GetContainer();
-                var nestedContainer = ultimateContainer.GetNestedContainer();
-                nestedContainer.AddInstance<IJobIdProvider>(new JobIdProvider { JobId = jobId });
-                nestedContainer.AddInstance<Settings>(data);
-                var mp3Stream = nestedContainer.Resolve<Mp3Stream>();
+                var container = containerProvider.GetFullFeatureContainer();
+                container.AddInstance<IJobIdProvider>(new JobIdProvider { JobId = jobId });
+                container.AddInstance<Settings>(data);
+                container.AddInstance<IWaveFileMetadata>(data);
+                var mp3Stream = container.Resolve<Mp3Stream>();
 
                 // prepare for the file creation
                 if (!Directory.Exists(DownloadService.DownloadDir))
@@ -47,7 +48,7 @@ namespace waveweb.ServiceInterface
             {
                 logger.LogError(ex, $"Error during file creation");
                 await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { IsComplete = true, Message = "File creation finished. Errors occurred." });
-                throw;
+                //throw;
             }
         }
     }

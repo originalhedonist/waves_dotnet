@@ -10,6 +10,7 @@ using Hangfire;
 using Microsoft.Extensions.Configuration;
 using waveweb.ServerComponents;
 using Microsoft.Extensions.Logging;
+using wavegenerator.library;
 
 namespace waveweb
 {
@@ -20,14 +21,13 @@ namespace waveweb
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public new void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(UltimateContainerInitializer.Initialize());
             services.AddSingleton<IMapper>(new Mapper(Mapping.CreateMapperConfiguration()));
             services.AddTransient<IWaveformTestPulseGeneratorProvider, WaveformTestPulseGeneratorProvider>();
             services.AddTransient<IJobScheduler, JobScheduler>();
             services.AddTransient<IJobProgressProvider, JobProgressProvider>();
             services.AddTransient<TestLongJob>();
             services.AddTransient<FileCreator>();
-            services.AddTransient<IFullFeatureUltimateContainerProvider, FullFeatureUltimateContainerProvider>();
+            services.AddTransient<IUltimateContainerProvider, UltimateContainerProvider>();
             services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
             services.AddHangfireServer();
 

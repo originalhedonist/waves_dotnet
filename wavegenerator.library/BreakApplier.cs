@@ -21,6 +21,7 @@ namespace wavegenerator.library
 
         public Task<double> Amplitude(double t, int n, int channel)
         {
+
             var brk = breaks.FirstOrDefault(b => b.IsWithin(t));
             var att = brk?.Attenuation(t) ?? 1;
             return Task.FromResult(att);

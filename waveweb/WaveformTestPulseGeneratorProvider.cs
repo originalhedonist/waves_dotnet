@@ -12,9 +12,9 @@ namespace waveweb
         private readonly IContainer container;
         private readonly IMapper mapper;
 
-        public WaveformTestPulseGeneratorProvider(Ultimate.DI.IContainer container, IMapper mapper)
+        public WaveformTestPulseGeneratorProvider(IUltimateContainerProvider containerProvider, IMapper mapper)
         {
-            this.container = container;
+            this.container = containerProvider.GetFastContainer();
             this.mapper = mapper;
         }
 
