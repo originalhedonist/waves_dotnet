@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Ultimate.DI;
 using wavegenerator.library;
 using waveweb.ServerComponents;
@@ -9,10 +10,12 @@ namespace waveweb
     public class UltimateContainerProvider : IUltimateContainerProvider
     {
         private readonly IConfiguration configuration;
+        private readonly ILoggerFactory loggerProvider;
 
-        public UltimateContainerProvider(IConfiguration configuration)
+        public UltimateContainerProvider(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             this.configuration = configuration;
+            this.loggerProvider = loggerFactory;
         }
 
         public IContainer GetFastContainer()
@@ -30,6 +33,7 @@ namespace waveweb
             a.AddTransient<IProgressReporter, WebProgressReporter>();
             a.AddTransient<IJobProgressProvider, JobProgressProvider>();
             a.AddInstance<IConfiguration>(configuration);
+            a.AddInstance<ILoggerFactory>(loggerProvider);
         });
     }
 }

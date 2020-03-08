@@ -1,4 +1,5 @@
-﻿using NAudio.Lame;
+﻿using Microsoft.Extensions.Logging;
+using NAudio.Lame;
 using NAudio.Wave;
 using System;
 using System.IO;
@@ -10,18 +11,30 @@ namespace wavegenerator.library
     {
         private readonly WaveStream waveStream;
         private readonly IProgressReporter progressReporter;
+        private readonly ILogger logger;
 
-        public Mp3Stream(WaveStream waveStream, IProgressReporter progressReporter)
+        public Mp3Stream(WaveStream waveStream, IProgressReporter progressReporter, ILoggerFactory loggerFactory)
         {
             this.waveStream = waveStream;
             this.progressReporter = progressReporter;
+            this.logger = loggerFactory.CreateLogger(typeof(Mp3Stream));
         }
 
         public async Task Write(string filePath)
         {
-            //don't write direct to the file - otherwise it's well slow.
-            await using var fileStream = new BufferedStream(File.OpenWrite(filePath));
-            await Write(fileStream);
+            logger.LogInformation("Creating mp3");
+            try
+            {
+                //don't write direct to the file - otherwise it's well slow.
+                await using var fileStream = new BufferedStream(File.OpenWrite(filePath));
+                await Write(fileStream);
+
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Error creating mp3");
+                throw;
+            }
         }
 
         public async Task Write(Stream fileStream)
