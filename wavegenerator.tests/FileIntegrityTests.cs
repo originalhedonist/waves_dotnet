@@ -32,7 +32,6 @@ namespace wavegenerator.tests
         [InlineData("Settings_FrequencyLinked.json", "D6242B11A5EE12549C4ECCC82DFCD7A7D8F08C1E172D33395137CDBEED4FC56C")]
         [InlineData("Settings_WetnessIndependent.json", "8E48C44288421CCB99BDAE1383DC2743FA418BFE58FAB34DFF75E9B7583F1FD0")]
         [InlineData("Settings_WetnessLinked.json", "C47B459E44ACF965FD1C54AD17C56908466B3C980EC7362F4746D823836C283A")]
-
         public async Task ValidSettings_VerifyFile(string settingsFile, string expectedSha256Hash)
         {
             var sha256 = SHA256.Create();
