@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-08 18:46:19
+Date: 2020-03-09 09:34:51
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -117,6 +117,13 @@ export class ChannelSettings
     public constructor(init?: Partial<ChannelSettings>) { (Object as any).assign(this, init); }
 }
 
+export enum JobProgressStatus
+{
+    Complete = 'Complete',
+    InProgress = 'InProgress',
+    Failed = 'Failed',
+}
+
 export class CreateFileResponse
 {
     public jobId: string;
@@ -127,8 +134,8 @@ export class CreateFileResponse
 
 export class JobProgress
 {
+    public status: JobProgressStatus;
     public progress: number;
-    public isComplete: boolean;
     public message: string;
     public responseStatus: ResponseStatus;
 
@@ -176,7 +183,6 @@ export class CreateFileRequest implements IReturn<CreateFileResponse>
 export class DownloadFileRequest implements IReturn<Blob>
 {
     public id: string;
-    public extension: string;
 
     public constructor(init?: Partial<DownloadFileRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new Blob(); }

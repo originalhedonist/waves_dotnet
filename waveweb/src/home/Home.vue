@@ -72,6 +72,7 @@
             <v-card-text>
                 <div>
                     <v-btn @click="createFile" :disabled="creatingFile">Create file</v-btn>
+                    <span style="color: red; margin-left:20px;" v-show="errorMessage !== null">{{errorMessage}}</span>
                 </div>
                 <div v-show="creatingFile" class="top-space">
                     <div style="float:left">
@@ -99,7 +100,7 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, TestRequest, Variance } from '../dtos';
+    import { CreateFileRequest, TestRequest, Variance, JobProgressStatus } from '../dtos';
     import ChannelEditor from '../components/ChannelEditor.vue';
     import DefaultDataCreator from '../defaultdatacreator';
     import JobProgress from '../components/JobProgress.vue';
@@ -122,13 +123,9 @@
         public txtName: string = this.name;
         public result: string = '';
         public show: boolean = false;
-        public runningTest: boolean = false;
         public creatingFile: boolean = false;
-        public testServerMessage: string = '';
-        public serverMessage: string = '';
-        public chunks: number = 60;
-        public testFileDownloadLink: string | null = null;
         public fileDownloadLink: string | null = null;
+        public errorMessage: string | null = null;
 
         public Request: CreateFileRequest = new CreateFileRequest({
             trackLengthMinutes: 20,
@@ -136,34 +133,20 @@
             channel1: DefaultDataCreator.createDefaultChannelSettings(),
         });
 
-        public async test() {
-            this.runningTest = true;
-            const request = new TestRequest({
-                chunks: this.chunks,
-            });
-            const response = await client.post(request);
-            this.testServerMessage = response.message;
-            this.testJobProgressModel.jobId = response.jobId;
-        }
-
         public async createFile() {
             this.creatingFile = true;
             const response = await client.post(this.Request);
             this.jobProgressModel.jobId = response.jobId; // start polling
         }
 
-        public testJobComplete() {
-            this.testServerMessage = 'File created successfully!';
-            this.testFileDownloadLink = '/downloadfile/' + this.testJobProgressModel.jobId;
-            window.location.href = this.testFileDownloadLink;
-            this.testJobProgressModel.jobId = null;
-            this.runningTest = false;
-        }
-
-        public jobComplete() {
-            this.serverMessage = 'File created successfully!';
-            this.fileDownloadLink = '/downloadfile/' + this.jobProgressModel.jobId;
-            window.location.href = this.fileDownloadLink; // triggers the download (doesn't navigate away)
+        public jobComplete(status: JobProgressStatus, message: string) {
+            if (status === JobProgressStatus.Failed) {
+                this.errorMessage = message;
+            }
+            if (status === JobProgressStatus.Complete) {
+                this.fileDownloadLink = '/downloadfile/' + this.jobProgressModel.jobId;
+                window.location.href = this.fileDownloadLink; // triggers the download (doesn't navigate away)
+            }
             this.jobProgressModel.jobId = null; // stops it polling
             this.creatingFile = false;
         }

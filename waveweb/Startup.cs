@@ -10,7 +10,6 @@ using Hangfire;
 using Microsoft.Extensions.Configuration;
 using waveweb.ServerComponents;
 using Microsoft.Extensions.Logging;
-using wavegenerator.library;
 
 namespace waveweb
 {

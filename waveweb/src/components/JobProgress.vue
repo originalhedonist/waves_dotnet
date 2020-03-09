@@ -16,7 +16,7 @@
     import { client } from '../shared';
 
     import '@/dtos';
-    import { JobProgressRequest } from '@/dtos';
+    import { JobProgressRequest, JobProgressStatus } from '@/dtos';
     import JobProgressModel from '../jobprogressodel';
 
     @Component
@@ -45,11 +45,11 @@
                     this.progressPercentage = pollResponse.progress * 100;
                 }
                 this.message = pollResponse.message;
-                if (pollResponse.isComplete) {
+                if (pollResponse.status === JobProgressStatus.Complete || pollResponse.status === JobProgressStatus.Failed) {
                     if (this.intervalId !== null) {
                         clearInterval(this.intervalId);
                     }
-                    this.$emit('complete');
+                    this.$emit('complete', pollResponse.status, pollResponse.message);
                 }
             }
         }

@@ -2,6 +2,7 @@
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using wavegenerator.models;
 using waveweb.ServiceInterface;
 using waveweb.ServiceModel;
 
@@ -21,16 +22,16 @@ namespace waveweb.ServerComponents
             await using var connection = new SqlConnection(connectionString);
             var progressToSet = Math.Max(jobProgress.Progress, 0.05);
             await using var command = new SqlCommand(@"
-                INSERT INTO JobProgress (JobId, Progress, DateLastUpdated, IsComplete, Message)
-                SELECT @JobId, @Progress, GETDATE(), @IsComplete, @Message
+                INSERT INTO JobProgress (JobId, Progress, DateLastUpdated, Status, Message)
+                SELECT @JobId, @Progress, GETDATE(), @Status, @Message
                 WHERE NOT EXISTS (SELECT * FROM JobProgress WHERE JobId = @JobId)
 
-                UPDATE JobProgress SET Progress = @Progress, DateLastUpdated = GETDATE(), IsComplete = @IsComplete, Message = @Message
+                UPDATE JobProgress SET Progress = @Progress, DateLastUpdated = GETDATE(), Status = @Status, Message = @Message
                 WHERE JobId = @JobId",
                 connection);
             command.Parameters.AddWithValue("@JobId", jobId);
             command.Parameters.AddWithValue("@Progress", progressToSet);
-            command.Parameters.AddWithValue("@IsComplete", jobProgress.IsComplete);
+            command.Parameters.AddWithValue("@Status", jobProgress.Status.ToString());
             command.Parameters.AddWithValue("@Message", jobProgress.Message);
             await connection.OpenAsync();
             await command.ExecuteNonQueryAsync();
@@ -41,14 +42,14 @@ namespace waveweb.ServerComponents
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             await using var connection = new SqlConnection(connectionString);
             await using var command = new SqlCommand(
-                "SELECT Progress, IsComplete, Message FROM JobProgress WHERE JobId = @JobId", connection);
+                "SELECT Progress, Status, Message FROM JobProgress WHERE JobId = @JobId", connection);
             command.Parameters.AddWithValue("@JobId", jobId);
             await connection.OpenAsync();
             var result = await command.ExecuteReaderAsync(System.Data.CommandBehavior.SingleRow);
             var jobProgress = new JobProgress();
             if(await result.ReadAsync())
             {
-                jobProgress.IsComplete = (bool)Convert.ChangeType(result["IsComplete"], typeof(bool));
+                jobProgress.Status = Enum.Parse<JobProgressStatus>(result["Status"].ToString());
                 jobProgress.Progress = (double)Convert.ChangeType(result["Progress"], typeof(double));
                 jobProgress.Message = (string)Convert.ChangeType(result["Message"], typeof(string));
             }

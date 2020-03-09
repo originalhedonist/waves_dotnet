@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using wavegenerator.library;
+using wavegenerator.models;
 using waveweb.ServiceModel;
 
 namespace waveweb.ServiceInterface
@@ -17,16 +18,16 @@ namespace waveweb.ServiceInterface
             this.jobId = jobIdProvider.JobId;
         }
 
-        public async Task ReportProgress(double progress, bool complete, string message)
+        public async Task ReportProgress(double progress, JobProgressStatus status, string message)
         {
-            if(lastReport == null || complete || DateTime.Now.Subtract(lastReport.Value) > TimeSpan.FromSeconds(5))
+            if(lastReport == null || status != JobProgressStatus.InProgress || DateTime.Now.Subtract(lastReport.Value) > TimeSpan.FromSeconds(5))
             {
                 lastReport = DateTime.Now;
                 await this.jobProgressProvider.SetJobProgressAsync(this.jobId,
                     new JobProgress
                     {
                         Progress = progress,
-                        IsComplete = complete,
+                        Status = status,
                         Message = message
                     });
             }

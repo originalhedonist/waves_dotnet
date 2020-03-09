@@ -1,5 +1,6 @@
 ﻿using ServiceStack;
 using System;
+using wavegenerator.models;
 
 namespace waveweb.ServiceModel
 {
@@ -11,8 +12,8 @@ namespace waveweb.ServiceModel
 
     public class JobProgress
     {
+        public JobProgressStatus Status { get; set; }
         public double Progress { get; set; }
-        public bool IsComplete { get; set; }
         public string Message { get; set; }
     }
 }

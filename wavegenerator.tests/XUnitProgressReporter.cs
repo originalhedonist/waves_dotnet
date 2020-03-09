@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using wavegenerator.library;
+using wavegenerator.models;
 using Xunit.Abstractions;
 
 namespace wavegenerator.tests
@@ -13,7 +14,7 @@ namespace wavegenerator.tests
             this.testOutputHelper = testOutputHelper;
         }
 
-        public Task ReportProgress(double progress, bool isComplete, string message)
+        public Task ReportProgress(double progress, JobProgressStatus status, string message)
         {
             testOutputHelper.WriteLine($"{progress:0.00%} {message}");
             return Task.CompletedTask;

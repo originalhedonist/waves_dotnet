@@ -2,6 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using wavegenerator.models;
 using waveweb.ServiceModel;
 
 namespace waveweb.ServiceInterface
@@ -24,7 +25,7 @@ namespace waveweb.ServiceInterface
                     new JobProgress
                     {
                         Progress = (double)i / data,
-                        IsComplete = false,
+                        Status = JobProgressStatus.InProgress,
                         Message = $"Done {i} chunks"
                     });
             }
@@ -33,7 +34,7 @@ namespace waveweb.ServiceInterface
                 Directory.CreateDirectory(DownloadService.DownloadDir);
             }
             await File.WriteAllTextAsync($"{DownloadService.DownloadDir}/{jobId}", "hello from the long job!");
-            await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { IsComplete = true, Message = "Long job finished!" });
+            await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { Status = JobProgressStatus.Complete, Message = "Long job finished!" });
         }
     }
 

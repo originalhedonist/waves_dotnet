@@ -27,31 +27,22 @@ namespace waveweb.ServiceInterface
         [AutomaticRetry(Attempts = 0)]
         public async Task Run(Settings data, Guid jobId, CancellationToken cancellationToken)
         {
-            try
-            {
-                // set up the stack
-                var container = containerProvider.GetFullFeatureContainer();
-                container.AddInstance<IJobIdProvider>(new JobIdProvider { JobId = jobId });
-                container.AddInstance<Settings>(data);
-                container.AddInstance<IWaveFileMetadata>(data);
-                var mp3Stream = container.Resolve<Mp3Stream>();
+            // set up the stack
+            var container = containerProvider.GetFullFeatureContainer();
+            container.AddInstance<IJobIdProvider>(new JobIdProvider { JobId = jobId });
+            container.AddInstance<Settings>(data);
+            container.AddInstance<IWaveFileMetadata>(data);
+            var mp3Stream = container.Resolve<Mp3Stream>();
 
-                // prepare for the file creation
-                if (!Directory.Exists(DownloadService.DownloadDir))
-                {
-                    Directory.CreateDirectory(DownloadService.DownloadDir);
-                }
-                var fullPath = Path.Combine(DownloadService.DownloadDir, $"{jobId}.mp3");
-
-                // write it
-                await mp3Stream.Write(fullPath);
-            }
-            catch (Exception ex)
+            // prepare for the file creation
+            if (!Directory.Exists(DownloadService.DownloadDir))
             {
-                logger.LogError(ex, $"Error during file creation");
-                await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { IsComplete = true, Message = "File creation finished. Errors occurred." });
-                //throw;
+                Directory.CreateDirectory(DownloadService.DownloadDir);
             }
+            var fullPath = Path.Combine(DownloadService.DownloadDir, $"{jobId}.mp3");
+
+            // write it
+            await mp3Stream.Write(fullPath);
         }
     }
 }
