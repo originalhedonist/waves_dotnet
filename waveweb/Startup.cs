@@ -10,6 +10,10 @@ using Hangfire;
 using Microsoft.Extensions.Configuration;
 using waveweb.ServerComponents;
 using Microsoft.Extensions.Logging;
+using System.IO;
+using System.Linq;
+using System;
+using System.Diagnostics;
 
 namespace waveweb
 {
@@ -27,14 +31,29 @@ namespace waveweb
             services.AddTransient<TestLongJob>();
             services.AddTransient<FileCreator>();
             services.AddTransient<IUltimateContainerProvider, UltimateContainerProvider>();
-            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddHangfire(x =>
+            {
+                x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"));
+                RecurringJob.AddOrUpdate(nameof(DeleteOldFiles), () => DeleteOldFiles(), "15 7 * * * *");
+                RecurringJob.Trigger(nameof(DeleteOldFiles));
+            });
             services.AddHangfireServer();
 
-            services.AddLogging(c => 
+            services.AddLogging(c =>
             {
                 c.AddConsole();
                 c.AddAzureWebAppDiagnostics();
             });
+
+        }
+
+        public static void DeleteOldFiles()
+        {
+            var limit = DateTime.Now.AddHours(24);
+            foreach (var oldFile in new DirectoryInfo("DownloadableFiles").GetFiles().Where(fi => fi.LastAccessTime < limit))
+            {
+                try { File.Delete(oldFile.FullName); } catch (Exception) { }
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,8 +69,9 @@ namespace waveweb
             {
                 AppSettings = new NetCoreAppSettings(Configuration)
             });
-            
-           
+
+            //
+
         }
     }
 

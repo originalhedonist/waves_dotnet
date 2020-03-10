@@ -43,7 +43,7 @@ namespace wavegenerator.library
 
         public async Task Write(Stream fileStream)
         {
-            string wavIntermediate = Guid.NewGuid() + ".wav";
+            string wavIntermediate = Path.Combine("DownloadableFiles", Guid.NewGuid() + ".wav");
             try
             {
                 {
