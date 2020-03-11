@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
 using System;
-using System.Diagnostics;
 
 namespace waveweb
 {
@@ -24,7 +22,8 @@ namespace waveweb
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public new void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IMapper>(new Mapper(Mapping.CreateMapperConfiguration()));
+            services.AddTransient<Ultimate.ORM.IObjectMapper, Ultimate.ORM.ObjectMapper>();
+            services.AddSingleton<AutoMapper.IMapper>(new AutoMapper.Mapper(Mapping.CreateMapperConfiguration()));
             services.AddTransient<IWaveformTestPulseGeneratorProvider, WaveformTestPulseGeneratorProvider>();
             services.AddTransient<IJobScheduler, JobScheduler>();
             services.AddTransient<IJobProgressProvider, JobProgressProvider>();

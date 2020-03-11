@@ -32,6 +32,7 @@ namespace waveweb
         {
             a.AddTransient<IProgressReporter, WebProgressReporter>();
             a.AddTransient<IJobProgressProvider, JobProgressProvider>();
+            a.AddTransient<Ultimate.ORM.IObjectMapper, Ultimate.ORM.ObjectMapper>();
             a.AddInstance<IConfiguration>(configuration);
             a.AddInstance<ILoggerFactory>(loggerProvider);
         });

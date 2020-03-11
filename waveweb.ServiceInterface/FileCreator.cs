@@ -27,22 +27,30 @@ namespace waveweb.ServiceInterface
         [AutomaticRetry(Attempts = 0)]
         public async Task Run(Settings data, Guid jobId, CancellationToken cancellationToken)
         {
-            // set up the stack
-            var container = containerProvider.GetFullFeatureContainer();
-            container.AddInstance<IJobIdProvider>(new JobIdProvider { JobId = jobId });
-            container.AddInstance<Settings>(data);
-            container.AddInstance<IWaveFileMetadata>(data);
-            var mp3Stream = container.Resolve<Mp3Stream>();
-
-            // prepare for the file creation
-            if (!Directory.Exists(DownloadService.DownloadDir))
+            try
             {
-                Directory.CreateDirectory(DownloadService.DownloadDir);
-            }
-            var fullPath = Path.Combine(DownloadService.DownloadDir, $"{jobId}.mp3");
+                // set up the stack
+                var container = containerProvider.GetFullFeatureContainer();
+                container.AddInstance<IJobIdProvider>(new JobIdProvider { JobId = jobId });
+                container.AddInstance<Settings>(data);
+                container.AddInstance<IWaveFileMetadata>(data);
+                var mp3Stream = container.Resolve<Mp3Stream>();
 
-            // write it
-            await mp3Stream.Write(fullPath);
+                // prepare for the file creation
+                if (!Directory.Exists(DownloadService.DownloadDir))
+                {
+                    Directory.CreateDirectory(DownloadService.DownloadDir);
+                }
+                var fullPath = Path.Combine(DownloadService.DownloadDir, $"{jobId}.mp3");
+
+                // write it
+                await mp3Stream.Write(fullPath);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error in FileCreator.Run");
+                throw;
+            }
         }
     }
 }

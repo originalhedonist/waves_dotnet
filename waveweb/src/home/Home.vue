@@ -1,6 +1,14 @@
 <template>
 
     <v-container fluid>
+        <v-row class="top-space">
+            <v-col cols="12">
+                <v-card>
+                    <v-file-input label="Settings file" placeholder="Please choose a file to open settings" name="settingsfile" @change="onFileChanged" />
+                </v-card>
+            </v-col>
+        </v-row>
+
         <v-expansion-panels :multiple="true">
             <v-expansion-panel>
                 <v-expansion-panel-header>
@@ -83,7 +91,7 @@
                         <p>Depending on how long you have chosen it be, this might take a while.</p>
                         <p>It should download automatically when complete.</p>
                     </div>
-                    <div style="clear:both"/>
+                    <div style="clear:both" />
                 </div>
                 <div v-show="jobProgressModel.jobId !== null">
                     <JobProgress :model="jobProgressModel" @complete="jobComplete" style="padding: 12px" />
@@ -100,7 +108,7 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, TestRequest, Variance, JobProgressStatus } from '../dtos';
+    import { CreateFileRequest, TestRequest, Variance, JobProgressStatus, UploadSettingsRequest } from '../dtos';
     import ChannelEditor from '../components/ChannelEditor.vue';
     import DefaultDataCreator from '../defaultdatacreator';
     import JobProgress from '../components/JobProgress.vue';
@@ -149,6 +157,19 @@
             }
             this.jobProgressModel.jobId = null; // stops it polling
             this.creatingFile = false;
+        }
+
+        public onFileChanged(files: File) {
+            const fileReader = new FileReader();
+            fileReader.onloadend = async () => {
+                if (typeof fileReader.result === 'string') {
+                    const uploadSettingsRequest = new UploadSettingsRequest({
+                        settingsFile: fileReader.result,
+                    });
+                    await client.post(uploadSettingsRequest);
+                }
+            };
+            fileReader.readAsText(files);
         }
     }
 </script>

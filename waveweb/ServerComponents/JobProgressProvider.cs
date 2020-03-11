@@ -2,6 +2,7 @@
 using System;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Ultimate.ORM;
 using wavegenerator.models;
 using waveweb.ServiceInterface;
 using waveweb.ServiceModel;
@@ -11,10 +12,12 @@ namespace waveweb.ServerComponents
     public class JobProgressProvider : IJobProgressProvider
     {
         private readonly IConfiguration configuration;
+        private readonly IObjectMapper objectMapper;
 
-        public JobProgressProvider(IConfiguration configuration)
+        public JobProgressProvider(IConfiguration configuration, IObjectMapper objectMapper)
         {
             this.configuration = configuration;
+            this.objectMapper = objectMapper;
         }
         public async Task SetJobProgressAsync(Guid jobId, JobProgress jobProgress)
         {
@@ -45,14 +48,7 @@ namespace waveweb.ServerComponents
                 "SELECT Progress, Status, Message FROM JobProgress WHERE JobId = @JobId", connection);
             command.Parameters.AddWithValue("@JobId", jobId);
             await connection.OpenAsync();
-            var result = await command.ExecuteReaderAsync(System.Data.CommandBehavior.SingleRow);
-            var jobProgress = new JobProgress();
-            if(await result.ReadAsync())
-            {
-                jobProgress.Status = Enum.Parse<JobProgressStatus>(result["Status"].ToString());
-                jobProgress.Progress = (double)Convert.ChangeType(result["Progress"], typeof(double));
-                jobProgress.Message = (string)Convert.ChangeType(result["Message"], typeof(string));
-            }
+            var jobProgress = await objectMapper.ToSingleObject<JobProgress>(command);
             return jobProgress;
         }
     }
