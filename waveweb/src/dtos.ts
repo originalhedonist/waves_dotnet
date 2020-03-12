@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-11 11:59:08
+Date: 2020-03-12 10:24:01
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -132,6 +132,14 @@ export class CreateFileResponse
     public constructor(init?: Partial<CreateFileResponse>) { (Object as any).assign(this, init); }
 }
 
+export class DownloadSettingsResponse
+{
+    public downloadId: string;
+    public responseStatus: ResponseStatus;
+
+    public constructor(init?: Partial<DownloadSettingsResponse>) { (Object as any).assign(this, init); }
+}
+
 export class JobProgress
 {
     public status: JobProgressStatus;
@@ -163,13 +171,6 @@ export class TestPulseWaveformResponse
     public constructor(init?: Partial<TestPulseWaveformResponse>) { (Object as any).assign(this, init); }
 }
 
-export class UploadSettingsResponse
-{
-    public responseStatus: ResponseStatus;
-
-    public constructor(init?: Partial<UploadSettingsResponse>) { (Object as any).assign(this, init); }
-}
-
 // @Route("/createfile")
 export class CreateFileRequest implements IReturn<CreateFileResponse>
 {
@@ -184,6 +185,14 @@ export class CreateFileRequest implements IReturn<CreateFileResponse>
     public constructor(init?: Partial<CreateFileRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new CreateFileResponse(); }
     public getTypeName() { return 'CreateFileRequest'; }
+}
+
+export class UploadSettingsResponse
+{
+    public request: CreateFileRequest;
+    public responseStatus: ResponseStatus;
+
+    public constructor(init?: Partial<UploadSettingsResponse>) { (Object as any).assign(this, init); }
 }
 
 // @Route("/downloadfile/{Id}")
@@ -203,6 +212,16 @@ export class TestDownloadRequest implements IReturn<Blob>
     public constructor(init?: Partial<TestDownloadRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new Blob(); }
     public getTypeName() { return 'TestDownloadRequest'; }
+}
+
+// @Route("/downloadsettings")
+export class DownloadSettingsRequest implements IReturn<DownloadSettingsResponse>
+{
+    public request: CreateFileRequest;
+
+    public constructor(init?: Partial<DownloadSettingsRequest>) { (Object as any).assign(this, init); }
+    public createResponse() { return new DownloadSettingsResponse(); }
+    public getTypeName() { return 'DownloadSettingsRequest'; }
 }
 
 // @Route("/jobprogress")

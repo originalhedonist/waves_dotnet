@@ -1,9 +1,9 @@
 <template>
 
     <v-container fluid>
-        <v-row class="top-space">
+        <v-row>
             <v-col cols="12">
-                <v-card>
+                <v-card style="padding-top: 10px;">
                     <v-file-input label="Settings file" placeholder="Please choose a file to open settings" name="settingsfile" @change="onFileChanged" />
                 </v-card>
             </v-col>
@@ -76,7 +76,7 @@
 
         </v-expansion-panels>
 
-        <v-card style="margin-top: 20px">
+        <v-card class="top-space">
             <v-card-text>
                 <div>
                     <v-btn @click="createFile" :disabled="creatingFile">Create file</v-btn>
@@ -101,6 +101,14 @@
                 </div>
             </v-card-text>
         </v-card>
+
+        <v-card class="top-space">
+            <v-card-text>
+                <v-btn @click="downloadSettings">Download settings</v-btn>
+            </v-card-text>
+        </v-card>
+
+
     </v-container>
 </template>
 
@@ -108,11 +116,12 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, TestRequest, Variance, JobProgressStatus, UploadSettingsRequest } from '../dtos';
+    import { CreateFileRequest, TestRequest, Variance, JobProgressStatus, UploadSettingsRequest, DownloadSettingsRequest } from '../dtos';
     import ChannelEditor from '../components/ChannelEditor.vue';
     import DefaultDataCreator from '../defaultdatacreator';
     import JobProgress from '../components/JobProgress.vue';
     import JobProgressModel from '../jobprogressodel';
+import { ResponseStatus } from '@servicestack/client';
 
     @Component({
         components: {
@@ -162,14 +171,25 @@
         public onFileChanged(files: File) {
             const fileReader = new FileReader();
             fileReader.onloadend = async () => {
-                if (typeof fileReader.result === 'string') {
+                if (typeof fileReader.result === 'string') { // always should be
                     const uploadSettingsRequest = new UploadSettingsRequest({
                         settingsFile: fileReader.result,
                     });
-                    await client.post(uploadSettingsRequest);
+                    const response = await client.post(uploadSettingsRequest);
+                    if (response.request !== null) {
+                        this.Request = response.request;
+                    }
                 }
             };
             fileReader.readAsText(files);
+        }
+
+        public async downloadSettings() {
+            const downloadSettingsRequest = new DownloadSettingsRequest({
+                request: this.Request,
+            });
+            const downloadResponse = await client.post(downloadSettingsRequest);
+            window.location.href = '/downloadfile/' + downloadResponse.downloadId;
         }
     }
 </script>

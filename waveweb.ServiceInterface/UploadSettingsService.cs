@@ -1,24 +1,25 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AutoMapper;
+using Newtonsoft.Json;
 using ServiceStack;
-using System.IO;
-using System.Threading.Tasks;
+using wavegenerator.models;
 using waveweb.ServiceModel;
 
 namespace waveweb.ServiceInterface
 {
     public class UploadSettingsService : Service
     {
-        private readonly ILogger<UploadSettingsService> logger;
+        private readonly IMapper mapper;
 
-        public UploadSettingsService(ILogger<UploadSettingsService> logger)
+        public UploadSettingsService(IMapper mapper)
         {
-            this.logger = logger;
+            this.mapper = mapper;
         }
 
-        public async Task Post(UploadSettingsRequest uploadSettingsRequest)
+        public UploadSettingsResponse Post(UploadSettingsRequest uploadSettingsRequest)
         {
-            
-            logger.LogInformation($"Received settings, files = {Request.Files.Length}");
+            var settings = JsonConvert.DeserializeObject<Settings>(uploadSettingsRequest.SettingsFile);
+            var createFileRequest = mapper.Map<Settings, CreateFileRequest>(settings);
+            return new UploadSettingsResponse { Request = createFileRequest };
         }
     }
 }
