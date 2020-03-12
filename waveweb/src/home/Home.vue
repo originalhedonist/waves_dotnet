@@ -1,21 +1,21 @@
 <template>
 
     <v-container fluid>
-        <v-row>
-            <v-col cols="12">
-                <v-card style="padding-top: 10px;">
-                    <v-file-input v-model="settingsFile" label="Settings file" placeholder="Please choose a file to open settings" name="settingsfile" @change="onFileChanged" />
-                </v-card>
-                <v-snackbar top v-model="showFileLoadSuccess">
-                    File loaded successfully.
-                    <v-btn color="gray"
-                           text
-                           @click="showFileLoadSuccess = false">
-                        Close
-                    </v-btn>
-                </v-snackbar>
-            </v-col>
-        </v-row>
+        <!--<v-row>
+        <v-col cols="12">
+            <v-card style="padding-top: 10px;">
+                <v-file-input v-model="settingsFile" label="Settings file" placeholder="Please choose a file to open settings" name="settingsfile" @change="onFileChanged" />
+            </v-card>
+            <v-snackbar top v-model="showFileLoadSuccess">
+                File loaded successfully.
+                <v-btn color="gray"
+                       text
+                       @click="showFileLoadSuccess = false">
+                    Close
+                </v-btn>
+            </v-snackbar>
+        </v-col>
+    </v-row>-->
 
         <v-expansion-panels :multiple="true">
             <v-expansion-panel>
@@ -112,7 +112,26 @@
 
         <v-card class="top-space">
             <v-card-text>
-                <v-btn @click="downloadSettings">Download settings</v-btn>
+                <input type="file" accept=".json" style="display:none!important" ref="uploader" @change="onFileChanged" />
+                <v-btn @click="$refs.uploader.click()">
+                    <v-icon style="color: slategray">mdi-folder-open</v-icon>
+                    Open settings
+                </v-btn>
+
+                <v-btn @click="downloadSettings" style="margin-left:20px">
+                    <v-icon style="color: slategray">mdi-content-save</v-icon>
+                    Save settings
+                </v-btn>
+
+                <v-snackbar top v-model="showFileLoadSuccess">
+                    File loaded successfully.
+                    <v-btn color="gray"
+                           text
+                           @click="showFileLoadSuccess = false">
+                        Close
+                    </v-btn>
+                </v-snackbar>
+
             </v-card-text>
         </v-card>
 
@@ -129,6 +148,7 @@
     import DefaultDataCreator from '../defaultdatacreator';
     import JobProgress from '../components/JobProgress.vue';
     import JobProgressModel from '../jobprogressodel';
+    import FileUploader from '../fileuploader';
 
     @Component({
         components: {
@@ -177,26 +197,33 @@
             this.creatingFile = false;
         }
 
-        public onFileChanged(files: File) {
-            if (files !== null) {
+        public onFileChanged(e: Event) {
+            const target = e.target as FileUploader;
+            const files = target.files;
+            console.log('onFileChanged, target: ', target);
+            if (files !== null && files.length === 1) {
                 const fileReader = new FileReader();
                 fileReader.onloadend = async () => {
                     if (typeof fileReader.result === 'string') { // always should be
                         const uploadSettingsRequest = new UploadSettingsRequest({
                             settingsFile: fileReader.result,
                         });
-                        const response = await client.post(uploadSettingsRequest);
-                        if (response.request !== null) {
-                            this.Request = new CreateFileRequest(response.request);
-                            this.showFileLoadSuccess = true;
-                            setTimeout(() => {
-                                this.showFileLoadSuccess = false;
-                            }, 3000)
-                            this.settingsFile = null;
+                        try {
+                            const response = await client.post(uploadSettingsRequest);
+                            console.log('received response from upload file', response);
+                            if (response.request) {
+                                console.log('it has a create files request: ', response.request);
+                                this.Request = new CreateFileRequest(response.request);
+                                this.showFileLoadSuccess = true;
+                            } else {
+                                console.log('no create files request');
+                            }
+                        } finally {
+                            target.value = '';
                         }
                     }
                 };
-                fileReader.readAsText(files);
+                fileReader.readAsText(files[0]);
             }
         }
 
