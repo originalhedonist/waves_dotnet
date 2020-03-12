@@ -1,22 +1,6 @@
 <template>
 
     <v-container fluid>
-        <!--<v-row>
-        <v-col cols="12">
-            <v-card style="padding-top: 10px;">
-                <v-file-input v-model="settingsFile" label="Settings file" placeholder="Please choose a file to open settings" name="settingsfile" @change="onFileChanged" />
-            </v-card>
-            <v-snackbar top v-model="showFileLoadSuccess">
-                File loaded successfully.
-                <v-btn color="gray"
-                       text
-                       @click="showFileLoadSuccess = false">
-                    Close
-                </v-btn>
-            </v-snackbar>
-        </v-col>
-    </v-row>-->
-
         <v-expansion-panels :multiple="true">
             <v-expansion-panel>
                 <v-expansion-panel-header>
@@ -200,7 +184,6 @@
         public onFileChanged(e: Event) {
             const target = e.target as FileUploader;
             const files = target.files;
-            console.log('onFileChanged, target: ', target);
             if (files !== null && files.length === 1) {
                 const fileReader = new FileReader();
                 fileReader.onloadend = async () => {
@@ -210,13 +193,9 @@
                         });
                         try {
                             const response = await client.post(uploadSettingsRequest);
-                            console.log('received response from upload file', response);
                             if (response.request) {
-                                console.log('it has a create files request: ', response.request);
                                 this.Request = new CreateFileRequest(response.request);
                                 this.showFileLoadSuccess = true;
-                            } else {
-                                console.log('no create files request');
                             }
                         } finally {
                             target.value = '';
