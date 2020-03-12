@@ -16,12 +16,14 @@ namespace waveweb.ServiceInterface
         private readonly IUltimateContainerProvider containerProvider;
         private readonly IJobProgressProvider jobProgressProvider;
         private readonly ILogger<FileCreator> logger;
+        private readonly IOutputDirectoryProvider outputDirectoryProvider;
 
-        public FileCreator(IUltimateContainerProvider containerProvider, IJobProgressProvider jobProgressProvider, ILogger<FileCreator> logger)
+        public FileCreator(IUltimateContainerProvider containerProvider, IJobProgressProvider jobProgressProvider, ILogger<FileCreator> logger, IOutputDirectoryProvider outputDirectoryProvider)
         {
             this.containerProvider = containerProvider;
             this.jobProgressProvider = jobProgressProvider;
             this.logger = logger;
+            this.outputDirectoryProvider = outputDirectoryProvider;
         }
 
         [AutomaticRetry(Attempts = 0)]
@@ -36,12 +38,8 @@ namespace waveweb.ServiceInterface
                 container.AddInstance<IWaveFileMetadata>(data);
                 var mp3Stream = container.Resolve<Mp3Stream>();
 
-                // prepare for the file creation
-                if (!Directory.Exists(DownloadService.DownloadDir))
-                {
-                    Directory.CreateDirectory(DownloadService.DownloadDir);
-                }
-                var fullPath = Path.Combine(DownloadService.DownloadDir, $"{jobId}.mp3");
+                // prepare for the file creation                
+                var fullPath = Path.Combine(outputDirectoryProvider.GetOutputDirectory(), $"{jobId}.mp3");
 
                 // write it
                 await mp3Stream.Write(fullPath);

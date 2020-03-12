@@ -4,23 +4,25 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using wavegenerator.library;
 using waveweb.ServiceModel;
 
 namespace waveweb.ServiceInterface
 {
     public class DownloadService : Service
     {
-        public DownloadService(ILogger<DownloadService> logger)
+        public DownloadService(ILogger<DownloadService> logger, IOutputDirectoryProvider outputDirectoryProvider)
         {
             this.logger = logger;
+            this.outputDirectoryProvider = outputDirectoryProvider;
         }
 
-        public const string DownloadDir = "DownloadableFiles";
         private readonly ILogger<DownloadService> logger;
+        private readonly IOutputDirectoryProvider outputDirectoryProvider;
 
         public async Task<Stream> Get(DownloadFileRequest request)
         {
-            var filePath = Directory.GetFiles(DownloadDir, $"{request.Id}.*").FirstOrDefault();
+            var filePath = Directory.GetFiles(outputDirectoryProvider.GetOutputDirectory(), $"{request.Id}.*").FirstOrDefault();
             if (filePath == null)
             {
                 return await NotFoundFileResult.Create();
@@ -32,28 +34,6 @@ namespace waveweb.ServiceInterface
                 return new DownloadFileResult(downloadName, filePath);
             }
             
-        }
-
-        public Stream Get(TestDownloadRequest request)
-        {
-            try
-            {
-                var guid = Guid.NewGuid();
-
-                string filePath = Path.Combine(DownloadDir, guid.ToString());
-                if (!Directory.Exists(DownloadDir))
-                {
-                    Directory.CreateDirectory(DownloadDir);
-                }
-                File.WriteAllText(filePath, "hello from test download service.");
-                return new DownloadFileResult("testfile.txt", filePath);
-
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error processing TestDownloadRequest");
-                throw;
-            }
         }
     }
 }

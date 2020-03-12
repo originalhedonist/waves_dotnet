@@ -40,6 +40,7 @@ namespace wavegenerator
                     var settings = SettingsLoader.LoadAndValidateSettings(filePath);
                     var container = DependencyConfig.ConfigureContainer(settings, c =>
                     {
+                        c.AddTransient<IOutputDirectoryProvider, CurrentDirectoryProvider>();
                         c.AddInstance<IProgressReporter>(new ConsoleProgressReporter());
                     });
 
@@ -75,7 +76,11 @@ namespace wavegenerator
 
         public static async Task<string> GetName(Settings settings)
         {
-            if (settings.Naming.Specific != null)
+            if(settings.Naming == null)
+            {
+                return $"{DateTime.Now:yyyyMMdd_HHmmss}";
+            }
+            else if (settings.Naming.Specific != null)
             {
                 return settings.Naming.Specific;
             }

@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-12 10:24:01
+Date: 2020-03-12 17:01:38
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -150,15 +150,6 @@ export class JobProgress
     public constructor(init?: Partial<JobProgress>) { (Object as any).assign(this, init); }
 }
 
-export class TestResponse
-{
-    public message: string;
-    public jobId: string;
-    public responseStatus: ResponseStatus;
-
-    public constructor(init?: Partial<TestResponse>) { (Object as any).assign(this, init); }
-}
-
 export class TestPulseWaveformResponse
 {
     public success: boolean;
@@ -205,15 +196,6 @@ export class DownloadFileRequest implements IReturn<Blob>
     public getTypeName() { return 'DownloadFileRequest'; }
 }
 
-// @Route("/testdownload")
-export class TestDownloadRequest implements IReturn<Blob>
-{
-
-    public constructor(init?: Partial<TestDownloadRequest>) { (Object as any).assign(this, init); }
-    public createResponse() { return new Blob(); }
-    public getTypeName() { return 'TestDownloadRequest'; }
-}
-
 // @Route("/downloadsettings")
 export class DownloadSettingsRequest implements IReturn<DownloadSettingsResponse>
 {
@@ -232,16 +214,6 @@ export class JobProgressRequest implements IReturn<JobProgress>
     public constructor(init?: Partial<JobProgressRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new JobProgress(); }
     public getTypeName() { return 'JobProgressRequest'; }
-}
-
-// @Route("/testrequest")
-export class TestRequest implements IReturn<TestResponse>
-{
-    public chunks: number;
-
-    public constructor(init?: Partial<TestRequest>) { (Object as any).assign(this, init); }
-    public createResponse() { return new TestResponse(); }
-    public getTypeName() { return 'TestRequest'; }
 }
 
 // @Route("/testpulsewaveform")

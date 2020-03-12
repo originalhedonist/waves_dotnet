@@ -1,9 +1,6 @@
 {
   "Randomization": true,
   "NumFiles": 1,
-  "Naming": {
-    "Specific": "Test_FrequencyIndependent_NoWetnessOnLeft"
-  },
   "TrackLength": "00:01:00",
   "NumberOfChannels": 2,
   "PhaseShiftCarrier": false,
@@ -45,16 +42,16 @@
         }
       },
       "Breaks": {
-        "MinTimeSinceStartOfTrack": "00:00:30",
-        "MinTimeBetweenBreaks": "00:00:05",
-        "MaxTimeBetweenBreaks": "00:00:10",
+        "MinTimeSinceStartOfTrack": "00:01:00",
+        "MinTimeBetweenBreaks": "00:02:00",
+        "MaxTimeBetweenBreaks": "00:03:00",
         "MinLength": "00:00:02",
         "MaxLength": "00:00:05",
         "RampLength": "00:00:05"
       },
       "Rises": {
         "Count": 1,
-        "EarliestTime": "00:00:30",
+        "EarliestTime": "00:01:00",
         "LengthEach": "00:00:05",
         "Amount": 0.08
       }
@@ -103,17 +100,17 @@
         }
       },
       "Breaks": {
-        "MinTimeSinceStartOfTrack": "00:00:40",
-        "MinTimeBetweenBreaks": "00:00:05",
-        "MaxTimeBetweenBreaks": "00:00:10",
+        "MinTimeSinceStartOfTrack": "00:01:00",
+        "MinTimeBetweenBreaks": "00:02:00",
+        "MaxTimeBetweenBreaks": "00:03:00",
         "MinLength": "00:00:02",
         "MaxLength": "00:00:05",
         "RampLength": "00:00:05"
       },
       "Rises": {
         "Count": 1,
-        "EarliestTime": "00:00:40",
-        "LengthEach": "00:00:05",
+        "EarliestTime": "00:02:00",
+        "LengthEach": "00:00:15",
         "Amount": 0.08
       }
     }

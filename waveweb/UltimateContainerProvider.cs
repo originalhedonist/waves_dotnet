@@ -35,6 +35,7 @@ namespace waveweb
             a.AddTransient<Ultimate.ORM.IObjectMapper, Ultimate.ORM.ObjectMapper>();
             a.AddInstance<IConfiguration>(configuration);
             a.AddInstance<ILoggerFactory>(loggerProvider);
+            a.AddTransient<IOutputDirectoryProvider, WebOutputDirectoryProvider>();
         });
     }
 }

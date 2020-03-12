@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Linq;
 using System;
+using wavegenerator.library;
 
 namespace waveweb
 {
@@ -27,9 +28,9 @@ namespace waveweb
             services.AddTransient<IWaveformTestPulseGeneratorProvider, WaveformTestPulseGeneratorProvider>();
             services.AddTransient<IJobScheduler, JobScheduler>();
             services.AddTransient<IJobProgressProvider, JobProgressProvider>();
-            services.AddTransient<TestLongJob>();
             services.AddTransient<FileCreator>();
             services.AddTransient<IUltimateContainerProvider, UltimateContainerProvider>();
+            services.AddTransient<IOutputDirectoryProvider, WebOutputDirectoryProvider>();
             services.AddHangfire(x =>
             {
                 x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"));
@@ -49,7 +50,7 @@ namespace waveweb
         public static void DeleteOldFiles()
         {
             var limit = DateTime.Now.AddHours(24);
-            foreach (var oldFile in new DirectoryInfo("DownloadableFiles").GetFiles().Where(fi => fi.LastAccessTime < limit))
+            foreach (var oldFile in new DirectoryInfo(WebOutputDirectoryProvider.OutputDir).GetFiles().Where(fi => fi.LastAccessTime < limit))
             {
                 try { File.Delete(oldFile.FullName); } catch (Exception) { }
             }

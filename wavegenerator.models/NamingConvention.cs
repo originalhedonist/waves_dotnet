@@ -23,18 +23,19 @@ namespace wavegenerator
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var settingsModel = (Settings)validationContext.ObjectInstance;
             var namingConvention = (NamingConvention)value;
-            if(namingConvention.Specific != null && namingConvention.Strategy != null)
+            if (namingConvention != null)
             {
-                return new ValidationResult("Cannot specify both 'Specific' and 'Strategy'");
-            }
+                if (namingConvention.Specific != null && namingConvention.Strategy != null)
+                {
+                    return new ValidationResult("Cannot specify both 'Specific' and 'Strategy'");
+                }
 
-            if(namingConvention.Specific == null && namingConvention.Strategy == null)
-            {
-                return new ValidationResult("Must specify either 'Specific' or 'Strategy'");
+                if (namingConvention.Specific == null && namingConvention.Strategy == null)
+                {
+                    return new ValidationResult("Must specify either 'Specific' or 'Strategy'");
+                }
             }
-
             return ValidationResult.Success;
         }
     }

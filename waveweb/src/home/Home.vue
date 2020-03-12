@@ -4,8 +4,16 @@
         <v-row>
             <v-col cols="12">
                 <v-card style="padding-top: 10px;">
-                    <v-file-input label="Settings file" placeholder="Please choose a file to open settings" name="settingsfile" @change="onFileChanged" />
+                    <v-file-input v-model="settingsFile" label="Settings file" placeholder="Please choose a file to open settings" name="settingsfile" @change="onFileChanged" />
                 </v-card>
+                <v-snackbar top v-model="showFileLoadSuccess">
+                    File loaded successfully.
+                    <v-btn color="gray"
+                           text
+                           @click="showFileLoadSuccess = false">
+                        Close
+                    </v-btn>
+                </v-snackbar>
             </v-col>
         </v-row>
 
@@ -116,12 +124,11 @@
     import Vue from 'vue';
     import { Component, Prop, Watch } from 'vue-property-decorator';
     import { client } from '../shared';
-    import { CreateFileRequest, TestRequest, Variance, JobProgressStatus, UploadSettingsRequest, DownloadSettingsRequest } from '../dtos';
+    import { CreateFileRequest, JobProgressStatus, UploadSettingsRequest, DownloadSettingsRequest } from '../dtos';
     import ChannelEditor from '../components/ChannelEditor.vue';
     import DefaultDataCreator from '../defaultdatacreator';
     import JobProgress from '../components/JobProgress.vue';
     import JobProgressModel from '../jobprogressodel';
-import { ResponseStatus } from '@servicestack/client';
 
     @Component({
         components: {
@@ -143,6 +150,8 @@ import { ResponseStatus } from '@servicestack/client';
         public creatingFile: boolean = false;
         public fileDownloadLink: string | null = null;
         public errorMessage: string | null = null;
+        public showFileLoadSuccess: boolean = false;
+        public settingsFile: File|null = null;
 
         public Request: CreateFileRequest = new CreateFileRequest({
             trackLengthMinutes: 20,
@@ -169,19 +178,26 @@ import { ResponseStatus } from '@servicestack/client';
         }
 
         public onFileChanged(files: File) {
-            const fileReader = new FileReader();
-            fileReader.onloadend = async () => {
-                if (typeof fileReader.result === 'string') { // always should be
-                    const uploadSettingsRequest = new UploadSettingsRequest({
-                        settingsFile: fileReader.result,
-                    });
-                    const response = await client.post(uploadSettingsRequest);
-                    if (response.request !== null) {
-                        this.Request = response.request;
+            if (files !== null) {
+                const fileReader = new FileReader();
+                fileReader.onloadend = async () => {
+                    if (typeof fileReader.result === 'string') { // always should be
+                        const uploadSettingsRequest = new UploadSettingsRequest({
+                            settingsFile: fileReader.result,
+                        });
+                        const response = await client.post(uploadSettingsRequest);
+                        if (response.request !== null) {
+                            this.Request = new CreateFileRequest(response.request);
+                            this.showFileLoadSuccess = true;
+                            setTimeout(() => {
+                                this.showFileLoadSuccess = false;
+                            }, 3000)
+                            this.settingsFile = null;
+                        }
                     }
-                }
-            };
-            fileReader.readAsText(files);
+                };
+                fileReader.readAsText(files);
+            }
         }
 
         public async downloadSettings() {

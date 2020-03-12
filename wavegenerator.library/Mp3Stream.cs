@@ -13,18 +13,17 @@ namespace wavegenerator.library
     {
         private readonly WaveStream waveStream;
         private readonly IProgressReporter progressReporter;
-        private readonly ILogger logger;
+        private readonly IOutputDirectoryProvider outputDirectoryProvider;
 
-        public Mp3Stream(WaveStream waveStream, IProgressReporter progressReporter, ILoggerFactory loggerFactory)
+        public Mp3Stream(WaveStream waveStream, IProgressReporter progressReporter, IOutputDirectoryProvider outputDirectoryProvider)
         {
             this.waveStream = waveStream;
             this.progressReporter = progressReporter;
-            this.logger = loggerFactory.CreateLogger(typeof(Mp3Stream));
+            this.outputDirectoryProvider = outputDirectoryProvider;
         }
 
         public async Task Write(string filePath)
         {
-            logger.LogInformation("Creating mp3");
             try
             {
                 CheckAddBinPath();
@@ -33,9 +32,8 @@ namespace wavegenerator.library
                 await Write(fileStream);
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                logger.LogError(e, "Error creating mp3");
                 await progressReporter.ReportProgress(1, JobProgressStatus.Failed, "An error occcurred creating the file");
                 throw;
             }
@@ -43,7 +41,7 @@ namespace wavegenerator.library
 
         public async Task Write(Stream fileStream)
         {
-            string wavIntermediate = Path.Combine("DownloadableFiles", Guid.NewGuid() + ".wav");
+            string wavIntermediate = Path.Combine(outputDirectoryProvider.GetOutputDirectory(), Guid.NewGuid() + ".wav");
             try
             {
                 {
@@ -72,8 +70,6 @@ namespace wavegenerator.library
             // get current search path from environment
 
             var path = Environment.GetEnvironmentVariable("PATH") ?? "";
-            logger.LogInformation($"path = {path}");
-            logger.LogInformation($"binPath = {binPath}");
             // add 'bin' folder to search path if not already present
             if (!path.Split(Path.PathSeparator).Contains(binPath, StringComparer.CurrentCultureIgnoreCase))
             {
