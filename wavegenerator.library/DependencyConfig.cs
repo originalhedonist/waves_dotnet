@@ -13,7 +13,7 @@ namespace wavegenerator.library
             if (settings is Settings settingsV1)
             {
                 a.AddInstance(settingsV1);
-                a.AddTransient<IWaveStream, WaveStream>();
+                a.AddTransient<IWaveStream, WaveStreamV1>();
                 a.AddInstance<IWaveFileMetadata>(settingsV1);
             }
             else if (settings is SettingsV2 settingsV2)

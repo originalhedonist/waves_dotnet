@@ -12,5 +12,7 @@ namespace wavegenerator.models
 
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
         public TimeSpan TrackLength { get; set; }
+
+        public virtual short GetNumberOfChannels() => 2;
     }
 }

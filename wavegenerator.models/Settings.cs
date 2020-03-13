@@ -14,6 +14,7 @@ namespace wavegenerator.models
 
         [Range(1, 2)]
         public short NumberOfChannels { get; set; }
+        public override short GetNumberOfChannels() => NumberOfChannels;
 
         [Description("Whether the right channel's carrier signal will be phase shifted from the left's")]
         public bool PhaseShiftCarrier { get; set; }
