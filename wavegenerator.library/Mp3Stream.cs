@@ -11,11 +11,11 @@ namespace wavegenerator.library
 {
     public class Mp3Stream
     {
-        private readonly WaveStream waveStream;
+        private readonly IWaveStream waveStream;
         private readonly IProgressReporter progressReporter;
         private readonly IOutputDirectoryProvider outputDirectoryProvider;
 
-        public Mp3Stream(WaveStream waveStream, IProgressReporter progressReporter, IOutputDirectoryProvider outputDirectoryProvider)
+        public Mp3Stream(IWaveStream waveStream, IProgressReporter progressReporter, IOutputDirectoryProvider outputDirectoryProvider)
         {
             this.waveStream = waveStream;
             this.progressReporter = progressReporter;

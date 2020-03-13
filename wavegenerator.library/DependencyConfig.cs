@@ -29,7 +29,7 @@ namespace wavegenerator.library
             container.AddTransient<Randomizer>();
             container.AddTransient<FeatureProvider>();
             container.AddInstance<ISamplingFrequencyProvider>(new SamplingFrequencyProvider(44100));
-            container.AddTransient<WaveStream>();
+            container.AddTransient<IWaveStream, WaveStream>();
             container.AddTransient<Mp3Stream>();
             additionalRegistrations?.Invoke(container);
             return container;

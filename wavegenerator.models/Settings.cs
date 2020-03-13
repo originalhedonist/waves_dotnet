@@ -5,16 +5,10 @@ using System.Linq;
 
 namespace wavegenerator.models
 {
-    public class Settings : IWaveFileMetadata
+    public class Settings : SettingsBase, IWaveFileMetadata
     {
         [Description("Whether to use randomization")]
         public bool Randomization { get; set; }
-
-        [ValidateNamingConvention]
-        public NamingConvention Naming { get; set; }
-
-        [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
-        public TimeSpan TrackLength { get; set; }
 
         public double TrackLengthSeconds => TrackLength.TotalSeconds;
 

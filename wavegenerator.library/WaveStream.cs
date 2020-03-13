@@ -6,7 +6,7 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class WaveStream : IAmplitude
+    public class WaveStream : IAmplitude, IWaveStream
     {
         private const short BytesPerSample = 2;
         public double LengthSeconds { get; }
@@ -23,7 +23,7 @@ namespace wavegenerator.library
         {
             LengthSeconds = settings.TrackLength.TotalSeconds;
             Channels = settings.NumberOfChannels;
-            N = (int) (LengthSeconds * samplingFrequencyProvider.SamplingFrequency);
+            N = (int)(LengthSeconds * samplingFrequencyProvider.SamplingFrequency);
             overallDataSize = N * Channels * BytesPerSample;
             overallFileSize = overallDataSize + 44;
             if (Channels < 1 || Channels > 2) throw new InvalidOperationException("Channels must be either 1 or 2.");
@@ -52,19 +52,19 @@ namespace wavegenerator.library
             await stream.WriteAsync(overallFileSize - 8);
             await stream.WriteAsync(Encoding.ASCII.GetBytes("WAVE"));
             await stream.WriteAsync(Encoding.ASCII.GetBytes("fmt "));
-            await stream.WriteAsync((int) 16); //length of format data
-            await stream.WriteAsync((short) 1); //type of format (1 = PCM)
+            await stream.WriteAsync((int)16); //length of format data
+            await stream.WriteAsync((short)1); //type of format (1 = PCM)
             await stream.WriteAsync(Channels);
             await stream.WriteAsync(samplingFrequencyProvider.SamplingFrequency);
-            await stream.WriteAsync((int) (samplingFrequencyProvider.SamplingFrequency * BytesPerSample * Channels));
-            await stream.WriteAsync((short) (BytesPerSample * Channels));
-            await stream.WriteAsync((short) (BytesPerSample * 8)); // bits per sample
+            await stream.WriteAsync((int)(samplingFrequencyProvider.SamplingFrequency * BytesPerSample * Channels));
+            await stream.WriteAsync((short)(BytesPerSample * Channels));
+            await stream.WriteAsync((short)(BytesPerSample * 8)); // bits per sample
             await stream.WriteAsync(Encoding.ASCII.GetBytes("data"));
             await stream.WriteAsync(overallDataSize);
 
             for (var n = 0; n < N; n++)
             {
-                var t = LengthSeconds * (double) n / N;
+                var t = LengthSeconds * (double)n / N;
 
                 for (var c = 0; c < Channels; c++)
                 {
@@ -73,14 +73,14 @@ namespace wavegenerator.library
                         throw new InvalidOperationException(
                             $"Amplitude must be -1 to 1. Amplitude for n = {n}, c = {c} was {A}.");
 
-                    var a = (short) ((A + 1) * (65535f / 2) - 32768);
+                    var a = (short)((A + 1) * (65535f / 2) - 32768);
 
                     await stream.WriteAsync(a);
                 }
 
-                if((n%10000) == 0)
+                if ((n % 10000) == 0)
                 {
-                    await progressReporter.ReportProgress(((double)n / N)*0.97, JobProgressStatus.InProgress, $"Written {n:n0} of {N:n0} samples"); //allow 3% for mp3 creation
+                    await progressReporter.ReportProgress(((double)n / N) * 0.97, JobProgressStatus.InProgress, $"Written {n:n0} of {N:n0} samples"); //allow 3% for mp3 creation
                 }
             }
         }
