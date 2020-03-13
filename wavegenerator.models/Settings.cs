@@ -10,8 +10,6 @@ namespace wavegenerator.models
         [Description("Whether to use randomization")]
         public bool Randomization { get; set; }
 
-        public bool ConvertToMp3 { get; set; }
-
         [ValidateNamingConvention]
         public NamingConvention Naming { get; set; }
 
