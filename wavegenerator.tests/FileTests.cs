@@ -18,19 +18,15 @@ namespace wavegenerator.tests
         [Fact]
         public async Task Mp3ToFile()
         {
-            if(!Directory.Exists("Output"))
-            {
-                Directory.CreateDirectory("Output");
-            }
-
             var settings = SettingsLoader.LoadAndValidateSettings("Settings_FrequencyLinked.json");
             var container = DependencyConfig.ConfigureContainer(settings, c =>
             {
                 c.AddInstance<IProgressReporter>(new XUnitProgressReporter(testOutputHelper));
+                c.AddTransient<IOutputDirectoryProvider, CurrentDirectoryProvider>();
             });
 
             var mp3Stream = container.Resolve<Mp3Stream>();
-            await mp3Stream.Write("Output/TestFile.mp3");
+            await mp3Stream.Write("TestFile.mp3");
         }
     }
 }

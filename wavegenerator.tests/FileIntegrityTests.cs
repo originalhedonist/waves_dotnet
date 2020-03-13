@@ -40,6 +40,7 @@ namespace wavegenerator.tests
             var container = DependencyConfig.ConfigureContainer(settings, c =>
             {
                 c.AddInstance<IProgressReporter>(new XUnitProgressReporter(testOutputHelper));
+                c.AddTransient<IOutputDirectoryProvider, CurrentDirectoryProvider>();
             });
 
             var mp3Stream = container.Resolve<Mp3Stream>();
