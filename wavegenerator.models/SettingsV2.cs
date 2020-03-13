@@ -1,6 +1,6 @@
 ﻿namespace wavegenerator.models
 {
-    public class SettingsV2 : SettingsBase
+    public class SettingsV2 : SettingsCommon
     {
 
     }

@@ -37,7 +37,7 @@ namespace wavegenerator
                 else
                 {
                     var filePath = args.Single();
-                    var settings = SettingsLoader.LoadAndValidateSettings(filePath);
+                    var settings = await SettingsLoader.LoadAndValidateSettings(filePath);
                     var container = DependencyConfig.ConfigureContainer(settings, c =>
                     {
                         c.AddTransient<IOutputDirectoryProvider, CurrentDirectoryProvider>();
@@ -62,7 +62,7 @@ namespace wavegenerator
             }
         }
 
-        private static async Task WriteFile(IContainer componentContext, Settings settings, string name)
+        private static async Task WriteFile(IContainer componentContext, SettingsCommon settings, string name)
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}";
             var mp3Stream = componentContext.Resolve<Mp3Stream>();
@@ -74,7 +74,7 @@ namespace wavegenerator
         private static readonly Random random = new Random();
         private static readonly ConcurrentDictionary<string, string[]> nameListCache = new ConcurrentDictionary<string, string[]>();
 
-        public static async Task<string> GetName(Settings settings)
+        public static async Task<string> GetName(SettingsCommon settings)
         {
             if(settings.Naming == null)
             {
@@ -123,7 +123,7 @@ namespace wavegenerator
             return retval;
         }
 
-        public static string GetRandomNameInternal(Settings settings)
+        public static string GetRandomNameInternal(SettingsCommon settings)
         {
             var possibleNameListFiles = new[] { "female-first-names.txt", "male-first-names.txt" };
             var nameListFilesToUse = possibleNameListFiles.Where((l, i) => ((i + 1) & (int)settings.Naming.Strategy.Value) != 0).ToArray();

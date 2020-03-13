@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace wavegenerator.models
 {
-    public class SettingsBase
+    public class SettingsCommon
     {
-        public int Version { get; set; }
+        public int? Version { get; set; }
 
         [ValidateNamingConvention]
         public NamingConvention Naming { get; set; }

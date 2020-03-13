@@ -18,7 +18,7 @@ namespace wavegenerator.tests
         [Fact]
         public async Task Mp3ToFile()
         {
-            var settings = SettingsLoader.LoadAndValidateSettings("Settings_FrequencyLinked.json");
+            var settings = await SettingsLoader.LoadAndValidateSettings("Settings_FrequencyLinked.json");
             var container = DependencyConfig.ConfigureContainer(settings, c =>
             {
                 c.AddInstance<IProgressReporter>(new XUnitProgressReporter(testOutputHelper));

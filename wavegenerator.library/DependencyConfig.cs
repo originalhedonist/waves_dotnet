@@ -6,14 +6,30 @@ namespace wavegenerator.library
 {
     public class DependencyConfig
     {
-        public static IContainer ConfigureContainer(Settings settings, Action<IContainer> additionalRegistrations = null) => ConfigureContainer(a =>
+        public static IContainer ConfigureContainer(SettingsCommon settings, Action<IContainer> additionalRegistrations = null) => ConfigureContainer(a =>
         {
-            a.AddInstance(settings);
-            a.AddInstance<IWaveFileMetadata>(settings);
+            if(settings == null) throw new ArgumentNullException(nameof(settings), "Settings must be non-null");
+
+            if (settings is Settings settingsV1)
+            {
+                a.AddInstance(settingsV1);
+                a.AddTransient<IWaveStream, WaveStream>();
+                a.AddInstance<IWaveFileMetadata>(settingsV1);
+            }
+            else if (settings is SettingsV2 settingsV2)
+            {
+                a.AddInstance(settingsV2);
+                a.AddTransient<IWaveStream, WaveStreamV2>();
+            }
+            else
+            {
+                throw new ArgumentException($"Settings must be a specific version. {settings.GetType().Name} not recognized.");
+            }
+
             additionalRegistrations?.Invoke(a);
         });
 
-        public static IContainer ConfigureContainer(Action<IContainer> additionalRegistrations = null)
+        private static IContainer ConfigureContainer(Action<IContainer> additionalRegistrations = null)
         {
             var container = new Container();
             container.AddTransient<IPerChannelComponent, RiseApplier>();
@@ -29,7 +45,6 @@ namespace wavegenerator.library
             container.AddTransient<Randomizer>();
             container.AddTransient<FeatureProvider>();
             container.AddInstance<ISamplingFrequencyProvider>(new SamplingFrequencyProvider(44100));
-            container.AddTransient<IWaveStream, WaveStream>();
             container.AddTransient<Mp3Stream>();
             additionalRegistrations?.Invoke(container);
             return container;

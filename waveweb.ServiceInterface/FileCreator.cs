@@ -32,7 +32,7 @@ namespace waveweb.ServiceInterface
             try
             {
                 // set up the stack
-                var container = containerProvider.GetFullFeatureContainer();
+                var container = containerProvider.GetFullFeatureContainer(data);
                 container.AddInstance<IJobIdProvider>(new JobIdProvider { JobId = jobId });
                 container.AddInstance<Settings>(data);
                 container.AddInstance<IWaveFileMetadata>(data);

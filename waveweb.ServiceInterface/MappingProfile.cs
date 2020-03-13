@@ -81,6 +81,7 @@ namespace waveweb.ServiceInterface
                 .ForMember(d => d.Naming, c => c.Ignore())
                 .ForMember(d => d.TrackLength, c => c.MapFrom(s => TimeSpan.FromMinutes(s.TrackLengthMinutes)))
                 .ForMember(d => d.NumberOfChannels, c => c.MapFrom(s => 2))
+                .ForMember(d => d.Version, c => c.MapFrom(s => 1))
                 ;
 
             CreateMap<Settings, CreateFileRequest>()

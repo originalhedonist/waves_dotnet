@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Ultimate.DI;
 using wavegenerator.library;
+using wavegenerator.models;
 using waveweb.ServerComponents;
 using waveweb.ServiceInterface;
 
@@ -28,7 +29,7 @@ namespace waveweb
             return container;
         }
 
-        public IContainer GetFullFeatureContainer() => DependencyConfig.ConfigureContainer(a =>
+        public IContainer GetFullFeatureContainer(SettingsCommon settings) => DependencyConfig.ConfigureContainer(settings, a =>
         {
             a.AddTransient<IProgressReporter, WebProgressReporter>();
             a.AddTransient<IJobProgressProvider, JobProgressProvider>();

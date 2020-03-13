@@ -36,7 +36,7 @@ namespace wavegenerator.tests
         {
             var sha256 = SHA256.Create();
             await using var memoryStream = new MemoryStream();
-            var settings = SettingsLoader.LoadAndValidateSettings(settingsFile);
+            var settings = await SettingsLoader.LoadAndValidateSettings(settingsFile);
             var container = DependencyConfig.ConfigureContainer(settings, c =>
             {
                 c.AddInstance<IProgressReporter>(new XUnitProgressReporter(testOutputHelper));
