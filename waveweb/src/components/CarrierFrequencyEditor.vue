@@ -1,6 +1,16 @@
 ﻿<template>
     <div>
         <v-row>
+            <v-col cols="12">
+                This can be a function of:
+                <ul>
+                    <li><b>t</b> = time through track</li>
+                    <li><b>T</b> = total track time</li>
+                    <li><b>V</b> = feature value (1 in the middle of the rise of a section, 0 at the beginning/end of a section (see the graph in the 'section length' section).</li>
+                </ul>
+            </v-col>
+        </v-row>
+        <v-row>
             <template v-if="!dualChannel">
                 <v-col cols="4">
                     <v-text-field label="Left channel carrier frequency expression" v-model="carrierFrequency.left" />

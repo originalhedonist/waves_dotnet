@@ -2,7 +2,7 @@
     <v-expansion-panels>
         <v-expansion-panel>
             <v-expansion-panel-header>
-                {{title}}: progression {{variance.progression}}, randomness {{variance.randomness}}
+                {{title}}: progression {{variance.progression}}, randomness {{variance.randomness}} (click to set)
             </v-expansion-panel-header>
             <v-expansion-panel-content>
                 <VarianceEditor :variance="variance" />

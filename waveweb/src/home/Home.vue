@@ -9,7 +9,17 @@
                 <v-expansion-panel-content>
                     <v-row>
                         <v-col cols="12">
-                            <v-switch v-model="Request.randomization" label="Use randomization" />
+                            <v-layout horizontal>
+                                <v-switch v-model="Request.randomization" label="Use randomization" />
+
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon style="margin-left:10px" color="primary" v-on="on">mdi-information</v-icon>
+                                    </template>
+                                    <span>Whether to use randomization. If not, the same settings will produce the same track every time.</span>
+                                </v-tooltip>
+                            </v-layout>
+
                         </v-col>
                     </v-row>
                     <v-row>
@@ -24,28 +34,42 @@
 
                     <v-row>
                         <v-col cols="4">
-                            <v-switch v-model="Request.dualChannel" label="Independent channels"></v-switch>
+                            <v-layout horizontal>
+                                <v-switch v-model="Request.dualChannel" label="Independent channels"></v-switch>
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon style="margin-left:10px" color="primary" v-on="on">mdi-information</v-icon>
+                                    </template>
+                                    <div>When 'Off', one set of settings applies to both channels.</div>
+                                    <div>When 'On', each channel has its own settings.</div>
+                                </v-tooltip>
+
+                            </v-layout>
                         </v-col>
                         <v-col cols="4">
-                            <v-tooltip top>
-                                <template v-slot:activator="{ on }">
-                                    <v-switch v-on="on" :disabled="!Request.dualChannel" v-model="Request.phaseShiftCarrier" label="Phase shift carrier"></v-switch>
-                                </template>
-                                <div>Setting this flag means left uses sin(x) and right cos(x).</div>
-                            </v-tooltip>
-
+                            <v-layout horizontal>
+                                <v-switch v-model="Request.phaseShiftCarrier" label="Phase shift carrier"></v-switch>
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon style="margin-left:10px" color="primary" v-on="on">mdi-information</v-icon>
+                                    </template>
+                                    <div>Setting this flag means left uses sin(x) and right cos(x).</div>
+                                </v-tooltip>
+                            </v-layout>
                         </v-col>
 
                         <v-col cols="4">
-                            <v-tooltip top>
-                                <template v-slot:activator="{ on }">
-                                    <v-switch v-on="on" :disabled="!Request.dualChannel" v-model="Request.phaseShiftPulses" label="Phase shift pulses"></v-switch>
-                                </template>
-                                <div>Setting this flag means left uses sin(x) and right cos(x).</div>
-                                <div>(Ignored if custom waveform expression is provided however.)</div>
+                            <v-layout horizontal>
+                                <v-switch v-model="Request.phaseShiftPulses" label="Phase shift pulses"></v-switch>
 
-                            </v-tooltip>
-
+                                <v-tooltip top>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon style="margin-left:10px" color="primary" v-on="on">mdi-information</v-icon>
+                                    </template>
+                                    <div>Setting this flag means left uses sin(x) and right cos(x).</div>
+                                    <div>(Ignored if custom waveform expression is provided however.)</div>
+                                </v-tooltip>
+                            </v-layout>
                         </v-col>
                     </v-row>
 
@@ -155,7 +179,7 @@
         public fileDownloadLink: string | null = null;
         public errorMessage: string | null = null;
         public showFileLoadSuccess: boolean = false;
-        public settingsFile: File|null = null;
+        public settingsFile: File | null = null;
 
         public Request: CreateFileRequest = new CreateFileRequest({
             trackLengthMinutes: 20,

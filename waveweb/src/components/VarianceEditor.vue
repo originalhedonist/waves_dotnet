@@ -1,17 +1,53 @@
 ﻿<template>
     <div>
-        <v-slider v-model="variance.randomness"
-                  label="Randomness"
-                  thumb-label="always"
-                  min="0"
-                  max="1"
-                  step="0.01" />
-        <v-slider v-model="variance.progression"
-                  label="Progression"
-                  thumb-label="always"
-                  min="0"
-                  max="2"
-                  step="0.01" />
+        <v-row align="center">
+            <v-col cols="12">
+                <v-layout horizontal>
+                    <div>
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on }">
+                                <v-icon color="primary" v-on="on">mdi-information</v-icon>
+                            </template>
+                            <p><b>Progression</b> governs how the <b>maximum</b> value rises through the track:</p>
+                            <p>To have just as high max values at the start of the track as the end, set progression to zero.</p>
+                            <p>To have the max value rise linearly, set progression to 1.</p>
+                            <p>To have the max value rising faster towards the end, set progression to greater than 1.</p>
+                        </v-tooltip>
+                        <v-label>Randomness</v-label>
+                    </div>
+                    <v-slider v-model="variance.progression"
+                              thumb-label="always"
+                              min="0"
+                              max="2"
+                              step="0.01" />
+                </v-layout>
+            </v-col>
+        </v-row>
+
+
+        <v-row align="center">
+            <v-col cols="12">
+                <v-layout horizontal>
+                    <div>
+                        <v-tooltip top>
+                            <template v-slot:activator="{ on }">
+                                <v-icon color="primary" v-on="on">mdi-information</v-icon>
+                            </template>
+                            <p><b>Randomness</b> governs how likely the expected values are to be near the maximum.</p>
+                            <p>To have the values always at the maximum, set randomness to zero.</p>
+                            <p>To have the values evenly distributed between the minimum value and the maximum, set randomness to 1.</p>
+                        </v-tooltip>
+                        <v-label>Randomness</v-label>
+                    </div>
+                    <v-slider v-model="variance.randomness"
+                              thumb-label="always"
+                              min="0"
+                              max="1"
+                              step="0.01" />
+                </v-layout>
+            </v-col>
+        </v-row>
+
         <GChart type="ScatterChart"
                 :data="chartData"
                 :options="chartOptions" />
