@@ -1,6 +1,8 @@
 # waves_dotnet
 
-## Web front end for this software: https://waveweb.azurewebsites.net
+## Web front end:
+To use this software online simply go to: https://waveweb.azurewebsites.net
+You can also use this to create a settings file, save it, modify it, and then run it through the program on your own computer.
 
 
 ## To just run from the command line:
