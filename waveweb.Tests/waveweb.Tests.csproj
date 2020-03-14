@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\wavegenerator.orchestrator\wavegenerator.orchestrator.csproj" />
     <ProjectReference Include="..\waveweb.ServiceInterface\waveweb.ServiceInterface.csproj" />
     <ProjectReference Include="..\waveweb.ServiceModel\waveweb.ServiceModel.csproj" />
     <PackageReference Include="MathParser.org-mXparser" Version="4.4.2" />
