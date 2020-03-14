@@ -6,7 +6,7 @@ namespace waveweb.ServiceInterface
 {
     public interface IJobProgressProvider
     {
-        Task SetJobProgressAsync(Guid jobId, JobProgress jobProgress);
+        Task<int> SetJobProgressAsync(Guid jobId, JobProgress jobProgress);
         Task<JobProgress> GetJobProgressAsync(Guid jobId);
     }
 }

@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System;
 using wavegenerator.library;
+using Hangfire.Common;
 
 namespace waveweb
 {
@@ -31,6 +32,7 @@ namespace waveweb
             services.AddTransient<FileCreator>();
             services.AddTransient<IUltimateContainerProvider, UltimateContainerProvider>();
             services.AddTransient<IOutputDirectoryProvider, WebOutputDirectoryProvider>();
+
             services.AddHangfire(x =>
             {
                 x.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection"));
@@ -49,8 +51,16 @@ namespace waveweb
 
         public static void DeleteOldFiles()
         {
-            var limit = DateTime.Now.AddHours(24);
+            // delete all files that haven't been accessed for 24 hours
+            var limit = DateTime.Now.AddHours(-24);
             foreach (var oldFile in new DirectoryInfo(WebOutputDirectoryProvider.OutputDir).GetFiles().Where(fi => fi.LastAccessTime < limit))
+            {
+                try { File.Delete(oldFile.FullName); } catch (Exception) { }
+            }
+
+            // delete all wav files that haven't been written in half an hour
+            var wavWriteLimit = DateTime.Now.AddMinutes(-30);
+            foreach(var oldFile in new DirectoryInfo(WebOutputDirectoryProvider.OutputDir).GetFiles("*.wav").Where(fi => fi.LastWriteTime < wavWriteLimit))
             {
                 try { File.Delete(oldFile.FullName); } catch (Exception) { }
             }

@@ -2,9 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using wavegenerator.models;
 using waveweb.ServiceInterface;
-using waveweb.ServiceModel;
 
 namespace waveweb.ServerComponents
 {
@@ -19,11 +17,10 @@ namespace waveweb.ServerComponents
             this.jobProgressProvider = jobProgressProvider;
         }
 
-        public async Task ScheduleJob<TService, TData>(Guid jobId, TData data) where TService : ILongJobProcessor<TData>
+        public Task ScheduleJob<TService, TData>(Guid jobId, TData data) where TService : ILongJobProcessor<TData>
         {
             backgroundJobClient.Enqueue<TService>(s => s.Run(data, jobId, CancellationToken.None));
-            await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { Status = JobProgressStatus.InProgress, Progress = 0, Message = "Starting..." });
-            // which will get set to min of 5%
+            return Task.CompletedTask;
         }
     }
 }

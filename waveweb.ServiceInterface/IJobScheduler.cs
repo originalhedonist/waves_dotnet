@@ -1,6 +1,4 @@
-﻿using Hangfire;
-using System;
-using System.Linq.Expressions;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,7 +11,6 @@ namespace waveweb.ServiceInterface
 
     public interface ILongJobProcessor<TData>
     {
-        [AutomaticRetry(Attempts = 0)]
         Task Run(TData data, Guid jobId, CancellationToken cancellationToken);
     }
 }

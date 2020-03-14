@@ -41,8 +41,17 @@ namespace waveweb.ServiceInterface
                 // prepare for the file creation                
                 var fullPath = Path.Combine(outputDirectoryProvider.GetOutputDirectory(), $"{jobId}.mp3");
 
-                // write it
-                await mp3Stream.Write(fullPath);
+                var rowsInserted = await jobProgressProvider.SetJobProgressAsync(jobId, new JobProgress { Status = JobProgressStatus.InProgress, Progress = 0, Message = "Starting..." });
+                if (rowsInserted == 1)
+                    //this check is necessary so it doesn't restart old jobs if azure kills the service.
+                    //otherwise, hangfire would kick in when it starts again and start processing them all and it
+                    //would keep exceeding its quota again.
+                {
+                    logger.LogInformation("Inserted a row - writing file!");
+                    // write it
+                    await mp3Stream.Write(fullPath);
+                }
+                else logger.LogInformation("Didn't insert a row - not writing file");
             }
             catch (Exception ex)
             {

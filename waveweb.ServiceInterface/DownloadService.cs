@@ -31,7 +31,9 @@ namespace waveweb.ServiceInterface
             {
                 var extension = Path.GetExtension(filePath);
                 var downloadName = $"{DateTime.Now:yyyyMMdd_HHmmss}{extension}";
-                return new DownloadFileResult(downloadName, filePath);
+                var result = await DownloadFileResult.Create(downloadName, filePath);
+                File.Delete(filePath);
+                return result;
             }
             
         }

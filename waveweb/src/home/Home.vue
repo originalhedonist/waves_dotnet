@@ -112,9 +112,6 @@
                 <div v-show="jobProgressModel.jobId !== null">
                     <JobProgress :model="jobProgressModel" @complete="jobComplete" style="padding: 12px" />
                 </div>
-                <div v-show="fileDownloadLink !== null" class="top-space">
-                    <a :href="fileDownloadLink">The file was created. Click here to try to download it if it did not download automatically.</a>
-                </div>
             </v-card-text>
         </v-card>
 
@@ -176,7 +173,6 @@
         public result: string = '';
         public show: boolean = false;
         public creatingFile: boolean = false;
-        public fileDownloadLink: string | null = null;
         public errorMessage: string | null = null;
         public showFileLoadSuccess: boolean = false;
         public settingsFile: File | null = null;
@@ -198,8 +194,7 @@
                 this.errorMessage = message;
             }
             if (status === JobProgressStatus.Complete) {
-                this.fileDownloadLink = '/downloadfile/' + this.jobProgressModel.jobId;
-                window.location.href = this.fileDownloadLink; // triggers the download (doesn't navigate away)
+                window.location.href = '/downloadfile/' + this.jobProgressModel.jobId;
             }
             this.jobProgressModel.jobId = null; // stops it polling
             this.creatingFile = false;
