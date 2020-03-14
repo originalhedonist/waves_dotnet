@@ -5,7 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\wavegenerator.library.common\wavegenerator.library.common.csproj" />
     <ProjectReference Include="..\wavegenerator.models\wavegenerator.models.csproj" />
   </ItemGroup>
 

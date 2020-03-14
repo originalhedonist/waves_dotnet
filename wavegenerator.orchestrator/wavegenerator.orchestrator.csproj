@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\wavegenerator.library.common\wavegenerator.library.common.csproj" />
+    <ProjectReference Include="..\wavegenerator.library.v1\wavegenerator.library.v1.csproj" />
+    <ProjectReference Include="..\wavegenerator.library.v2\wavegenerator.library.v2.csproj" />
     <ProjectReference Include="..\wavegenerator.models\wavegenerator.models.csproj" />
   </ItemGroup>
 
