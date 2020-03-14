@@ -11,17 +11,30 @@ namespace wavegenerator.library
     public class WaveStreamV2 : WaveStreamBase, IWaveStream
     {
         private readonly SettingsV2 settings;
+
+#nullable enable
+        private readonly PulseV2WaveFile? phase;
+#nullable disable
         private readonly PulseV2WaveFile[] channels;
 
         public WaveStreamV2(SettingsV2 settings, ISamplingFrequencyProvider samplingFrequencyProvider, IProgressReporter progressReporter)
             : base(settings, samplingFrequencyProvider, progressReporter)
         {
             this.settings = settings;
+            var functions = new List<Function>();
+            var constants = new List<Constant> { new Constant("N", N) };
+            if (settings.Phase != null)
+            {
+                phase = new PulseV2WaveFile(samplingFrequencyProvider, settings.Phase, constants.ToArray(), new Function[] { });
+                functions.Add(new Function("phase_amp_l", "(1-p)/2", "p"));
+                functions.Add(new Function("phase_amp_r", "(p+1)/2", "p"));
+                functions.Add(new Function("phase_shift", "p*pi", "p"));
+            }
 
             channels = new PulseV2WaveFile[]
             {
-                new PulseV2WaveFile(samplingFrequencyProvider, settings.Right.Frequency, settings.Right.Pulse, new Constant("N", N)),
-                new PulseV2WaveFile(samplingFrequencyProvider, settings.Left.Frequency, settings.Left.Pulse, new Constant("N", N))
+                new PulseV2WaveFile(samplingFrequencyProvider, settings.Right, constants.ToArray(), functions.ToArray()),
+                new PulseV2WaveFile(samplingFrequencyProvider, settings.Left, constants.ToArray(), functions.ToArray())
             };
         }
 
@@ -37,18 +50,20 @@ namespace wavegenerator.library
         private readonly Expression pulseExpression;
 
         public PulseV2WaveFile(ISamplingFrequencyProvider samplingFrequencyProvider, 
-            string frequencyExpression, 
-            string pulseExpression,
-            params Constant[] constants) 
+            PulseSettingsV2 pulseSettings,
+            Constant[] constants,
+            Function[] functions) 
             : base(numberOfChannels: 2, phaseShiftChannels: false, samplingFrequencyProvider.SamplingFrequency)
         {
-            this.frequencyExpression = new Expression(frequencyExpression);
+            this.frequencyExpression = new Expression(pulseSettings.Frequency);
             this.frequencyExpression.addConstants(constants);
+            this.frequencyExpression.addFunctions(functions);
             this.frequencyExpression.addArguments(new Argument("t"), new Argument("n"));
             this.frequencyExpression.verifySyntax();
 
-            this.pulseExpression = new Expression(pulseExpression);
+            this.pulseExpression = new Expression(pulseSettings.Pulse);
             this.pulseExpression.addConstants(constants);
+            this.pulseExpression.addFunctions(functions);
             this.pulseExpression.addArguments(new Argument("x"));
             this.pulseExpression.verifySyntax();
         }
