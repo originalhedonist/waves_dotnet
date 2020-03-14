@@ -9,7 +9,7 @@
   "PhaseShiftPulses": true,
   "ChannelSettings": [
     {
-      "WaveformExpression": "(Math.Pow(x-(int)x, 0.5) - Math.Pow(x-(int)x, 8)) * 2/0.779282548848943 - 1",
+      "WaveformExpression": "sin(x)",
       "Sections": {
         "TotalLength": "00:01:00",
         "MinFeatureLength": "00:00:10",
