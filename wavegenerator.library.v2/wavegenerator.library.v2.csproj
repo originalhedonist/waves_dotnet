@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MathParser.org-mXparser" Version="4.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\wavegenerator.library.common\wavegenerator.library.common.csproj" />
     <ProjectReference Include="..\wavegenerator.models.common\wavegenerator.models.common.csproj" />
     <ProjectReference Include="..\wavegenerator.models.v2\wavegenerator.models.v2.csproj" />
