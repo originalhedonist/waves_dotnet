@@ -26,7 +26,12 @@ namespace waveweb.ServiceInterface
             var settings = mapper.Map<CreateFileRequest, Settings>(downloadSettingsRequest.Request);
             var downloadFileId = Guid.NewGuid();
             await using var fileStream = File.OpenWrite(Path.Combine(outputDirectoryProvider.GetOutputDirectory(), $"{downloadFileId}.json"));
-            var jsonSerializer = new JsonSerializer { Formatting = Formatting.Indented };
+            var jsonSerializer = new JsonSerializer
+            {
+                Formatting = Formatting.Indented,
+                ContractResolver = new BaseClassPropertiesFirstContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            };
             await using var textWriter = new StreamWriter(fileStream);
             jsonSerializer.Serialize(textWriter, settings);
             return new DownloadSettingsResponse { DownloadId = downloadFileId };

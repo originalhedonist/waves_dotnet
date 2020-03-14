@@ -10,7 +10,7 @@ namespace wavegenerator.models
         [Description("Whether to use randomization")]
         public bool Randomization { get; set; }
 
-        public double TrackLengthSeconds => TrackLength.TotalSeconds;
+        public double TrackLengthSeconds() => TrackLength.TotalSeconds;
 
         [Range(1, 2)]
         public short NumberOfChannels { get; set; }

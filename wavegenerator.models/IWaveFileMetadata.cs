@@ -6,6 +6,6 @@
         bool PhaseShiftCarrier { get; }
         bool PhaseShiftPulses { get; }
         bool Randomization { get; }
-        double TrackLengthSeconds { get; }
+        double TrackLengthSeconds();
     }
 }

@@ -17,7 +17,7 @@ namespace wavegenerator.library
 
         public int NumSections()
         {
-            return (int)(settings.TrackLengthSeconds / sections.TotalLength.TotalSeconds);
+            return (int)(settings.TrackLengthSeconds() / sections.TotalLength.TotalSeconds);
         }
 
         public int Section(int n)

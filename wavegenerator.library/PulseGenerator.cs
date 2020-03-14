@@ -62,6 +62,10 @@ namespace wavegenerator.library
                 };
                 waveformScript.setArgumentValue(nameof(WaveformExpressionParams.x), p.x);
                 var result = waveformScript.calculate();
+                if(double.IsNaN(result))
+                {
+                    throw new InvalidOperationException($"Waveform script returned NaN (not-a-number) for x = {p.x}{Environment.NewLine}{waveformScript.getExpressionString()}");
+                }
                 return result; // (negative, cos wetness inverts it)
             }
             else

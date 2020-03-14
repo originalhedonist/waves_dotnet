@@ -23,7 +23,7 @@ namespace waveweb.Tests
         {
             var settings = await SettingsLoader.LoadAndValidateSettings("Settings_RoundTrip.json");
             var settingsv1 = Assert.IsAssignableFrom<Settings>(settings);
-            var settingsJson = JsonConvert.SerializeObject(settings); // convert back to json, to avoid whitespace issues, etc
+            var settingsJson = JsonConvert.SerializeObject(settings, new JsonSerializerSettings { ContractResolver = new BaseClassPropertiesFirstContractResolver() }); // convert back to json, to avoid whitespace issues, etc
 
             var mappingConfig = Mapping.CreateMapperConfiguration();
             var mapper = new Mapper(mappingConfig);
@@ -31,7 +31,7 @@ namespace waveweb.Tests
             var createFileRequest = mapper.Map<Settings, CreateFileRequest>(settingsv1);
             var roundTrippedSettings = mapper.Map<CreateFileRequest, Settings>(createFileRequest);
 
-            var roundTrippedSettingsJson = JsonConvert.SerializeObject(roundTrippedSettings);
+            var roundTrippedSettingsJson = JsonConvert.SerializeObject(roundTrippedSettings, new JsonSerializerSettings { ContractResolver = new BaseClassPropertiesFirstContractResolver() });
 
             Assert.Equal(settingsJson, roundTrippedSettingsJson);
         }

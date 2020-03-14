@@ -66,7 +66,13 @@ namespace wavegenerator
         {
             var compositionName = $"{name}_{DateTime.Now.ToString("yyyyMMdd_HHmm")}";
             var mp3Stream = componentContext.Resolve<Mp3Stream>();
-            await File.WriteAllTextAsync($"{compositionName}.parameters.json", JsonConvert.SerializeObject(settings, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore } ));
+            string json = JsonConvert.SerializeObject(settings, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                ContractResolver = new BaseClassPropertiesFirstContractResolver(),
+                Formatting = Formatting.Indented
+            });
+            await File.WriteAllTextAsync($"{compositionName}.parameters.json", json);
 
             await mp3Stream.Write($"{compositionName}.mp3");
         }
