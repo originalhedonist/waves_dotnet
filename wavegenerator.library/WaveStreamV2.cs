@@ -19,4 +19,18 @@ namespace wavegenerator.library
             return Math.Sin(2 * Math.PI * 0.1 * t);
         }
     }
+
+    public class WaveStreamV2PulseComponent : FrequencyFunctionWaveFile
+    {
+        public WaveStreamV2PulseComponent(ISamplingFrequencyProvider samplingFrequencyProvider, string frequencyFunction) 
+            : base(numberOfChannels: 2, phaseShiftChannels: false, samplingFrequencyProvider.SamplingFrequency)
+        {
+
+        }
+
+        protected override Task<double> Frequency(double t, int n, int channel)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
