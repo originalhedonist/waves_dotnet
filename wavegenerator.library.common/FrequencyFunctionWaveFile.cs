@@ -8,10 +8,12 @@ namespace wavegenerator.library
         protected readonly double[] X;
         protected readonly bool PhaseShiftChannels;
         private readonly int samplingFrequency;
+        private readonly int?[] lastNCheck;
 
         protected FrequencyFunctionWaveFile(int numberOfChannels, bool phaseShiftChannels, int samplingFrequency)
         {
             X = new double[numberOfChannels];
+            lastNCheck = new int?[numberOfChannels];
             PhaseShiftChannels = phaseShiftChannels;
             this.samplingFrequency = samplingFrequency;
         }
@@ -25,6 +27,12 @@ namespace wavegenerator.library
 
         public virtual async Task<double> Amplitude(double t, int n, int channel)
         {
+            if(lastNCheck[channel] != null && lastNCheck[channel] !=  n-1)
+            {
+                throw new InvalidOperationException($"Frequency function wave file is stateful and has been calculated in the wrong order");
+            }
+            lastNCheck[channel] = n;
+
             var f = await Frequency(t, n, channel);
 
             var dx = 2 * Math.PI * f / samplingFrequency;

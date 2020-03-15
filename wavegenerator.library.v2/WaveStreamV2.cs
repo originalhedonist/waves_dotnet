@@ -29,6 +29,7 @@ namespace wavegenerator.library
                 functions.Add(new Function("phase_amp_l", "(1-p)/2", "p"));
                 functions.Add(new Function("phase_amp_r", "(p+1)/2", "p"));
                 functions.Add(new Function("phase_shift", "p*pi", "p"));
+                //functions.Add(new Function("phase", ))
             }
 
             channels = new PulseV2WaveFile[]
@@ -44,7 +45,42 @@ namespace wavegenerator.library
         }
     }
 
-    public class PulseV2WaveFile : FrequencyFunctionWaveFile
+    public class FunctionEvaluator : FunctionExtension
+    {
+        private readonly IAmplitude generator;
+
+        public FunctionEvaluator(IAmplitude generator)
+        {
+            this.generator = generator;
+        }
+
+        public double calculate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public FunctionExtension clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getParameterName(int parameterIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int getParametersNumber()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void setParameterValue(int parameterIndex, double parameterValue)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class PulseV2WaveFile : FrequencyFunctionWaveFile, FunctionExtension
     {
         private readonly Expression frequencyExpression;
         private readonly Expression pulseExpression;
@@ -83,6 +119,31 @@ namespace wavegenerator.library
             frequencyExpression.setArgumentValue("n", n);
             var val = frequencyExpression.calculateAndVerify();
             return Task.FromResult(val);
+        }
+
+        public int getParametersNumber()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void setParameterValue(int parameterIndex, double parameterValue)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string getParameterName(int parameterIndex)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double calculate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public FunctionExtension clone()
+        {
+            throw new NotImplementedException();
         }
     }
 }
