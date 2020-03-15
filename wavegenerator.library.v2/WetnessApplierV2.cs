@@ -14,7 +14,7 @@ namespace wavegenerator.library
 
         public WetnessApplierV2(IAmplitude delegation, string expressionString, Function[] functions, Constant[] constants)
         {
-            if(expressionString != null)
+            if (expressionString != null)
             {
                 this.wetnessExpression = new Expression(expressionString);
                 this.wetnessExpression.addConstants(constants);
@@ -29,18 +29,20 @@ namespace wavegenerator.library
         {
             var baseA = await delegation.Amplitude(t, n, channel);
             var apos = (1 - baseA) / 2;
-            if (wetnessExpression == null) return apos;
+            double wetnessVal;
+
+            if (wetnessExpression == null) wetnessVal = 0;
             else
             {
                 //apply wetness
                 this.wetnessExpression.setArgumentValue("t", t);
                 this.wetnessExpression.setArgumentValue("n", n);
                 this.wetnessExpression.setArgumentValue("channel", channel);
-                var wetnessVal = this.wetnessExpression.calculateAndVerify(-1, 1);
-                var dryness = 1 - wetnessVal;
-                var a = 1 - dryness * apos;
-                return a;
+                wetnessVal = this.wetnessExpression.calculateAndVerify(0, 1);
             }
+            var dryness = 1 - wetnessVal;
+            var a = 1 - dryness * apos;
+            return a;
         }
     }
 }
