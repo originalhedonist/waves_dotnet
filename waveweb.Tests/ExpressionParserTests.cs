@@ -35,5 +35,14 @@ namespace waveweb.Tests
             Assert.True(expr.checkSyntax());
             Assert.Equal(output, expr.calculate(), 8);
         }
+
+        [Fact]
+        public void ConstantValue()
+        {
+            var expr = new Expression("0.5");
+            expr.addArguments(new Argument("x"));
+            Assert.True(expr.checkSyntax());
+            Assert.Equal(0.5, expr.calculate());
+        }
     }
 }

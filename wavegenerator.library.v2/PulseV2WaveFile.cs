@@ -13,7 +13,7 @@ namespace wavegenerator.library
 
         public PulseV2WaveFile(ISamplingFrequencyProvider samplingFrequencyProvider, 
             int numberOfChannels,
-            PulseComponent component,
+            FrequencyPulse component,
             Constant[] constants,
             Function[] functions) 
             : base(numberOfChannels: numberOfChannels, phaseShiftChannels: false, samplingFrequencyProvider.SamplingFrequency)

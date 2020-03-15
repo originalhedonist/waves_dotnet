@@ -1,12 +1,10 @@
 ﻿using org.mariuszgromada.math.mxparser;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace wavegenerator.library.common
 {
-    public static class ExpressionExtensions
+    public static class ExpressionHelpers
     {
         public static double calculateAndVerify(this Expression expression)
         {
@@ -36,6 +34,15 @@ namespace wavegenerator.library.common
             }
         }
 
+        public static Function verify(this Function function)
+        {
+            if(!function.checkSyntax())
+            {
+                throw new InvalidOperationException($"Function is invalid syntax: {function.GetDebugString()}");
+            }
+            return function;
+        }
+
         public static string GetDebugString(this Expression expression)
         {
             var sw = new StringWriter();
@@ -47,5 +54,18 @@ namespace wavegenerator.library.common
             }
             return sw.ToString();
         }
+
+        public static string GetDebugString(this Function function)
+        {
+            var sw = new StringWriter();
+            sw.WriteLine(function.getFunctionName());
+            for (int i = 0; i < function.getArgumentsNumber(); i++)
+            {
+                var arg = function.getArgument(i);
+                sw.WriteLine($"{arg.getArgumentName()} = {arg.getArgumentValue()}");
+            }
+            return sw.ToString();
+        }
+
     }
 }

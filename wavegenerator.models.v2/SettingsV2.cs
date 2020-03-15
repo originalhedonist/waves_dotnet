@@ -4,18 +4,19 @@ namespace wavegenerator.models
 {
     public class SettingsV2 : SettingsCommon
     {
-        public PulseComponent Phase { get; set; }
-        public Dictionary<string, PulseSettingsV2> Channels { get; set; } // could be an array (keys don't matter), just makes the json easier to understand
+        public FrequencyPulse Phase { get; set; }
+        public Dictionary<string, ChannelSettingsV2> Channels { get; set; } // could be an array (keys don't matter), just makes the json easier to understand
     }
 
-    public class PulseSettingsV2
+    public class ChannelSettingsV2
     {
-        public PulseComponent[] Components { get; set; }
-
-        //also breaks, wetness, rises, etc.
+        public string Wetness { get; set; }
+        public FrequencyPulse Carrier { get; set; }
+        public FrequencyPulse[] Components { get; set; }
+        //also breaks, rises, etc.
     }
 
-    public class PulseComponent
+    public class FrequencyPulse
     {
         public string Frequency { get; set; }
         public string Pulse { get; set; }

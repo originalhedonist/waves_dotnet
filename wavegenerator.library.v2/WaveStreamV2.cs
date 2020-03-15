@@ -7,44 +7,41 @@ using wavegenerator.models;
 
 namespace wavegenerator.library
 {
+
     public class WaveStreamV2 : WaveStreamBase, IWaveStream
     {
-        private readonly SettingsV2 settings;
-
 #nullable enable
         private readonly PulseV2WaveFile? phase;
 #nullable disable
-        private readonly PulseV2WaveFile[][] channelComponents;
+        private readonly IAmplitude[] channelComponents;
 
         public WaveStreamV2(SettingsV2 settings, ISamplingFrequencyProvider samplingFrequencyProvider, IProgressReporter progressReporter)
             : base(settings, samplingFrequencyProvider, progressReporter)
         {
-            this.settings = settings;
             var functions = new List<Function>();
             var constants = new List<Constant> { new Constant("N", N) };
             if (settings.Phase != null)
             {
                 phase = new PulseV2WaveFile(samplingFrequencyProvider, numberOfChannels: settings.Channels.Count, settings.Phase, constants.ToArray(), new Function[] { });
-                functions.Add(new Function("phase_amp_l", "(1-p)/2", "p"));
-                functions.Add(new Function("phase_amp_r", "(p+1)/2", "p"));
-                functions.Add(new Function("phase_shift", "p*pi", "p"));
-                functions.Add(new Function("phase", new FunctionEvaluator(phase)));
+                functions.Add(new Function("phase_amp_l", "(1-p)/2", "p").verify());
+                functions.Add(new Function("phase_amp_r", "(p+1)/2", "p").verify());
+                functions.Add(new Function("phase_shift", "p*pi", "p").verify());
+                functions.Add(new Function("phase", new FunctionEvaluator(phase)).verify());
             }
+
+            IAmplitude MakeChannelComponent(FrequencyPulse component) => new PulseV2WaveFile(samplingFrequencyProvider, numberOfChannels: settings.Channels.Count, component, constants.ToArray(), functions.ToArray());
 
             channelComponents = settings.Channels.Values.Select(channel => 
-                channel.Components.Select(component => 
-                    new PulseV2WaveFile(samplingFrequencyProvider, numberOfChannels:settings.Channels.Count, component, constants.ToArray(), functions.ToArray())
-                    ).ToArray()).ToArray();
+            {
+                var preWetnessComponents = new AmplitudeAggregator(channel.Components.Select(MakeChannelComponent).ToArray());
+                var wetnessApplier = new WetnessApplierV2(preWetnessComponents, channel.Wetness, functions.ToArray(), constants.ToArray());
+
+                var carrierApplier = MakeChannelComponent(channel.Carrier);
+                var postWetnessComponents = new AmplitudeAggregator(new[] { carrierApplier, wetnessApplier });
+                return postWetnessComponents;
+            }).ToArray();
         }
 
-        public override async Task<double> Amplitude(double t, int n, int channel)
-        {
-            double a = 1;
-            foreach(var component in channelComponents[channel])
-            {
-                a *= await component.Amplitude(t, n, channel);
-            }
-            return a;
-        }
+        public override Task<double> Amplitude(double t, int n, int channel) => channelComponents[channel].Amplitude(t, n, channel);
     }
 }
