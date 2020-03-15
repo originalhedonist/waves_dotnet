@@ -51,7 +51,7 @@ namespace wavegenerator.library
             return baseA;
         }
 
-        protected override async Task<double> GetWaveformSample(double[] x, bool phaseShiftChannels, int channel)
+        protected override async Task<double> GetWaveformSample(double[] x, bool phaseShiftChannels, double t, int n, int channel)
         {
             if (waveformScript != null)
             {
@@ -66,11 +66,11 @@ namespace wavegenerator.library
                 {
                     throw new InvalidOperationException($"Waveform script returned NaN (not-a-number) for x = {p.x}{Environment.NewLine}{waveformScript.getExpressionString()}");
                 }
-                return result; // (negative, cos wetness inverts it)
+                return result;
             }
             else
             {
-                return await base.GetWaveformSample(x, phaseShiftChannels, channel);
+                return await base.GetWaveformSample(x, phaseShiftChannels, t, n, channel);
             }
         }
 

@@ -1,13 +1,21 @@
-﻿namespace wavegenerator.models
+﻿using System.Collections.Generic;
+
+namespace wavegenerator.models
 {
     public class SettingsV2 : SettingsCommon
     {
-        public PulseSettingsV2 Phase { get; set; }
-        public PulseSettingsV2 Left { get; set; }
-        public PulseSettingsV2 Right { get; set; }
+        public PulseComponent Phase { get; set; }
+        public Dictionary<string, PulseSettingsV2> Channels { get; set; } // could be an array (keys don't matter), just makes the json easier to understand
     }
 
     public class PulseSettingsV2
+    {
+        public PulseComponent[] Components { get; set; }
+
+        //also breaks, wetness, rises, etc.
+    }
+
+    public class PulseComponent
     {
         public string Frequency { get; set; }
         public string Pulse { get; set; }
