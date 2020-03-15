@@ -1,0 +1,39 @@
+{
+  "Version": 2,
+  "Naming": {
+    "Specific": "UniDiStriker"
+  },
+  "TrackLength": "00:00:30",
+  "Phase": {
+    "Frequency": "0.2",
+    "Pulse": "sin(x)*sgn(cos(x))"
+  },
+  "Channels": {
+    "Left": {
+      "Wetness": "0",
+      "Carrier": {
+        "Frequency": "800",
+        "Pulse": "sin(x)"
+      },
+      "Components": [
+        {
+          "Frequency": "1/30",
+          "Pulse": "(((sin(x)*sgn(cos(x))+1)/2)^0.2) * phase_amp_l(phase(t,n,channel))"
+        }
+      ]
+    },
+    "Right": {
+      "Wetness": "0",
+      "Carrier": {
+        "Frequency": "800",
+        "Pulse": "sin(x + phase_shift(phase(t,n,channel)))"
+      },
+      "Components": [
+        {
+          "Frequency": "1/30",
+          "Pulse": "(((sin(x)*sgn(cos(x))+1)/2)^0.2) * phase_amp_r(phase(t,n,channel))"
+        }
+      ]
+    }
+  }
+}

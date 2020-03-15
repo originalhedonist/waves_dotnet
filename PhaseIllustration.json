@@ -1,0 +1,25 @@
+{
+  "Version": 2,
+  "Naming": {
+    "Specific": "Test"
+  },
+  "TrackLength": "00:00:30",
+  "Phase": {
+    "Frequency": "0.2",
+    "Pulse": "sin(x)*sgn(cos(x))"
+  },
+  "Channels": {
+    "Single": {
+      "Carrier": {
+        "Frequency": "800",
+        "Pulse": "1"
+      },
+      "Components": [
+        {
+          "Frequency": "0.1",
+          "Pulse": "phase(t,n,channel)"
+        }
+      ]
+    }
+  }
+}

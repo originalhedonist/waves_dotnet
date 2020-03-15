@@ -38,7 +38,7 @@ namespace wavegenerator.library
                 this.wetnessExpression.setArgumentValue("t", t);
                 this.wetnessExpression.setArgumentValue("n", n);
                 this.wetnessExpression.setArgumentValue("channel", channel);
-                wetnessVal = this.wetnessExpression.calculateAndVerify(0, 1);
+                wetnessVal = this.wetnessExpression.calculateAndVerify(-1, 1);
             }
             var dryness = 1 - wetnessVal;
             var a = 1 - dryness * apos;
