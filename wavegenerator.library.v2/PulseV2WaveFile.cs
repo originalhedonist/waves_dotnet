@@ -33,7 +33,7 @@ namespace wavegenerator.library
 
         protected override Task<double> GetWaveformSample(double[] x, bool phaseShiftChannels, double t, int n, int channel)
         {
-            double xparam = x[channel] / (2 * Math.PI);
+            double xparam = x[channel];
             this.pulseExpression.setArgumentValue("x", xparam);
             this.pulseExpression.setArgumentValue("t", t);
             this.pulseExpression.setArgumentValue("n", n);

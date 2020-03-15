@@ -11,7 +11,7 @@ namespace wavegenerator.library.common
             var v = expression.calculate();
             if(double.IsNaN(v))
             {
-                throw new InvalidOperationException($"Expression returned NaN (not-a-number): {expression.GetDebugString()}");
+                throw new WaveGeneratorException($"Expression returned NaN (not-a-number): {expression.GetDebugString()}");
             }
             return v;
         }
@@ -21,7 +21,7 @@ namespace wavegenerator.library.common
             var v = expression.calculateAndVerify();
             if(v < min || v > max)
             {
-                throw new InvalidOperationException($"Expression result was out of range:\n{v}\n{expression.GetDebugString()}");
+                throw new WaveGeneratorException($"Expression result was out of range:\n{v}\n{expression.GetDebugString()}");
             }
             return v;
         }
@@ -30,7 +30,7 @@ namespace wavegenerator.library.common
         {
             if(!expression.checkSyntax())
             {
-                throw new InvalidOperationException($"Expression is invalid syntax: {expression.GetDebugString()}");
+                throw new WaveGeneratorException($"Expression is invalid syntax: {expression.GetDebugString()}");
             }
         }
 
@@ -38,7 +38,7 @@ namespace wavegenerator.library.common
         {
             if(!function.checkSyntax())
             {
-                throw new InvalidOperationException($"Function is invalid syntax: {function.GetDebugString()}");
+                throw new WaveGeneratorException($"Function is invalid syntax: {function.GetDebugString()}");
             }
             return function;
         }

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Ultimate.DI;
 using wavegenerator.library;
+using wavegenerator.library.common;
 using wavegenerator.models;
 
 namespace wavegenerator
@@ -56,7 +57,8 @@ namespace wavegenerator
             }
             catch (Exception ex)
             {
-                ConsoleWriter.WriteLine(ex.Message, ConsoleColor.Red);
+                var exceptionToReport = (ex.GetBaseException() as WaveGeneratorException) ?? ex;
+                ConsoleWriter.WriteLine(exceptionToReport.Message, ConsoleColor.Red);
                 Console.WriteLine();
                 Console.WriteLine($"If the program will not accept the settings file you are using, please go to https://github.com/originalhedonist/waves_dotnet/issues and create an issue, attaching the file, and/or email originalhedonist@gmail.com, and I will convert the file into a format that can be read by the current version of the program for you. ");
             }
