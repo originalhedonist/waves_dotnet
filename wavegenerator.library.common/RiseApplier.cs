@@ -13,7 +13,7 @@ namespace wavegenerator.library
         private readonly RisesModel riseModel;
         private readonly Rise[] rises;
 
-        public RiseApplier(SettingsCommon settings, IGetRandom randomizer, RisesModel riseModel)
+        public RiseApplier(SettingsCommon settings, RisesModel riseModel, IGetRandom randomizer)
         {
             this.settings = settings;
             this.randomizer = randomizer;

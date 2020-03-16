@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="automapper" Version="9.0.0" />
     <PackageReference Include="hangfire" Version="1.7.9" />
+    <PackageReference Include="microsoft.aspnet.webapi.client" Version="5.2.7" />
     <PackageReference Include="ServiceStack" Version="5.*" />
     <PackageReference Include="ultimate.di" Version="1.0.1" />
   </ItemGroup>

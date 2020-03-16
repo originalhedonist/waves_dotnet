@@ -154,7 +154,10 @@
     import JobProgress from '../components/JobProgress.vue';
     import JobProgressModel from '../jobprogressodel';
     import FileUploader from '../fileuploader';
+    import '@/grecaptcha';
+    import GRecaptchaObject from '@/grecaptcha';
 
+    declare var grecaptcha: GRecaptchaObject;
     @Component({
         components: {
             ChannelEditor,
@@ -184,9 +187,21 @@
         });
 
         public async createFile() {
-            this.creatingFile = true;
-            const response = await client.post(this.Request);
-            this.jobProgressModel.jobId = response.jobId; // start polling
+            console.log(grecaptcha);
+            //const gresp = await grecaptcha.execute('6LeRm-EUAAAAAMHH_tHu2B_zX7MwN-1ktSkyf4XI', { action: 'homepage' }).;
+            //console.log('gresp = ', gresp);
+
+            if (false) {
+                //this.Request.recaptchaToken = gresp;
+                this.creatingFile = true;
+                try {
+                    const response = await client.post(this.Request);
+                    this.jobProgressModel.jobId = response.jobId; // start polling
+                } catch (error) {
+                    this.creatingFile = false;
+                    this.jobProgressModel.jobId = null;
+                }
+            }
         }
 
         public jobComplete(status: JobProgressStatus, message: string) {

@@ -1,0 +1,3 @@
+﻿import GRecaptchaObject from "./grecaptcha";
+
+

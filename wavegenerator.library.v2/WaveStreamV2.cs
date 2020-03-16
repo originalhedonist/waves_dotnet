@@ -14,7 +14,6 @@ namespace wavegenerator.library
         private readonly PulseV2WaveFile? phase;
 #nullable disable
         private readonly IAmplitude[] channelComponents;
-        private readonly IGetRandom randomizer;
 
         public WaveStreamV2(SettingsV2 settings, ISamplingFrequencyProvider samplingFrequencyProvider, IProgressReporter progressReporter, IGetRandom randomizer)
             : base(settings, samplingFrequencyProvider, progressReporter)
@@ -33,15 +32,15 @@ namespace wavegenerator.library
             IAmplitude MakeChannelComponent(FrequencyPulse component) => new PulseV2WaveFile(samplingFrequencyProvider, numberOfChannels: settings.Channels.Count, component, constants.ToArray(), functions.ToArray());
 
             var breakApplier = new BreakApplier(settings, settings.Breaks, randomizer); // one for all channels
+            var riseApplier = new RiseApplier(settings, settings.Rises, randomizer);
             channelComponents = settings.Channels.Values.Select(channel => 
             {
                 var preWetnessComponents = new AmplitudeAggregator(channel.Components.Select(MakeChannelComponent).ToArray());
                 var wetnessApplier = new WetnessApplierV2(preWetnessComponents, channel.Wetness, functions.ToArray(), constants.ToArray());
                 var carrierApplier = MakeChannelComponent(channel.Carrier);
-                var postWetnessComponents = new AmplitudeAggregator(new[] { carrierApplier, wetnessApplier, breakApplier });
+                var postWetnessComponents = new AmplitudeAggregator(new[] { carrierApplier, wetnessApplier, breakApplier, riseApplier });
                 return postWetnessComponents;
             }).ToArray();
-            this.randomizer = randomizer;
         }
 
         public override Task<double> Amplitude(double t, int n, int channel) => channelComponents[channel].Amplitude(t, n, channel);

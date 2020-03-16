@@ -87,7 +87,9 @@ namespace waveweb.ServiceInterface
             CreateMap<Settings, CreateFileRequest>()
                 .ForMember(d => d.DualChannel, c => c.MapFrom(s => s.ChannelSettings.Length > 1))
                 .ForMember(d => d.Channel0, c => c.MapFrom(s => s.ChannelSettings.FirstOrDefault()))
-                .ForMember(d => d.Channel1, c => c.MapFrom(s => s.ChannelSettings.Skip(1).FirstOrDefault())); // null if only one channel
-        }
+                .ForMember(d => d.Channel1, c => c.MapFrom(s => s.ChannelSettings.Skip(1).FirstOrDefault())) // null if only one channel
+                .ForMember(d => d.RecaptchaToken, c => c.Ignore())
+                ;
+        }   
     }
 }

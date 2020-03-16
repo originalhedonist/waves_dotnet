@@ -1,24 +1,10 @@
 {
   "Version": 2,
   "Naming": {
-    "Specific": "BiDiStriker"
+    "Specific": "BiDiStrikerDemo"
   },
-  "TrackLength": "00:45:00",
+  "TrackLength": "00:05:00",
   "Randomization": true,
-  "Breaks": {
-    "MinTimeSinceStartOfTrack": "00:10:00",
-    "MinTimeBetweenBreaks": "00:05:00",
-    "MaxTimeBetweenBreaks": "00:30:00",
-    "MinLength": "00:00:05",
-    "MaxLength": "00:00:30",
-    "RampLength": "00:00:05"
-  },
-  "Rises": {
-    "Count": 3,
-    "EarliestTime": "00:10:00",
-    "LengthEach": "00:00:20",
-    "Amount": 0.08
-  },
   "Phase": {
     "Frequency": "1/4",
     "Pulse": "sin(x)"

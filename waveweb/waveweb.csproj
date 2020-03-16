@@ -1,32 +1,30 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-  
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <TypeScriptToolsVersion>3.7</TypeScriptToolsVersion>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <Platforms>AnyCPU;x86</Platforms>
+    <UserSecretsId>7e7b74f4-f2f7-487c-81f3-29bd582dab8a</UserSecretsId>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
-  
   <ItemGroup>
     <None Remove="src\defaultdatacreator.ts" />
     <None Remove="src\fileuploader.ts" />
+    <None Remove="src\grecaptcha.ts" />
+    <None Remove="src\grecaptchaglobal.ts" />
     <None Remove="src\jobprogressodel.ts" />
     <None Remove="src\plugins\vuetify.ts" />
     <None Remove="src\vue-google-charts.d.ts" />
   </ItemGroup>
-  
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
-  
   <ItemGroup>
     <PackageReference Include="hangfire.aspnetcore" Version="1.7.9" />
     <PackageReference Include="hangfire.core" Version="1.7.9" />
@@ -37,24 +35,26 @@
     <PackageReference Include="ultimate.di" Version="1.0.1" />
     <PackageReference Include="ultimate.orm" Version="1.0.0" />
   </ItemGroup>
-  
   <ItemGroup>
     <ProjectReference Include="..\wavegenerator\wavegenerator.csproj" />
     <ProjectReference Include="..\waveweb.ServiceInterface\waveweb.ServiceInterface.csproj" />
     <ProjectReference Include="..\waveweb.ServiceModel\waveweb.ServiceModel.csproj" />
   </ItemGroup>
-  
   <ItemGroup>
     <TypeScriptCompile Include="src\defaultdatacreator.ts" />
     <TypeScriptCompile Include="src\fileuploader.ts" />
+    <TypeScriptCompile Include="src\grecaptcha.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="src\grecaptchaglobal.ts" />
     <TypeScriptCompile Include="src\jobprogressodel.ts" />
     <TypeScriptCompile Include="src\vue-google-charts.d.ts" />
     <TypeScriptCompile Include="src\plugins\vuetify.ts" />
   </ItemGroup>
-
   <Target Name="OnFirstUse" BeforeTargets="Build" Condition=" !Exists('wwwroot\dist') ">
-    <Exec Command="node --version" ContinueOnError="true"><Output TaskParameter="ExitCode" PropertyName="ErrorCode" /></Exec>
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
     <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
   </Target>
-
 </Project>

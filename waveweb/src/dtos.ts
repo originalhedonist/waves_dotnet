@@ -1,5 +1,5 @@
 /* Options:
-Date: 2020-03-12 17:01:38
+Date: 2020-03-16 13:00:16
 Version: 5.81
 Tip: To override a DTO option, remove "//" prefix before updating
 BaseUrl: https://localhost:5001
@@ -172,6 +172,7 @@ export class CreateFileRequest implements IReturn<CreateFileResponse>
     public phaseShiftPulses: boolean;
     public channel0: ChannelSettings;
     public channel1: ChannelSettings;
+    public recaptchaToken: string;
 
     public constructor(init?: Partial<CreateFileRequest>) { (Object as any).assign(this, init); }
     public createResponse() { return new CreateFileResponse(); }

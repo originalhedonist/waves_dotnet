@@ -14,5 +14,6 @@ namespace waveweb.ServiceModel
         public bool PhaseShiftPulses { get; set; }
         public ChannelSettings Channel0 { get; set; }
         public ChannelSettings Channel1 { get; set; }
+        public string RecaptchaToken { get; set; }
     }
 }

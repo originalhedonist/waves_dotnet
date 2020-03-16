@@ -32,6 +32,7 @@ namespace waveweb
             services.AddTransient<FileCreator>();
             services.AddTransient<IUltimateContainerProvider, UltimateContainerProvider>();
             services.AddTransient<IOutputDirectoryProvider, WebOutputDirectoryProvider>();
+            services.AddSingleton<RecaptchaVerifier>();
 
             services.AddHangfire(x =>
             {
@@ -53,7 +54,9 @@ namespace waveweb
         {
             // delete all files that haven't been accessed for 24 hours
             var limit = DateTime.Now.AddHours(-24);
-            foreach (var oldFile in new DirectoryInfo(WebOutputDirectoryProvider.OutputDir).GetFiles().Where(fi => fi.LastAccessTime < limit))
+            var directoryProvider = new WebOutputDirectoryProvider();
+
+            foreach (var oldFile in new DirectoryInfo(directoryProvider.GetOutputDirectory()).GetFiles().Where(fi => fi.LastAccessTime < limit))
             {
                 try { File.Delete(oldFile.FullName); } catch (Exception) { }
             }
@@ -69,19 +72,25 @@ namespace waveweb
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables();
+
+
             if (env.IsDevelopment())
             {
                 logger.LogInformation("In development environment");
                 app.UseDeveloperExceptionPage();
+                configBuilder.AddUserSecrets<Startup>();
             }
 
+            Configuration = configBuilder.Build();
             app.UseServiceStack(new AppHost
             {
                 AppSettings = new NetCoreAppSettings(Configuration)
             });
-
-            //
-
         }
     }
 
