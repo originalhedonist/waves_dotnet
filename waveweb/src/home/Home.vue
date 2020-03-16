@@ -155,7 +155,7 @@
     import JobProgressModel from '../jobprogressodel';
     import FileUploader from '../fileuploader';
     import '@/grecaptcha';
-    import GRecaptchaObject from '@/grecaptcha';
+    import GRecaptchaObject from '../grecaptcha';
 
     declare var grecaptcha: GRecaptchaObject;
     @Component({
@@ -187,12 +187,9 @@
         });
 
         public async createFile() {
-            console.log(grecaptcha);
-            //const gresp = await grecaptcha.execute('6LeRm-EUAAAAAMHH_tHu2B_zX7MwN-1ktSkyf4XI', { action: 'homepage' }).;
-            //console.log('gresp = ', gresp);
-
-            if (false) {
-                //this.Request.recaptchaToken = gresp;
+            grecaptcha.execute('6LeRm-EUAAAAAMHH_tHu2B_zX7MwN-1ktSkyf4XI', { action: 'createFile' }).then(async (token) => {
+                console.log('the token is:', token);
+                this.Request.recaptchaToken = token;
                 this.creatingFile = true;
                 try {
                     const response = await client.post(this.Request);
@@ -201,7 +198,7 @@
                     this.creatingFile = false;
                     this.jobProgressModel.jobId = null;
                 }
-            }
+            });
         }
 
         public jobComplete(status: JobProgressStatus, message: string) {

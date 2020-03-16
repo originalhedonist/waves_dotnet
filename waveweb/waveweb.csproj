@@ -16,8 +16,6 @@
   <ItemGroup>
     <None Remove="src\defaultdatacreator.ts" />
     <None Remove="src\fileuploader.ts" />
-    <None Remove="src\grecaptcha.ts" />
-    <None Remove="src\grecaptchaglobal.ts" />
     <None Remove="src\jobprogressodel.ts" />
     <None Remove="src\plugins\vuetify.ts" />
     <None Remove="src\vue-google-charts.d.ts" />
@@ -43,10 +41,6 @@
   <ItemGroup>
     <TypeScriptCompile Include="src\defaultdatacreator.ts" />
     <TypeScriptCompile Include="src\fileuploader.ts" />
-    <TypeScriptCompile Include="src\grecaptcha.ts">
-      <SubType>Code</SubType>
-    </TypeScriptCompile>
-    <TypeScriptCompile Include="src\grecaptchaglobal.ts" />
     <TypeScriptCompile Include="src\jobprogressodel.ts" />
     <TypeScriptCompile Include="src\vue-google-charts.d.ts" />
     <TypeScriptCompile Include="src\plugins\vuetify.ts" />
