@@ -19,10 +19,12 @@ namespace waveweb.ServiceInterface
         public async Task<bool> VerifyAsync(string userResponse, string remoteIp)
         {
             var secret = configuration.GetValue<string>("Recaptcha:SecretKey");
-            var formData = new MultipartFormDataContent();
-            formData.Add(new StringContent(remoteIp), "remoteip");
-            formData.Add(new StringContent(userResponse), "response");
-            formData.Add(new StringContent(secret), "secret");
+            var formData = new MultipartFormDataContent
+            {
+                { new StringContent(remoteIp), "remoteip" },
+                { new StringContent(userResponse), "response" },
+                { new StringContent(secret), "secret" }
+            };
             var response = await recaptchaClient.PostAsync("https://www.google.com/recaptcha/api/siteverify", formData);
             response.EnsureSuccessStatusCode();
             var recaptchaResponse = await response.Content.ReadAsAsync<RecaptchaResonse>();
