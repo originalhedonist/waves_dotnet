@@ -1,5 +1,6 @@
 ﻿using System;
 using Ultimate.DI;
+using wavegenerator.library.common;
 using wavegenerator.models;
 
 namespace wavegenerator.library
@@ -43,6 +44,7 @@ namespace wavegenerator.library
             container.AddTransient<ChannelSplitter>();
             container.AddTransient<ChannelComponentStack>();
             container.AddTransient<Randomizer>();
+            container.AddTransient<IGetRandom, Randomizer>();
             container.AddTransient<FeatureProvider>();
             container.AddInstance<ISamplingFrequencyProvider>(new SamplingFrequencyProvider(44100));
             container.AddTransient<Mp3Stream>();

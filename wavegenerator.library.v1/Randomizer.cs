@@ -1,9 +1,10 @@
 ﻿using System;
+using wavegenerator.library.common;
 using wavegenerator.models;
 
 namespace wavegenerator.library
 {
-    public class Randomizer
+    public class Randomizer : IGetRandom
     {
         private readonly Random random = new Random();
         private readonly IWaveFileMetadata waveFileMetadata;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using wavegenerator.library.common;
 using wavegenerator.models;
 
 namespace wavegenerator.library
@@ -9,10 +10,10 @@ namespace wavegenerator.library
     public class BreakApplier : IPerChannelComponent
     {
         private readonly IWaveFileMetadata settings;
-        private readonly Randomizer randomizer;
+        private readonly IGetRandom randomizer;
         private readonly Break[] breaks;
 
-        public BreakApplier(IWaveFileMetadata settings, BreaksModel breaksSettings, Randomizer randomizer)
+        public BreakApplier(IWaveFileMetadata settings, BreaksModel breaksSettings, IGetRandom randomizer)
         {
             this.settings = settings;
             this.randomizer = randomizer;
