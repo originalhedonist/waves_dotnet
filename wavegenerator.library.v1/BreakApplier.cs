@@ -8,11 +8,11 @@ namespace wavegenerator.library
 {
     public class BreakApplier : IPerChannelComponent
     {
-        private readonly Settings settings;
+        private readonly IWaveFileMetadata settings;
         private readonly Randomizer randomizer;
         private readonly Break[] breaks;
 
-        public BreakApplier(Settings settings, BreaksModel breaksSettings, Randomizer randomizer)
+        public BreakApplier(IWaveFileMetadata settings, BreaksModel breaksSettings, Randomizer randomizer)
         {
             this.settings = settings;
             this.randomizer = randomizer;
@@ -21,7 +21,6 @@ namespace wavegenerator.library
 
         public Task<double> Amplitude(double t, int n, int channel)
         {
-
             var brk = breaks.FirstOrDefault(b => b.IsWithin(t));
             var att = brk?.Attenuation(t) ?? 1;
             return Task.FromResult(att);

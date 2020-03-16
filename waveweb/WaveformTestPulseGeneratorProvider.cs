@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System;
 using Ultimate.DI;
 using wavegenerator.library;
 using wavegenerator.models;
@@ -23,7 +24,8 @@ namespace waveweb
             var pulseFrequencyModel = mapper.Map<PulseFrequency, PulseFrequencyModel>(testPulseWaveformRequest.PulseFrequency);
             var sectionsModel = mapper.Map<Sections, SectionsModel>(testPulseWaveformRequest.Sections);
             var waveformExpressionProvider = new WaveformExpressionProvider(testPulseWaveformRequest.WaveformExpression);
-            var waveFileMetadata = new WavefileMetadata(numberOfChannels: 1, phaseShiftCarrier: false, phaseShiftPulses: false, randomization: false, trackLengthSeconds: testPulseWaveformRequest.Sections.SectionLengthSeconds);
+            var trackLength = TimeSpan.FromSeconds(testPulseWaveformRequest.Sections.SectionLengthSeconds);
+            var waveFileMetadata = new WavefileMetadata(numberOfChannels: 1, phaseShiftCarrier: false, phaseShiftPulses: false, randomization: false, trackLength: trackLength);
             var featureChooser = new AlwaysFeatureChooser(parameters.ChooseFeature);
             var samplingFrequencyProvider = new SamplingFrequencyProvider(parameters.SamplingFrequency);
 

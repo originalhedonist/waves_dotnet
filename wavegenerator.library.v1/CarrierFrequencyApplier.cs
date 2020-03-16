@@ -38,7 +38,7 @@ namespace wavegenerator.library
             var p = new CarrierFrequencyExpressionParams
             {
                 t = t,
-                T = metadata.TrackLengthSeconds(),
+                T = metadata.TrackLength.TotalSeconds,
                 v = featureProvider.FeatureValue(t, n, 0, 1)
             };
             script.setArgumentValue(nameof(CarrierFrequencyExpressionParams.t), p.t);

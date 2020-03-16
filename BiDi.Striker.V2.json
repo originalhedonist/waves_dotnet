@@ -3,7 +3,15 @@
   "Naming": {
     "Specific": "BiDiStriker"
   },
-  "TrackLength": "00:00:30",
+  "TrackLength": "00:01:00",
+  "Breaks": {
+    "MinTimeSinceStartOfTrack": "00:00:00",
+    "MinTimeBetweenBreaks": "00:05:00",
+    "MaxTimeBetweenBreaks": "00:30:00",
+    "MinLength": "00:00:02",
+    "MaxLength": "00:00:25",
+    "RampLength": "00:00:05"
+  },
   "Phase": {
     "Frequency": "0.2",
     "Pulse": "sin(x)"
@@ -15,8 +23,7 @@
         "Frequency": "800",
         "Pulse": "sin(x)"
       },
-      "Components": [
-        {
+      "Components": [{
           "Frequency": "1/30",
           "Pulse": "(((sin(x)*sgn(cos(x))+1)/2)^0.2) * phase_amp_l(phase(t,n,channel))"
         }
@@ -28,8 +35,7 @@
         "Frequency": "800",
         "Pulse": "sin(x + phase_shift(phase(t,n,channel)))"
       },
-      "Components": [
-        {
+      "Components": [{
           "Frequency": "1/30",
           "Pulse": "(((sin(x)*sgn(cos(x))+1)/2)^0.2) * phase_amp_r(phase(t,n,channel))"
         }

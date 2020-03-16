@@ -44,5 +44,13 @@ namespace waveweb.Tests
             Assert.True(expr.checkSyntax());
             Assert.Equal(0.5, expr.calculate());
         }
+
+        [Fact]
+        public void TimeSpanDivision()
+        {
+            var t1 = TimeSpan.FromSeconds(3);
+            var t2 = TimeSpan.FromSeconds(2);
+            Assert.Equal(1.5, t1 / t2); // not 1
+        }
     }
 }

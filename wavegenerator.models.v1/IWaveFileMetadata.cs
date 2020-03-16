@@ -1,4 +1,6 @@
-﻿namespace wavegenerator.models
+﻿using System;
+
+namespace wavegenerator.models
 {
     public interface IWaveFileMetadata
     {
@@ -6,6 +8,6 @@
         bool PhaseShiftCarrier { get; }
         bool PhaseShiftPulses { get; }
         bool Randomization { get; }
-        double TrackLengthSeconds();
+        TimeSpan TrackLength { get; }
     }
 }

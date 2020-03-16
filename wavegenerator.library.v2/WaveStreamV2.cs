@@ -35,7 +35,7 @@ namespace wavegenerator.library
             {
                 var preWetnessComponents = new AmplitudeAggregator(channel.Components.Select(MakeChannelComponent).ToArray());
                 var wetnessApplier = new WetnessApplierV2(preWetnessComponents, channel.Wetness, functions.ToArray(), constants.ToArray());
-
+                
                 var carrierApplier = MakeChannelComponent(channel.Carrier);
                 var postWetnessComponents = new AmplitudeAggregator(new[] { carrierApplier, wetnessApplier });
                 return postWetnessComponents;
