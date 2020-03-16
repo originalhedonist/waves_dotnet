@@ -10,7 +10,7 @@ namespace wavegenerator.library
         public static IContainer ConfigureContainer(SettingsCommon settings, Action<IContainer> additionalRegistrations = null) => ConfigureContainer(a =>
         {
             if(settings == null) throw new ArgumentNullException(nameof(settings), "Settings must be non-null");
-
+            a.AddInstance<SettingsCommon>(settings);
             if (settings is Settings settingsV1)
             {
                 a.AddInstance(settingsV1);

@@ -4,6 +4,7 @@ namespace wavegenerator.models
 {
     public class SettingsV2 : SettingsCommon
     {
+        public BreaksModel Breaks { get; set; }
         public FrequencyPulse Phase { get; set; }
         public Dictionary<string, ChannelSettingsV2> Channels { get; set; } // could be an array (keys don't matter), just makes the json easier to understand
 

@@ -8,11 +8,11 @@ namespace wavegenerator.library
 {
     public class BreakApplier : IPerChannelComponent
     {
-        private readonly IWaveFileMetadata settings;
+        private readonly SettingsCommon settings;
         private readonly IGetRandom randomizer;
         private readonly Break[] breaks;
 
-        public BreakApplier(IWaveFileMetadata settings, BreaksModel breaksSettings, IGetRandom randomizer)
+        public BreakApplier(SettingsCommon settings, BreaksModel breaksSettings, IGetRandom randomizer)
         {
             this.settings = settings;
             this.randomizer = randomizer;
