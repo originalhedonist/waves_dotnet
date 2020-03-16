@@ -188,7 +188,6 @@
 
         public async createFile() {
             grecaptcha.execute('6LeRm-EUAAAAAMHH_tHu2B_zX7MwN-1ktSkyf4XI', { action: 'createFile' }).then(async (token) => {
-                console.log('the token is:', token);
                 this.Request.recaptchaToken = token;
                 this.creatingFile = true;
                 try {
