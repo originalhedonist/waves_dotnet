@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace wavegenerator.library.common
+﻿namespace wavegenerator.library.common
 {
     public interface IGetRandom
     {
