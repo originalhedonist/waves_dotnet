@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace wavegenerator.models
@@ -12,6 +13,9 @@ namespace wavegenerator.models
 
         [Range(typeof(TimeSpan), "00:00:30", "13:31:35")]
         public TimeSpan TrackLength { get; set; }
+
+        [Description("Whether to use randomization")]
+        public bool Randomization { get; set; }
 
         public virtual short GetNumberOfChannels() => 2;
     }

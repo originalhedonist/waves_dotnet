@@ -7,9 +7,6 @@ namespace wavegenerator.models
 {
     public class Settings : SettingsCommon, IWaveFileMetadata
     {
-        [Description("Whether to use randomization")]
-        public bool Randomization { get; set; }
-
         public double TrackLengthSeconds() => TrackLength.TotalSeconds;
 
         [Range(1, 2)]

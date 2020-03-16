@@ -4,10 +4,11 @@
     "Specific": "BiDiStriker"
   },
   "TrackLength": "00:01:00",
+  "Randomization": false,
   "Breaks": {
     "MinTimeSinceStartOfTrack": "00:00:00",
-    "MinTimeBetweenBreaks": "00:05:00",
-    "MaxTimeBetweenBreaks": "00:30:00",
+    "MinTimeBetweenBreaks": "00:00:10",
+    "MaxTimeBetweenBreaks": "00:00:30",
     "MinLength": "00:00:02",
     "MaxLength": "00:00:25",
     "RampLength": "00:00:05"
