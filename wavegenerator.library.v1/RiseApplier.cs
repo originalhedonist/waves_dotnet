@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using wavegenerator.library.common;
 using wavegenerator.models;
 
 namespace wavegenerator.library
 {
     public class RiseApplier : IPerChannelComponent
     {
-        private readonly Settings settings;
-        private readonly Randomizer randomizer;
+        private readonly SettingsCommon settings;
+        private readonly IGetRandom randomizer;
         private readonly RisesModel riseModel;
         private readonly Rise[] rises;
 
-        public RiseApplier(Settings settings, Randomizer randomizer, RisesModel riseModel)
+        public RiseApplier(SettingsCommon settings, IGetRandom randomizer, RisesModel riseModel)
         {
             this.settings = settings;
             this.randomizer = randomizer;
@@ -70,22 +71,5 @@ namespace wavegenerator.library
             }
             return Task.FromResult(amplitude);
         }
-    }
-
-    public class Rise
-    {
-        public Rise(TimeSpan startTime, TimeSpan endTime, double minAttenuation, double maxAttenuation)
-        {
-            StartTime = startTime;
-            EndTime = endTime;
-            MinAttenuation = minAttenuation;
-            MaxAttenuation = maxAttenuation;
-        }
-
-        public TimeSpan StartTime { get;  }
-        public TimeSpan EndTime { get; }
-        public TimeSpan Length  => EndTime - StartTime;
-        public double MinAttenuation { get; }
-        public double MaxAttenuation { get; }
     }
 }
